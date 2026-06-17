@@ -1,7 +1,7 @@
 # claude-chai — agent configuration for real-engineer code
 
 <p align="center">
-  <img src="assets/claude-chai.png" alt="claude-chai — the little green devil that does the job" width="320">
+  <img src="![alt text](image.png)" alt="claude-chai — the little green devil that does the job" width="320">
 </p>
 
 A drop-in `.claude/` configuration that wires Claude Code to produce **high-quality, well-tested,
@@ -13,15 +13,15 @@ before anything risky, and a strict gate before "done".
 
 ## Why claude-chai
 
-Claude's strength is writing code. Its **demon** is the fast, plausible answer to an *under-thought*
+Claude's strength is writing code. Its **demon** is the fast, plausible answer to an _under-thought_
 decision — great syntax, shaky judgment. claude-chai is the counter-demon: a system of **tools, rules,
 gates, and specialist agents** that force the reasoning to be explicit, evidence-backed, and finished —
 never half-done.
 
 It fixes four recurring failure modes:
 
-- **Guessing instead of looking** → tools pre-digest the repo so agents read *conclusions*, not raw trees.
-- **Under-thought risky decisions** → the `devil` rules on a plan (`BLOCK` / `PROCEED`) *before* code exists.
+- **Guessing instead of looking** → tools pre-digest the repo so agents read _conclusions_, not raw trees.
+- **Under-thought risky decisions** → the `devil` rules on a plan (`BLOCK` / `PROCEED`) _before_ code exists.
 - **Reinventing & duplicating** → a library-first discipline and a duplication finder keep the code DRY.
 - **"Looks done"** → a strict, multi-tool quality gate is the only definition of done.
 
@@ -40,10 +40,10 @@ It fixes four recurring failure modes:
 2. **`/deal`** (for risky work) submits the plan to the **`devil`**, the risk magistrate. It scores blast
    radius / reversibility / cost / confidence, names the failure nobody mentioned, and **pronounces a
    verdict**. `BLOCK` stops the work until resolved. Trivial, reversible work skips this.
-3. **`builder`** implements it: brief from `digest.sh`, build the reusable primitive *first*, then write the
+3. **`builder`** implements it: brief from `digest.sh`, build the reusable primitive _first_, then write the
    failing test, then the minimum code, then refactor — every step run and observed.
 4. **`/quality`** runs every strict gate (format · lint · types · SAST · supply-chain audit · a11y). Green,
-   with tests passing in the project's own framework, *is* done.
+   with tests passing in the project's own framework, _is_ done.
 
 Throughout: **facts, not claims** (every assertion cites a command + output or `file:line`), and **green or
 reverted** (never a half-built tree left behind).
@@ -54,14 +54,14 @@ reverted** (never a half-built tree left behind).
 
 Pick the **smallest scope** that fits the job.
 
-| Layer | Path | What it is | How it fires |
-|---|---|---|---|
-| **Rules** | `rules/*.md` | Always-on / glob-scoped constraints (the craft discipline) | auto, by `alwaysApply` or `globs`; also read by `/refactor` |
-| **Commands** | `commands/*.md` | One focused, single-shot action | you type `/<name> <args>` |
-| **Skills** | `skills/<name>/SKILL.md` | A capability that auto-triggers on intent | trigger phrase, or by name |
-| **Workflows** | `workflows/*.md` | Multi-phase playbooks that orchestrate the rest | `/workflow:<name> <args>` |
-| **Tools** | `tools/*.sh` | Executable digesters, the quality gate, preflight + watchdog | an agent runs `.claude/tools/<name>.sh` |
-| **Agents** | `agents/*.md` | Specialist subagents you delegate to | by name, by trigger, or from a workflow |
+| Layer         | Path                     | What it is                                                   | How it fires                                                |
+| ------------- | ------------------------ | ------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Rules**     | `rules/*.md`             | Always-on / glob-scoped constraints (the craft discipline)   | auto, by `alwaysApply` or `globs`; also read by `/refactor` |
+| **Commands**  | `commands/*.md`          | One focused, single-shot action                              | you type `/<name> <args>`                                   |
+| **Skills**    | `skills/<name>/SKILL.md` | A capability that auto-triggers on intent                    | trigger phrase, or by name                                  |
+| **Workflows** | `workflows/*.md`         | Multi-phase playbooks that orchestrate the rest              | `/workflow:<name> <args>`                                   |
+| **Tools**     | `tools/*.sh`             | Executable digesters, the quality gate, preflight + watchdog | an agent runs `.claude/tools/<name>.sh`                     |
+| **Agents**    | `agents/*.md`            | Specialist subagents you delegate to                         | by name, by trigger, or from a workflow                     |
 
 **Rule of thumb:** a constraint that must always hold → **rule**; one shot → **command**; a capability that
 fires on intent → **skill**; a gated, multi-phase procedure → **workflow**; a recurring parse or a
@@ -77,16 +77,16 @@ instead of re-reading the tree every session. Output caches to `.claude/cache/`,
 (a stale cache rebuilds itself). Pure `bash` + coreutils; `rg`/`jq` used when present. Full index:
 [`tools/README.md`](tools/README.md).
 
-| Tool | Answers |
-|---|---|
-| `digest.sh` | "What am I working with?" — the start-of-task briefing (composes the five below) |
-| `facts.sh` | "How do I build/test/lint? Which gates and **test framework** does this project use?" |
-| `preflight.sh` | "Is the environment ready?" — `.env` / secrets / credentials / toolchain, **before** building |
-| `codemap.sh` | "Where does X live? What's heavy? What's untested?" |
-| `untested.sh` | "What needs a test before I touch it?" — the TDD worklist |
-| `dupes.sh` | "What should I extract into the library?" — duplication candidates |
-| `quality.sh` | "Is it the highest quality — *strictly*?" — the gate (format·lint·types·SAST·audit), verify-only |
-| `watch.sh` | "Run this without ever hanging" — hard **+ idle** timeouts around any command (exit 124 = killed) |
+| Tool           | Answers                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------- |
+| `digest.sh`    | "What am I working with?" — the start-of-task briefing (composes the five below)                  |
+| `facts.sh`     | "How do I build/test/lint? Which gates and **test framework** does this project use?"             |
+| `preflight.sh` | "Is the environment ready?" — `.env` / secrets / credentials / toolchain, **before** building     |
+| `codemap.sh`   | "Where does X live? What's heavy? What's untested?"                                               |
+| `untested.sh`  | "What needs a test before I touch it?" — the TDD worklist                                         |
+| `dupes.sh`     | "What should I extract into the library?" — duplication candidates                                |
+| `quality.sh`   | "Is it the highest quality — _strictly_?" — the gate (format·lint·types·SAST·audit), verify-only  |
+| `watch.sh`     | "Run this without ever hanging" — hard **+ idle** timeouts around any command (exit 124 = killed) |
 
 ```sh
 .claude/tools/digest.sh                          # brief yourself first (cached)
@@ -101,16 +101,19 @@ instead of re-reading the tree every session. Output caches to `.claude/cache/`,
 Pick the **narrowest** agent for the job; compose them at a gate. Each is defined in `agents/<name>.md`.
 
 **Build & extend**
-- **`builder`** — TDD, library-first, fact-driven. Turns a contract into shipped code; *green or reverted, never half*.
+
+- **`builder`** — TDD, library-first, fact-driven. Turns a contract into shipped code; _green or reverted, never half_.
 - **`forger`** — the toolsmith. Forges the scripts/commands that make rules self-enforcing; iterates on feedback.
 - **`innovator`** — vision. 10x ideas grounded in facts, each with a cheap experiment **and a kill criterion**.
 
 **Advise & design**
+
 - **`devil`** — the **risk magistrate**. Scores risk and pronounces `BLOCK` / `PROCEED-WITH-CONDITIONS` / `PROCEED` before risky code exists.
 - **`architect`** — boundaries, contracts, data flow; produces decisions and interfaces, not code.
 - **`documenter`** — docs only; never touches source, examples copied from tests.
 
 **Verify (converge here)**
+
 - **`reviewer`** — strict merge review: correctness, leaks, contract violations, bloat.
 - **`security`** — white-box attacker; finds the exploit, rates it, names the minimal fix.
 - **`benchmarker`** — performance in numbers against a baseline; no adjectives.
@@ -130,7 +133,7 @@ Always-on rules (`alwaysApply`) that bind every task:
 - **`dsa-and-memory`** — pick the optimal data structure + algorithm; pool allocations (Rust manages its own).
 - **`test-frameworks`** — per-language reference; **detect and use** the project's framework, don't reinvent it.
 - **`run-safely`** — verify config before building; bound every command so nothing hangs.
-- **`minimalism-ladder`** + **`minimalism-markers`** — the *ponytail* ladder: YAGNI → stdlib → platform →
+- **`minimalism-ladder`** + **`minimalism-markers`** — the _ponytail_ ladder: YAGNI → stdlib → platform →
   existing dep → one-liner → minimum, with a performance override on hot paths.
 - **`refactor-common`** — universal structural / naming / error-handling / testing invariants.
 
@@ -141,7 +144,7 @@ Tech-scoped rules load by glob when you touch that language: `refactor-{c,go,rus
 
 ## Quick start
 
-1. **Install** — copy these files into your project's `.claude/` directory (this repo *is* that directory's
+1. **Install** — copy these files into your project's `.claude/` directory (this repo _is_ that directory's
    contents). Keep `settings.json` valid JSON.
 2. **Brief Claude** — `.claude/tools/digest.sh` to see the stack, toolchain, test framework, untested files,
    and duplication at a glance.
