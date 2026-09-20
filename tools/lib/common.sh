@@ -3,7 +3,13 @@
 # Source it; never execute it. This is the project library for the tools:
 # every tool stays thin glue over these functions (see rules/library-first.md).
 
-set -euo pipefail
+# A sourced library must not mutate the caller's shell options. This used to run
+# `set -euo pipefail`, which silently re-enabled -e on the four tools that had
+# deliberately turned it off — quality.sh even says "not -e: a failing gate is
+# data, not a script error" and got -e back on the next line. The symptom was a
+# gate script exiting silently at the first `grep -q` that found nothing, which
+# is the SUCCESS case for a negative check. Every tool that wants -e declares it
+# itself; the library now leaves that choice alone.
 
 # --- capability probes ------------------------------------------------------
 
@@ -119,6 +125,47 @@ loc() { wc -l <"$1" 2>/dev/null | tr -d ' ' || echo 0; }
 
 # Best-effort top-level symbol matches (regex, not AST — ponytail: good enough
 # to navigate; the agent reads the real file before editing).
+# --- this config's own assets -----------------------------------------------
+# selfcheck.sh and context.sh analyse the .claude payload itself, not the host
+# repo. Everything below addresses THIS directory tree, never repo_root().
+
+# Root of the .claude payload (the directory holding tools/, rules/, agents/).
+claude_root() { cd "$(_tools_dir)/.." && pwd; }
+
+# Print a file's YAML frontmatter body (between the opening --- and the next ---).
+# Prints nothing when line 1 is not exactly '---' — which is the Claude Code
+# signal for "always load this rule", so absence is meaningful, not an error.
+fm_block() {
+  [ -f "$1" ] || return 0
+  [ "$(head -1 "$1")" = "---" ] || return 0
+  awk 'NR==1 && $0=="---" {inside=1; next} inside && $0=="---" {exit} inside' "$1"
+}
+
+# Value of a top-level frontmatter key, trimmed. Empty when absent.
+# Ponytail: line-oriented, so it reads a scalar (`model: opus`) but not a
+# multi-line block or a nested map — which is all any field here uses.
+fm_field() {
+  fm_block "$1" | sed -n "s/^$2:[[:space:]]*//p" | head -1 \
+    | sed 's/^["'"'"']//; s/["'"'"']$//; s/[[:space:]]*$//'
+}
+
+# True when the frontmatter declares a `paths:` key (scalar or YAML list),
+# i.e. the rule/skill lazy-loads instead of costing context every session.
+fm_has_paths() { fm_block "$1" | grep -q '^paths:'; }
+
+# Names of this config's assets, one per line, sorted.
+#   agents|rules|commands|workflows -> <dir>/<name>.md  ->  name
+#   skills                          -> skills/<name>/SKILL.md -> name
+#   tools                           -> tools/<name>.sh  ->  name
+asset_names() {
+  local root; root="$(claude_root)"
+  case "$1" in
+    skills) find "$root/skills" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort ;;
+    tools)  find "$root/tools" -maxdepth 1 -name '*.sh' -printf '%f\n' 2>/dev/null | sed 's/\.sh$//' | sort ;;
+    *)      find "$root/$1" -maxdepth 1 -name '*.md' -printf '%f\n' 2>/dev/null | sed 's/\.md$//' | sort ;;
+  esac
+}
+
 symbols_of() {
   local f="$1" pat
   case "$(lang_of "$f")" in
