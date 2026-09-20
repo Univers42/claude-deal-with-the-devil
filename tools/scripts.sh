@@ -53,6 +53,12 @@ die() {
 #   | name | runner | file | does | args | exit |
 # Only rows whose `runner` is a bare interpreter are executable; that column is
 # the whole defence against upstream's missing shebangs.
+#
+# Ponytail: this parses markdown with awk on `|`, not a markdown parser. A cell
+# containing a literal pipe, or a row wrapped across lines, is silently mangled —
+# and it under-reports, so a malformed row disappears from `list` rather than
+# erroring. If a registered script is missing from `list`, suspect its row before
+# suspecting the cache.
 _rows() {
   [ -f "$REGISTRY" ] || die "no registry at $REGISTRY"
   awk -F'|' '

@@ -84,6 +84,10 @@ while read -r f; do
   case "$f" in
   */cache/* | */node_modules/* | */claude-code-best-practice/*) continue ;;
   esac
+  # Tests are deliberately full of bounded reads, samples and fixtures that read
+  # as signals but are the point of the test. Scanning them produced only false
+  # positives, and a gate that cries wolf gets switched off.
+  is_test_file "$f" && continue
 
   if grep -qi 'ponytail:' "$f" 2>/dev/null; then
     MARKED=$((MARKED + 1))

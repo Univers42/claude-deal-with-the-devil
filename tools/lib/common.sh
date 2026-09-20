@@ -119,11 +119,15 @@ is_code() {
   esac
 }
 
+# Paths arrive repo-relative from list_files ("tests/x.sh", not "./tests/x.sh"),
+# so the `*/tests/*` globs alone missed a top-level tests/ directory entirely —
+# every file in it counted as untested source. Match both anchored and nested.
 is_test_file() {
   case "$1" in
-  *_test.go | *_test.rs | *_test.py | test_*.py) return 0 ;;
+  *_test.go | *_test.rs | *_test.py | test_*.py | test_*.sh | *.bats) return 0 ;;
   *.test.ts | *.test.tsx | *.test.js | *.spec.ts | *.spec.js) return 0 ;;
   */tests/* | */test/* | */__tests__/* | */spec/*) return 0 ;;
+  tests/* | test/* | __tests__/* | spec/*) return 0 ;;
   esac
   return 1
 }

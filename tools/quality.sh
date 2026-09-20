@@ -66,13 +66,14 @@ record() { RESULTS+="$1	$2	$3	$4"$'\n'; } # status tool category note
 
 # check <category> <label> <relevant 0|1> <bin|""> <gate-fn>
 check() {
-  local cat="$1" label="$2" rel="$3" bin="$4" fn="$5" out rc
+  local cat="$1" label="$2" rel="$3" bin="$4" fn="$5" rc
   [ "$rel" = 1 ] || return 0
   if [ -z "$bin" ]; then
     record SKIP "$label" "$cat" "not installed"
     return 0
   fi
-  if out="$("$fn" "$bin" 2>&1)"; then rc=0; else rc=$?; fi
+  # The gate's own output is noise here: the board reports status, not logs.
+  if "$fn" "$bin" >/dev/null 2>&1; then rc=0; else rc=$?; fi
   RAN=$((RAN + 1))
   if [ "$rc" -eq 0 ]; then
     record PASS "$label" "$cat" ""

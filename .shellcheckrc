@@ -1,0 +1,15 @@
+# Sourced libraries live in lib/ and are resolved at run time, not by the linter.
+disable=SC1091
+
+# Backticks inside single-quoted printf/echo strings are markdown code spans in
+# the text these tools emit, never command substitution. SC2016 has no way to
+# tell the difference and fires on every one of them.
+disable=SC2016
+
+# The gate scripts are deliberately written in the terse style the boards are
+# read in: `manifest x && echo 1 || echo 0` is a value, not a branch (SC2015),
+# `ls .env.example ...` runs over four literal names (SC2012), and sed over a
+# single line is clearer than a parameter expansion with escaped pipes (SC2001,
+# SC2005). Character classes stay ASCII because they match language keywords
+# (SC2018, SC2019).
+disable=SC2015,SC2012,SC2001,SC2005,SC2018,SC2019

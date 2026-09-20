@@ -28,8 +28,10 @@ fixture() {
   cp "$ROOT/tools/selfcheck.sh" "$d/tools/"
   cp "$ROOT/tools/lib/common.sh" "$d/tools/lib/"
   chmod +x "$d/tools/selfcheck.sh"
+  # shellcheck disable=SC2016  # the backticks are markdown links in the fixture
   printf -- '---\nname: demo-agent\ndescription: a demo\n---\n\nBody `rules/demo.md`\n' \
     >"$d/agents/demo-agent.md"
+  # shellcheck disable=SC2016  # ditto
   printf -- '# Demo rule\n\nAlways on, no frontmatter. See `agents/demo-agent.md`.\n' \
     >"$d/rules/demo.md"
   printf -- '---\nname: demo\ndescription: a demo skill\n---\n\n# Demo\n' \

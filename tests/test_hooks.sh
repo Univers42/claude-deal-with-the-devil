@@ -38,15 +38,19 @@ expect() {
     return
   fi
   case "$want" in
-    silent)
-      [ -z "$out" ] && ok "$label" || no "$label — expected no opinion, got: ${out:0:80}"
-      ;;
-    *)
-      case "$out" in
-        *"\"permissionDecision\": \"$want\""*) ok "$label" ;;
-        *) no "$label — expected $want, got: ${out:0:120}" ;;
-      esac
-      ;;
+  silent)
+    if [ -z "$out" ]; then
+      ok "$label"
+    else
+      no "$label — expected no opinion, got: ${out:0:80}"
+    fi
+    ;;
+  *)
+    case "$out" in
+    *"\"permissionDecision\": \"$want\""*) ok "$label" ;;
+    *) no "$label — expected $want, got: ${out:0:120}" ;;
+    esac
+    ;;
   esac
 }
 
@@ -82,13 +86,16 @@ expect "writing an ordinary file" \
 # --- fail open: a broken hook must never block the session ------------------
 for label in "malformed json" "empty stdin" "no event name" "null fields"; do
   case "$label" in
-    "malformed json") payload='{not json' ;;
-    "empty stdin") payload='' ;;
-    "no event name") payload='{"tool_name":"Bash"}' ;;
-    "null fields") payload='{"hook_event_name":"PreToolUse","tool_name":null,"tool_input":null}' ;;
+  "malformed json") payload='{not json' ;;
+  "empty stdin") payload='' ;;
+  "no event name") payload='{"tool_name":"Bash"}' ;;
+  "null fields") payload='{"hook_event_name":"PreToolUse","tool_name":null,"tool_input":null}' ;;
   esac
-  printf '%s' "$payload" | python3 "$HOOK" >/dev/null 2>&1
-  if [ $? -eq 0 ]; then ok "fails open on $label"; else no "$label must still exit 0"; fi
+  if printf '%s' "$payload" | python3 "$HOOK" >/dev/null 2>&1; then
+    ok "fails open on $label"
+  else
+    no "$label must still exit 0"
+  fi
 done
 
 # --- an unknown event is simply ignored -------------------------------------
