@@ -105,6 +105,14 @@ TS=$(  { manifest tsconfig.json; } && echo 1 || echo 0 )
 # --- run gates, in canonical order -----------------------------------------
 
 # format
+# A .claude payload's own integrity is a gate like any other: this repo once
+# documented 4 agents, 5 rules and a settings.json that did not exist, and
+# nothing caught it. Only relevant when the tree IS such a payload.
+g_selfcheck() { "$1" "$DIR/selfcheck.sh" --summary >/dev/null 2>&1; }
+check config selfcheck \
+  "$([ -f "$DIR/selfcheck.sh" ] && [ -d "$ROOT/rules" ] && [ -d "$ROOT/agents" ] && echo 1 || echo 0)" \
+  "$(resolve bash)" g_selfcheck
+
 check format prettier      "$WEB"  "$(resolve prettier)"     g_prettier
 check format gofmt         "$GO"   "$(resolve gofumpt || resolve gofmt)" g_gofmt
 check format rustfmt       "$RUST" "$(resolve cargo)"         g_rustfmt
