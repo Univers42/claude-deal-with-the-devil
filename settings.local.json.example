@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy to settings.local.json (gitignored) for machine-local toggles. Nothing here is shared.",
+
+  "_supermemory": "supermemory is declared in .mcp.json and OFF until you remove it from this list. It persists memory across sessions AND projects — and sends your context to a third-party cloud. Read doc/MEMORY.md before enabling it.",
+  "disabledMcpjsonServers": ["supermemory"],
+
+  "_hooks": "Uncomment to silence every hook, including the risk enforcement in hooks/scripts/hooks.py. Prefer the narrower switches in hooks/config/hooks-config.local.json.",
+  "__disableAllHooks": false,
+
+  "_model": "Per-machine overrides that should not be forced on the team.",
+  "__model": "opus",
+  "__outputStyle": "Explanatory",
+
+  "_env": "Machine-local environment only. Never a secret — this file is a config, not a vault.",
+  "env": {}
+}
