@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # Every linter runs even when an earlier one fails — one push should surface
+  # every problem, not just the first.
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        if: always()
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          find . -name '*.sh' -not -path './cache/*' \
+                 -not -path './claude-code-best-practice/*' \
+            -print0 | xargs -0 shellcheck -e SC1091
+
+      - name: shfmt
+        if: always()
+        run: |
+          curl -fsSL -o /tmp/shfmt \
+            https://github.com/mvdan/sh/releases/download/v3.10.0/shfmt_v3.10.0_linux_amd64
+          chmod +x /tmp/shfmt
+          find . -name '*.sh' -not -path './cache/*' \
+                 -not -path './claude-code-best-practice/*' \
+            -exec /tmp/shfmt -d -i 2 {} +
+
+      - name: markdownlint
+        if: always()
+        run: |
+          npm install -g markdownlint-cli@0.42.0
+          markdownlint '**/*.md' \
+            --ignore node_modules --ignore cache --ignore claude-code-best-practice
+
+      - name: python syntax
+        if: always()
+        run: python3 -m py_compile hooks/scripts/hooks.py
+
+      - name: json is valid
+        if: always()
+        run: |
+          for f in settings.json .mcp.json hooks/config/hooks-config.json \
+                   settings.local.json.example; do
+            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" \
+              && echo "ok   $f" || { echo "FAIL $f"; exit 1; }
+          done
+
+  # The config must tell the truth about itself. This is the gate that stops the
+  # README drifting from the tree again.
+  selfcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: tools/selfcheck.sh
+        run: bash tools/selfcheck.sh
+      - name: tools/context.sh
+        run: bash tools/context.sh --summary
+      - name: tools/ponytail.sh --strict
+        run: bash tools/ponytail.sh --strict
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install shellcheck (a gate under test uses it)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+      - name: run every test
+        run: |
+          rc=0
+          for t in tests/test_*.sh; do
+            echo "── $t"
+            bash "$t" || rc=1
+          done
+          exit $rc
+
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install the gates quality.sh will find
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+      # --no-audit: the network audits are not this repo's concern (no deps).
+      - name: tools/quality.sh
+        run: bash tools/quality.sh --no-audit
