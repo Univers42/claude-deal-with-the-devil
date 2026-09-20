@@ -95,7 +95,10 @@ g_rustfmt() { "$1" fmt --all --check; }
 g_ruff_fmt() { "$1" format --check .; }
 g_ruff_lint() { "$1" check .; }
 g_shellcheck() { list_files | grep -iE '\.(sh|bash)$' | xargs -r "$1"; }
-g_shfmt() { "$1" -d .; }
+# `shfmt -d .` walked gitignored trees (a vendored clone, cache/) and used the
+# default tab indent, so it disagreed with CI on a repo that is 2-space. Drive it
+# from list_files like the shellcheck gate, at the width CI enforces.
+g_shfmt() { list_files | grep -iE '\.(sh|bash)$' | xargs -r "$1" -d -i 2; }
 g_clangfmt() { list_files | grep -iE '\.(c|h)$' | xargs -r "$1" --dry-run -Werror; }
 g_cppcheck() { "$1" --error-exitcode=1 --enable=warning,style --quiet .; }
 g_semgrep() { if manifest .semgrep.yml; then _t "$1" --error --config .semgrep.yml; else _t "$1" --error --config auto; fi; }
