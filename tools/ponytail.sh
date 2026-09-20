@@ -45,7 +45,7 @@ for a in "$@"; do
 done
 
 ROOT="$(repo_root)"
-cd "$ROOT"
+cd "$ROOT" || exit 1
 
 # A comment that hedges. These are the words people reach for instead of writing
 # the caveat properly — which is exactly where the caveat is owed.

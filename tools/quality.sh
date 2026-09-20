@@ -30,7 +30,7 @@ for a in "$@"; do
   esac
 done
 
-ROOT="$(repo_root)"; cd "$ROOT"
+ROOT="$(repo_root)"; cd "$ROOT" || exit 1
 RESULTS=""; FAILED=0; RAN=0
 
 # --- helpers ----------------------------------------------------------------

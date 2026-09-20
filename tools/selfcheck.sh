@@ -40,7 +40,7 @@ for a in "$@"; do
 done
 
 ROOT="$(claude_root)"
-cd "$ROOT"
+cd "$ROOT" || exit 1
 FAILED=0
 WARNED=0
 ROWS=""
@@ -78,7 +78,10 @@ check_dangling() {
         *.md | *.sh | *.py | *.json) target="$ref" ;;
         *) continue ;; # a bare directory is not a claim about a file
       esac
+      # A markdown link is relative to its own file, so resolve both ways:
+      # hooks/HOOKS-README.md saying `scripts/hooks.py` means hooks/scripts/hooks.py.
       [ -e "$ROOT/$target" ] && continue
+      [ -e "$(dirname "$doc")/$target" ] && continue
       echo "$doc|$target"
     done
   done < <(_docs) | sort -u | while IFS='|' read -r doc target; do

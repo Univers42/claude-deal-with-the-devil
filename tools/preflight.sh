@@ -17,7 +17,7 @@ for a in "$@"; do case "$a" in
   *) echo "preflight.sh: unknown arg '$a'" >&2; exit 2 ;;
 esac; done
 
-ROOT="$(repo_root)"; cd "$ROOT"
+ROOT="$(repo_root)"; cd "$ROOT" || exit 1
 MISS=0; CREDS=0
 
 _env_keys() { grep -hE '^[A-Za-z_][A-Za-z0-9_]*=' "$1" 2>/dev/null | sed 's/=.*//' | sort -u; }

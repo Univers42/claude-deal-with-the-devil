@@ -40,7 +40,7 @@ for a in "$@"; do
 done
 
 ROOT="$(claude_root)"
-cd "$ROOT"
+cd "$ROOT" || exit 1
 
 # Ponytail: bytes/4 is the usual English-prose rule of thumb for tokens. It is
 # an estimate, not a count — no tokenizer runs here. Trust the BYTES column;
