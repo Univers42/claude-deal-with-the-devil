@@ -30,12 +30,12 @@ SUMMARY=0
 STRICT=0
 for a in "$@"; do
   case "$a" in
-    --summary) SUMMARY=1 ;;
-    --strict) STRICT=1 ;;
-    *)
-      echo "selfcheck.sh: unknown arg '$a'" >&2
-      exit 2
-      ;;
+  --summary) SUMMARY=1 ;;
+  --strict) STRICT=1 ;;
+  *)
+    echo "selfcheck.sh: unknown arg '$a'" >&2
+    exit 2
+    ;;
   esac
 done
 
@@ -71,12 +71,12 @@ check_dangling() {
   local doc ref target seen=""
   while read -r doc; do
     [ -n "$doc" ] || continue
-    grep -oE '(\.claude/)?(agents|rules|commands|workflows|skills|tools|doc|scripts)/[A-Za-z0-9_./-]+' "$doc" 2>/dev/null \
-      | sed 's|^\.claude/||' | sort -u | while read -r ref; do
+    grep -oE '(\.claude/)?(agents|rules|commands|workflows|skills|tools|doc|scripts)/[A-Za-z0-9_./-]+' "$doc" 2>/dev/null |
+      sed 's|^\.claude/||' | sort -u | while read -r ref; do
       case "$ref" in
-        */) continue ;;
-        *.md | *.sh | *.py | *.json) target="$ref" ;;
-        *) continue ;; # a bare directory is not a claim about a file
+      */) continue ;;
+      *.md | *.sh | *.py | *.json) target="$ref" ;;
+      *) continue ;; # a bare directory is not a claim about a file
       esac
       # A markdown link is relative to its own file, so resolve both ways:
       # hooks/HOOKS-README.md saying `scripts/hooks.py` means hooks/scripts/hooks.py.
@@ -101,8 +101,8 @@ check_agents() {
       row FAIL agent "$f" "no frontmatter; agents need name + description"
       continue
     fi
-    [ "$name" = "$(basename "$f" .md)" ] \
-      || row FAIL agent "$f" "name '$name' != filename '$(basename "$f" .md)'"
+    [ "$name" = "$(basename "$f" .md)" ] ||
+      row FAIL agent "$f" "name '$name' != filename '$(basename "$f" .md)'"
     # description may be a folded block (>), in which case the scalar read is
     # empty but the key is present — check the key, not the value.
     fm_block "$f" | grep -q '^description:' || row FAIL agent "$f" "no description:"
@@ -119,10 +119,10 @@ check_skills() {
       row FAIL skill "$name" "no SKILL.md"
       continue
     fi
-    [ "$(fm_field "$d/SKILL.md" name)" = "$name" ] \
-      || row FAIL skill "$name" "frontmatter name != directory name"
-    fm_block "$d/SKILL.md" | grep -q '^description:' \
-      || row FAIL skill "$name" "no description:"
+    [ "$(fm_field "$d/SKILL.md" name)" = "$name" ] ||
+      row FAIL skill "$name" "frontmatter name != directory name"
+    fm_block "$d/SKILL.md" | grep -q '^description:' ||
+      row FAIL skill "$name" "no description:"
     if fm_block "$d/SKILL.md" | grep -q '^tools:'; then
       row FAIL skill "$name" "uses 'tools:' — not a skill field; use 'allowed-tools:'"
     fi
@@ -146,8 +146,8 @@ check_invocables() {
   for kind in commands workflows; do
     for f in "$kind"/*.md; do
       [ -e "$f" ] || continue
-      fm_block "$f" | grep -q '^description:' \
-        || row FAIL "${kind%s}" "$f" "no description: — it will not appear in the / menu"
+      fm_block "$f" | grep -q '^description:' ||
+        row FAIL "${kind%s}" "$f" "no description: — it will not appear in the / menu"
     done
   done
 }
@@ -175,13 +175,13 @@ check_orphans() {
     while read -r name; do
       [ -n "$name" ] || continue
       case "$kind" in
-        commands) pat="$kind/$name|/$name\b|\`$name\`" ;;
-        workflows) pat="$kind/$name|/workflow:$name\b|\`$name\`" ;;
-        skills) pat="skills/$name/|\`$name\`" ;;
-        *) pat="$kind/$name|\`$name\`" ;;
+      commands) pat="$kind/$name|/$name\b|\`$name\`" ;;
+      workflows) pat="$kind/$name|/workflow:$name\b|\`$name\`" ;;
+      skills) pat="skills/$name/|\`$name\`" ;;
+      *) pat="$kind/$name|\`$name\`" ;;
       esac
-      hits="$(grep -rlE "$pat" --include='*.md' . 2>/dev/null \
-        | grep -v "^\./$kind/$name" | grep -v claude-code-best-practice | head -1)"
+      hits="$(grep -rlE "$pat" --include='*.md' . 2>/dev/null |
+        grep -v "^\./$kind/$name" | grep -v claude-code-best-practice | head -1)"
       [ -n "$hits" ] || row "$sev" orphan "$kind/$name" "no other doc references it"
     done < <(asset_names "$kind")
   done

@@ -12,8 +12,11 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REFRESH_FLAG=""
 for a in "$@"; do
   case "$a" in
-    --refresh) REFRESH_FLAG="--refresh" ;;
-    *) echo "digest.sh: unknown arg '$a'" >&2; exit 2 ;;
+  --refresh) REFRESH_FLAG="--refresh" ;;
+  *)
+    echo "digest.sh: unknown arg '$a'" >&2
+    exit 2
+    ;;
   esac
 done
 
@@ -21,9 +24,13 @@ echo "# Build briefing — $(repo_root)"
 echo
 echo "_Facts before action. Read this, then read-by-query (rg/jq), then build. Never hand-parse what a tool already digested._"
 echo
-_section() { bash "$1" --summary $REFRESH_FLAG || echo "_($(basename "$1") failed — run it directly to see why)_"; echo; }
+_section() {
+  bash "$1" --summary $REFRESH_FLAG || echo "_($(basename "$1") failed — run it directly to see why)_"
+  echo
+}
 _section "$DIR/facts.sh"
-bash "$DIR/preflight.sh" --summary || true; echo   # non-zero = findings, not failure
+bash "$DIR/preflight.sh" --summary || true
+echo # non-zero = findings, not failure
 _section "$DIR/codemap.sh"
 _section "$DIR/untested.sh"
 _section "$DIR/dupes.sh"

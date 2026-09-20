@@ -73,13 +73,19 @@ _sync() {
   if [ ! -d "$CACHE/.git" ]; then
     echo "scripts.sh: fetching $URL into $CACHE" >&2
     rm -rf "$CACHE"
-    "$DIR/watch.sh" --timeout 300 --idle 60 -- git clone --quiet "$URL" "$CACHE" >&2 \
-      || { echo "scripts.sh: clone failed (offline, or no SSH access to $URL)" >&2; return 3; }
+    "$DIR/watch.sh" --timeout 300 --idle 60 -- git clone --quiet "$URL" "$CACHE" >&2 ||
+      {
+        echo "scripts.sh: clone failed (offline, or no SSH access to $URL)" >&2
+        return 3
+      }
   fi
-  git -C "$CACHE" cat-file -e "$PIN^{commit}" 2>/dev/null \
-    || "$DIR/watch.sh" --timeout 300 --idle 60 -- git -C "$CACHE" fetch --quiet origin >&2
-  git -C "$CACHE" checkout --quiet --detach "$PIN" 2>/dev/null \
-    || { echo "scripts.sh: pinned sha $PIN not found upstream" >&2; return 3; }
+  git -C "$CACHE" cat-file -e "$PIN^{commit}" 2>/dev/null ||
+    "$DIR/watch.sh" --timeout 300 --idle 60 -- git -C "$CACHE" fetch --quiet origin >&2
+  git -C "$CACHE" checkout --quiet --detach "$PIN" 2>/dev/null ||
+    {
+      echo "scripts.sh: pinned sha $PIN not found upstream" >&2
+      return 3
+    }
   echo "scripts.sh: at $PIN" >&2
 }
 
@@ -128,8 +134,8 @@ cmd_run() {
   [ -n "$row" ] || die "'$name' is not in the registry — refusing to run an unvetted script"
   IFS=$'\t' read -r _ runner file _ _ _ <<<"$row"
   case "$runner" in
-    bash | sh | python3 | node) : ;;
-    *) die "registry runner '$runner' for '$name' is not an allowed interpreter" ;;
+  bash | sh | python3 | node) : ;;
+  *) die "registry runner '$runner' for '$name' is not an allowed interpreter" ;;
   esac
   _synced || _sync || return 3
   [ -f "$CACHE/$file" ] || die "'$file' not present at $PIN — the registry is stale"
@@ -138,27 +144,27 @@ cmd_run() {
 }
 
 case "${1:-list}" in
-  list)
-    shift || true
-    cmd_list "${1:-}"
-    ;;
-  show)
-    shift
-    cmd_show "$@"
-    ;;
-  run)
-    shift
-    cmd_run "$@"
-    ;;
-  sync)
-    shift || true
-    [ "${1:-}" = "--pin" ] && {
-      PIN="${2:?--pin needs a sha}"
-      shift 2
-    }
-    _sync
-    ;;
-  path) echo "$CACHE" ;;
-  -h | --help | help) sed -n '2,32p' "$0" ;;
-  *) die "unknown command '${1}' — try list, show, run, sync, path" ;;
+list)
+  shift || true
+  cmd_list "${1:-}"
+  ;;
+show)
+  shift
+  cmd_show "$@"
+  ;;
+run)
+  shift
+  cmd_run "$@"
+  ;;
+sync)
+  shift || true
+  [ "${1:-}" = "--pin" ] && {
+    PIN="${2:?--pin needs a sha}"
+    shift 2
+  }
+  _sync
+  ;;
+path) echo "$CACHE" ;;
+-h | --help | help) sed -n '2,32p' "$0" ;;
+*) die "unknown command '${1}' — try list, show, run, sync, path" ;;
 esac

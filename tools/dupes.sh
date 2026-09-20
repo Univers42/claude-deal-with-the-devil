@@ -12,13 +12,20 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
 . "$DIR/lib/common.sh"
 
-MODE=full; WINDOW=6
+MODE=full
+WINDOW=6
 while [ $# -gt 0 ]; do
   case "$1" in
-    --summary) MODE=summary ;;
-    --refresh) export REFRESH=1 ;;
-    --window)  WINDOW="${2:-6}"; shift ;;
-    *) echo "dupes.sh: unknown arg '$1'" >&2; exit 2 ;;
+  --summary) MODE=summary ;;
+  --refresh) export REFRESH=1 ;;
+  --window)
+    WINDOW="${2:-6}"
+    shift
+    ;;
+  *)
+    echo "dupes.sh: unknown arg '$1'" >&2
+    exit 2
+    ;;
   esac
   shift
 done
@@ -27,7 +34,8 @@ done
 # busiest first. awk holds a per-file ring buffer; a window is keyed by its
 # normalized text, locations are collected, blocks seen >1 are reported.
 _blocks() {
-  local root list; root="$(repo_root)"
+  local root list
+  root="$(repo_root)"
   # Files as awk ARGUMENTS (so FILENAME/FNR read contents), NUL-safe for spaces.
   list="$(list_files | while read -r rel; do
     if is_code "$rel" && ! is_test_file "$rel"; then printf '%s\n' "$root/$rel"; fi
@@ -52,10 +60,14 @@ _blocks() {
 }
 
 build_full() {
-  local blocks; blocks="$(_blocks)"
+  local blocks
+  blocks="$(_blocks)"
   echo "# Duplication candidates (window=$WINDOW lines)"
   echo
-  if [ -z "$blocks" ]; then echo "_No repeated $WINDOW-line blocks. Nothing obvious to extract._"; return 0; fi
+  if [ -z "$blocks" ]; then
+    echo "_No repeated $WINDOW-line blocks. Nothing obvious to extract._"
+    return 0
+  fi
   echo "Each row repeats — extract into the project library, then replace call sites:"
   echo
   echo "| count | first seen | starts with |"
@@ -64,15 +76,20 @@ build_full() {
 }
 
 build_summary() {
-  local blocks n; blocks="$(_blocks)"; n="$(printf '%s\n' "$blocks" | grep -c . || true)"
+  local blocks n
+  blocks="$(_blocks)"
+  n="$(printf '%s\n' "$blocks" | grep -c . || true)"
   echo "## Duplication (window=$WINDOW)"
-  if [ "$n" -eq 0 ]; then echo "- no repeated blocks found"; return 0; fi
+  if [ "$n" -eq 0 ]; then
+    echo "- no repeated blocks found"
+    return 0
+  fi
   echo "- $n repeated block(s) — extraction candidates for the project library"
   printf '%s\n' "$blocks" | head -5 | awk -F'\t' '{printf "- ×%s `%s` — %s\n",$1,$2,substr($3,1,48)}'
   echo "- full list: \`.claude/tools/dupes.sh\`"
 }
 
 case "$MODE" in
-  summary) emit_cached dupes.summary.md build_summary ;;
-  full)    emit_cached dupes.md build_full ;;
+summary) emit_cached dupes.summary.md build_summary ;;
+full) emit_cached dupes.md build_full ;;
 esac

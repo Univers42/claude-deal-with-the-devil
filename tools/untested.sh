@@ -14,9 +14,12 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=full
 for a in "$@"; do
   case "$a" in
-    --summary) MODE=summary ;;
-    --refresh) export REFRESH=1 ;;
-    *) echo "untested.sh: unknown arg '$a'" >&2; exit 2 ;;
+  --summary) MODE=summary ;;
+  --refresh) export REFRESH=1 ;;
+  *)
+    echo "untested.sh: unknown arg '$a'" >&2
+    exit 2
+    ;;
   esac
 done
 
@@ -27,7 +30,8 @@ _gaps() {
   list_files | while read -r rel; do
     is_code "$rel" || continue
     is_test_file "$rel" && continue
-    stem="$(basename "$rel")"; stem="${stem%.*}"
+    stem="$(basename "$rel")"
+    stem="${stem%.*}"
     printf '%s\n' "$tests" | grep -qi -- "$stem" || echo "$rel"
   done
 }
@@ -36,10 +40,15 @@ _total_code() { list_files | while read -r f; do is_code "$f" && ! is_test_file 
 
 build_full() {
   local gaps total n
-  gaps="$(_gaps)"; total="$(_total_code)"; n="$(printf '%s\n' "$gaps" | grep -c . || true)"
+  gaps="$(_gaps)"
+  total="$(_total_code)"
+  n="$(printf '%s\n' "$gaps" | grep -c . || true)"
   echo "# Untested source ($n of $total files)"
   echo
-  if [ "$n" -eq 0 ]; then echo "_Every source file is named by a test. Run the coverage target for line-level gaps._"; return 0; fi
+  if [ "$n" -eq 0 ]; then
+    echo "_Every source file is named by a test. Run the coverage target for line-level gaps._"
+    return 0
+  fi
   echo "Write the failing test FIRST, then the code (see agents/builder.md):"
   echo
   printf '%s\n' "$gaps" | sed 's/^/- `/; s/$/`/'
@@ -47,16 +56,21 @@ build_full() {
 
 build_summary() {
   local gaps total n
-  gaps="$(_gaps)"; total="$(_total_code)"; n="$(printf '%s\n' "$gaps" | grep -c . || true)"
+  gaps="$(_gaps)"
+  total="$(_total_code)"
+  n="$(printf '%s\n' "$gaps" | grep -c . || true)"
   echo "## Untested"
-  if [ "$total" -eq 0 ]; then echo "- no source files detected"; return 0; fi
+  if [ "$total" -eq 0 ]; then
+    echo "- no source files detected"
+    return 0
+  fi
   echo "- $n of $total source files have no test naming their stem"
-  [ "$n" -gt 0 ] && printf '%s\n' "$gaps" | sed 's#/[^/]*$##' | sort | uniq -c | sort -rn | head -5 \
-    | awk '{printf "- %s untested under `%s/`\n",$1,$2}'
+  [ "$n" -gt 0 ] && printf '%s\n' "$gaps" | sed 's#/[^/]*$##' | sort | uniq -c | sort -rn | head -5 |
+    awk '{printf "- %s untested under `%s/`\n",$1,$2}'
   echo "- full list: \`.claude/tools/untested.sh\`"
 }
 
 case "$MODE" in
-  summary) emit_cached untested.summary.md build_summary ;;
-  full)    emit_cached untested.md build_full ;;
+summary) emit_cached untested.summary.md build_summary ;;
+full) emit_cached untested.md build_full ;;
 esac

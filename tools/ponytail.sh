@@ -33,14 +33,14 @@ STRICT=0
 TARGET=""
 for a in "$@"; do
   case "$a" in
-    --summary) MODE=summary ;;
-    --strict) STRICT=1 ;;
-    --refresh) export REFRESH=1 ;;
-    -*)
-      echo "ponytail.sh: unknown arg '$a'" >&2
-      exit 2
-      ;;
-    *) TARGET="$a" ;;
+  --summary) MODE=summary ;;
+  --strict) STRICT=1 ;;
+  --refresh) export REFRESH=1 ;;
+  -*)
+    echo "ponytail.sh: unknown arg '$a'" >&2
+    exit 2
+    ;;
+  *) TARGET="$a" ;;
   esac
 done
 
@@ -82,7 +82,7 @@ while read -r f; do
   [ -f "$f" ] || continue
   is_code "$f" || continue
   case "$f" in
-    */cache/* | */node_modules/* | */claude-code-best-practice/*) continue ;;
+  */cache/* | */node_modules/* | */claude-code-best-practice/*) continue ;;
   esac
 
   if grep -qi 'ponytail:' "$f" 2>/dev/null; then

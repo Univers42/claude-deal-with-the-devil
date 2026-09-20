@@ -19,9 +19,12 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=full
 for a in "$@"; do
   case "$a" in
-    --summary) MODE=summary ;;
-    --refresh) export REFRESH=1 ;;
-    *) echo "codemap.sh: unknown arg '$a'" >&2; exit 2 ;;
+  --summary) MODE=summary ;;
+  --refresh) export REFRESH=1 ;;
+  *)
+    echo "codemap.sh: unknown arg '$a'" >&2
+    exit 2
+    ;;
   esac
 done
 
@@ -33,15 +36,18 @@ _rows() {
   list_files | while read -r rel; do
     is_code "$rel" || continue
     is_test_file "$rel" && continue
-    f="$root/$rel"; [ -f "$f" ] || continue
-    stem="$(basename "$rel")"; stem="${stem%.*}"
+    f="$root/$rel"
+    [ -f "$f" ] || continue
+    stem="$(basename "$rel")"
+    stem="${stem%.*}"
     if printf '%s\n' "$tests" | grep -qi -- "$stem"; then has=yes; else has=NO; fi
     printf '%s\t%s\t%s\t%s\t%s\n' "$(lang_of "$rel")" "$(loc "$f")" "$(symbol_count "$f")" "$has" "$rel"
   done
 }
 
 build_full() {
-  local rows; rows="$(_rows)"
+  local rows
+  rows="$(_rows)"
   echo "# Codemap"
   echo
   echo "Source files (tests excluded). \`symbols\` = regex-matched top-level defs; \`test?\` = a test file names this stem."
@@ -52,10 +58,14 @@ build_full() {
 }
 
 build_summary() {
-  local rows; rows="$(_rows)"
+  local rows
+  rows="$(_rows)"
   echo "## Codemap (summary)"
   echo
-  if [ -z "$rows" ]; then echo "_No source files detected._"; return 0; fi
+  if [ -z "$rows" ]; then
+    echo "_No source files detected._"
+    return 0
+  fi
   echo "| lang | files | loc | untested |"
   echo "|---|---:|---:|---:|"
   printf '%s\n' "$rows" | awk -F'\t' '
@@ -63,13 +73,13 @@ build_summary() {
     END{for(k in f) printf "| %s | %d | %d | %d |\n", k, f[k], l[k], u[k]+0}' | sort
   echo
   echo "Heaviest files:"
-  printf '%s\n' "$rows" | sort -t"$(printf '\t')" -k2,2nr | head -5 \
-    | awk -F'\t' '{printf "- `%s` — %s loc (%s)\n",$5,$2,$1}'
+  printf '%s\n' "$rows" | sort -t"$(printf '\t')" -k2,2nr | head -5 |
+    awk -F'\t' '{printf "- `%s` — %s loc (%s)\n",$5,$2,$1}'
   echo
   echo "_Drill in: \`.claude/tools/codemap.sh\` (full table) or \`rg <symbol> \$(.claude/tools/codemap.sh | …)\`._"
 }
 
 case "$MODE" in
-  summary) emit_cached codemap.summary.md build_summary ;;
-  full)    emit_cached codemap.md build_full ;;
+summary) emit_cached codemap.summary.md build_summary ;;
+full) emit_cached codemap.md build_full ;;
 esac

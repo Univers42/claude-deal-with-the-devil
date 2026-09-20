@@ -30,12 +30,12 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODE=full
 for a in "$@"; do
   case "$a" in
-    --summary) MODE=summary ;;
-    --refresh) export REFRESH=1 ;;
-    *)
-      echo "context.sh: unknown arg '$a'" >&2
-      exit 2
-      ;;
+  --summary) MODE=summary ;;
+  --refresh) export REFRESH=1 ;;
+  *)
+    echo "context.sh: unknown arg '$a'" >&2
+    exit 2
+    ;;
   esac
 done
 
@@ -79,8 +79,8 @@ done
 
 for kind in skills commands workflows; do
   case "$kind" in
-    skills) files=(skills/*/SKILL.md) ;;
-    *) files=("$kind"/*.md) ;;
+  skills) files=(skills/*/SKILL.md) ;;
+  *) files=("$kind"/*.md) ;;
   esac
   for f in "${files[@]}"; do
     [ -e "$f" ] || continue
