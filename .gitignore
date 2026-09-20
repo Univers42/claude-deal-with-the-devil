@@ -1,3 +1,7 @@
 # Tool digest/gate output — regenerated on demand, fingerprinted to git state.
 cache/
 settings.local.json
+
+# A separate clone (git@github.com:Univers42/claude-code-best-practice.git) parked
+# here for reference; it carries its own .git and 151 MB of assets.
+claude-code-best-practice/
