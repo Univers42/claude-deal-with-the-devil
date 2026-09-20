@@ -25,6 +25,11 @@ is_set()  { [ -n "${!1:-}" ]; }                                   # exported and
 in_env()  { [ -f "$ROOT/.env" ] && grep -qE "^$1=.+" "$ROOT/.env"; }  # present with a value
 is_cred() { printf '%s' "$1" | grep -qiE 'KEY|SECRET|TOKEN|PASSWORD|PASSWD|CREDENTIAL|PRIVATE'; }
 
+# Ponytail: required config is inferred from whichever of these files exists
+# first, so a project that declares its config anywhere else (a schema, a chart,
+# a README table) reports as having none — which reads as "nothing required"
+# when it means "nothing found". Absence of an example file is reported ⚪, not
+# green, for exactly that reason.
 example="$(ls .env.example .env.sample .env.template .env.dist 2>/dev/null | head -1)"
 
 report_env() {

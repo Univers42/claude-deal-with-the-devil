@@ -35,6 +35,11 @@ RESULTS=""; FAILED=0; RAN=0
 
 # --- helpers ----------------------------------------------------------------
 
+# Ponytail: 180s is a flat bound on the network gates, not a measurement. A
+# genuinely slow audit on a large lockfile is killed and recorded FAIL, which
+# reads as "vulnerable" when it means "did not finish" — re-run the named tool
+# directly before acting on it. Without `timeout` installed there is no bound at
+# all and a hung registry call will block the gate.
 _t() { if have timeout; then timeout 180 "$@"; else "$@"; fi; }   # bound network gates
 
 # Resolve a CLI: prefer the repo-local node bin, then a global one. Empty = none.
