@@ -3,7 +3,7 @@ name: write-test
 description: >
   Generate tests for existing code. Auto-triggers on:
   "write tests for", "add test coverage", "this needs tests"
-tools: Read, Write, Bash
+allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
 # Write Tests
