@@ -1,9 +1,7 @@
----
-description: When a decision must face the devil's verdict before it becomes code, and how risk is scored.
-alwaysApply: true
----
-
 # Risk — engineer the decision before you write the code
+
+*When a decision must face the devil's verdict before it becomes code, and how risk is
+scored.*
 
 The sharpest failure mode is a fast, plausible answer to an under-thought decision. The fix is
 a gate: before risky work turns into code, it faces the `devil` (the risk magistrate), who rules

@@ -1,6 +1,6 @@
 ---
-globs: ["**/*.go"]
-description: Go refactoring rules
+paths:
+  - "**/*.go"
 ---
 
 # Go Refactoring

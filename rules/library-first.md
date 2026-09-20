@@ -1,9 +1,6 @@
----
-description: Build a project-tailored library first; features are thin glue. No redundancy.
-alwaysApply: true
----
-
 # Library-first — extract before you duplicate
+
+*Build a project-tailored library first; features are thin glue. No redundancy.*
 
 The smallest, fastest codebase is the one where each capability exists once.
 Before adding feature code, build the reusable primitive; the feature is then thin

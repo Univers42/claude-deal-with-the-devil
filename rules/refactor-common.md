@@ -1,9 +1,6 @@
----
-description: Universal refactoring rules — applies to all technologies
-alwaysApply: true
----
-
 # Refactoring — Common Ground (craft discipline)
+
+*Universal refactoring rules — applies to all technologies.*
 
 ## Structural invariants
 

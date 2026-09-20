@@ -1,9 +1,6 @@
----
-description: Verify the environment before building; bound every command so nothing hangs.
-alwaysApply: true
----
-
 # Run safely — verify first, never hang
+
+*Verify the environment before building; bound every command so nothing hangs.*
 
 Two failure modes waste the most time: building against an unconfigured environment,
 and waiting forever on a stuck process. Both are preventable. Both have a tool.

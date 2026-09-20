@@ -1,9 +1,6 @@
----
-description: Pick the optimal data structure and algorithm; pool allocations. Rust manages its own.
-alwaysApply: true
----
-
 # Data structures, algorithms, memory
+
+*Pick the optimal data structure and algorithm; pool allocations. Rust manages its own.*
 
 Correctness first, then the right structure, then the right algorithm. The data
 structure is a design decision made before the code, not discovered after.

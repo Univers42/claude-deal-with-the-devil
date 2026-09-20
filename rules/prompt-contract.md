@@ -1,9 +1,7 @@
----
-description: How Claude consumes a request (input) and returns work (output). The best-prompt contract.
-alwaysApply: true
----
-
 # Prompt contract — facts in, evidence out
+
+*How Claude consumes a request (input) and returns work (output). The best-prompt
+contract.*
 
 The best prompt is not a longer prompt — it is a grounded one: facts gathered
 before action, results returned as proof. This binds every command, skill,

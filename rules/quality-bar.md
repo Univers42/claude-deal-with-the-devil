@@ -1,9 +1,6 @@
----
-description: The strict, multi-tool quality bar that sits on top of the per-language rules.
-alwaysApply: true
----
-
 # Quality bar — strictest mode, every layer, one command
+
+*The strict, multi-tool quality bar that sits on top of the per-language rules.*
 
 Per-language linters and formatters live in `rules/refactor-<tech>.md` under
 "After refactoring". This rule adds the layers that apply to EVERY language and

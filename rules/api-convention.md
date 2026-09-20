@@ -1,9 +1,16 @@
 ---
-globs: ["**/routes/**", "**/handlers/**", "**/controllers/**", "**/api/**", "**/*router*", "**/*controller*"]
-description: REST API conventions — endpoints, auth, access control, errors
+paths:
+  - "**/routes/**"
+  - "**/handlers/**"
+  - "**/controllers/**"
+  - "**/api/**"
+  - "**/*router*"
+  - "**/*controller*"
 ---
 
 # API Conventions
+
+*REST API conventions — endpoints, auth, access control, errors.*
 
 ## Shape
 

@@ -1,9 +1,7 @@
----
-description: Detect and use the project's test framework; don't reinvent it. Reference per language.
-alwaysApply: true
----
-
 # Test frameworks — detect, then use the right one
+
+*Detect and use the project's test framework; don't reinvent it. Reference per
+language.*
 
 A test proves something only when it runs in the project's real framework and runner.
 Don't hand-roll what `gtest`, `pytest`, or `vitest` already do. Build and verify WITH
