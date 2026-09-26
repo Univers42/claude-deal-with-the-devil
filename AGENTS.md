@@ -80,19 +80,19 @@ Every subagent obeys these, even for a one-off slice:
 
 Pick the narrowest agent for the job; compose them at a gate (§4). Each obeys §5.
 
-**Build & extend**
+### Build & extend
 
 - `builder` — TDD, library-first, fact-driven; turns a contract into shipped code with every gate green.
 - `forger` — toolsmith; forges the scripts/commands that make rules self-enforcing, iterates on feedback.
 - `innovator` — vision; 10x ideas grounded in facts, each with a cheap experiment and a kill criterion.
 
-**Advise & design**
+### Advise & design
 
 - `architect` — boundaries, contracts, data flow; produces decisions and interfaces, not code.
 - `devil` — risk magistrate; scores risk and pronounces a verdict (BLOCK / PROCEED) before risky code exists.
 - `documenter` — docs only; never touches source, examples copied from tests.
 
-**Verify (converge here)**
+### Verify (converge here)
 
 - `reviewer` — strict merge review: correctness, leaks, contract violations, bloat.
 - `security` — white-box attacker; finds the exploit, rates it, names the minimal fix.

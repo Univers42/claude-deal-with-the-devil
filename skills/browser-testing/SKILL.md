@@ -28,7 +28,7 @@ Playwright in the repo otherwise.
 
 ## 2. Drive it
 
-```
+```text
 browser_navigate  → browser_snapshot  → browser_click / browser_type / browser_fill_form
                   → browser_wait_for  → browser_snapshot
 ```

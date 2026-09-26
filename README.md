@@ -36,7 +36,7 @@ evidence before action. In practice it fixes five habits:
 
 ## How a task flows
 
-```
+```text
 /prompt          →   /deal           →   builder              →   /quality
 write a spec         the devil          test-first, reuse        run the strict gate
                      decides go/stop    red → green → refactor
@@ -143,7 +143,7 @@ coreutils, with `rg`/`jq` used when they're around. Full list:
 Pick the narrowest one for the job and combine them when you check the work. Each lives
 in `agents/<name>.md`.
 
-**Build and extend**
+### Build and extend
 
 - **`builder`** — test-first, reuse-first. Turns a contract into shipped code; green or
   reverted, never half.
@@ -152,7 +152,7 @@ in `agents/<name>.md`.
 - **`innovator`** — the ideas person, with a cheap experiment and a clear way to know
   when to drop it.
 
-**Advise and design**
+### Advise and design
 
 - **`devil`** — weighs the risk and decides BLOCK / PROCEED-WITH-CONDITIONS / PROCEED
   before risky code exists.
@@ -160,7 +160,7 @@ in `agents/<name>.md`.
   interfaces, not code.
 - **`documenter`** — docs only, never touches source; examples come from the tests.
 
-**Verify**
+### Verify
 
 - **`reviewer`** — strict merge review: correctness, leaks, broken contracts, bloat.
 - **`security`** — thinks like an attacker, finds the exploit, rates it, names the
@@ -274,7 +274,7 @@ These hold for everything here, even one-off tasks:
 
 ## Repository layout
 
-```
+```text
 .claude/
 ├── README.md          this file
 ├── AGENTS.md          multi-agent discipline

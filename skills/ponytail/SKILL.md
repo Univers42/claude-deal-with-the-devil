@@ -44,7 +44,7 @@ Then check what the tool cannot see in the change itself:
 Not "this is regex-based" — that tells the reader nothing. State **what fails, in which
 direction, and what to do instead**:
 
-```
+```text
 # Ponytail: matches the import line, so a conditional or dynamic import is missed.
 # It under-reports, so an empty result means "found nothing", not "there is nothing" —
 # confirm against the real dependency graph before deleting anything.

@@ -11,7 +11,7 @@ else picked is a default you will turn off.
 
 1. Drop files into a directory named after the event, lowercased:
 
-   ```
+   ```text
    hooks/sounds/
    ├── pretooluse/      any .wav or .mp3
    ├── posttooluse/

@@ -47,7 +47,7 @@ git stash push -- <path>   # set aside what belongs in the next commit
 
 ## 3. Write the message
 
-```
+```text
 <type>(<scope>): <what changed, imperative, lower case, no period>
 
 <why — the problem, the constraint, the measurement. Not the what: the diff has that.>

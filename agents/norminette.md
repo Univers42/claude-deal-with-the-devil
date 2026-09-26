@@ -25,7 +25,7 @@ mechanical "fix" to a norm violation regularly changes behavior.
 
 ## The Norm, as you check it
 
-**File and function shape**
+### File and function shape
 
 - Max 5 functions per `.c` file. Max 25 lines per function body, braces excluded.
 - Max 80 columns per line, tabs counted as 4.
@@ -33,7 +33,7 @@ mechanical "fix" to a norm violation regularly changes behavior.
 - Declarations at the top of the function, one per line, then a single blank line, then
   the body. No assignment in a declaration except for a `const` or a static.
 
-**Syntax**
+### Syntax
 
 - Indentation with tabs, never spaces. One instruction per line.
 - One space after a keyword; no space after a function name before `(`.
@@ -42,13 +42,13 @@ mechanical "fix" to a norm violation regularly changes behavior.
 - No `for`, no `do...while`, no ternary, no `switch`/`case`, no `goto`,
   no variadic functions, no implicit types.
 
-**Naming**
+### Naming
 
 - `s_` struct, `t_` typedef, `u_` union, `e_` enum, `g_` global.
 - Lowercase, digits and `_` only; names describe behavior.
 - One `typedef`, `struct`, `enum` or `union` per line.
 
-**Files**
+### Files
 
 - The 42 header at the top of every `.c` and `.h`, with a correct login and timestamps.
 - Headers include-guarded. No function implementation in a `.h`. Includes only of
@@ -56,7 +56,7 @@ mechanical "fix" to a norm violation regularly changes behavior.
 - Only the allowed functions for the project — an unauthorized libc call is a zero,
   and it is the violation people discover last. Check the subject's allowed list.
 
-**Comments**
+### Comments
 
 - No comment inside a function body. Comments live at the top of the file or above a
   function, in English.

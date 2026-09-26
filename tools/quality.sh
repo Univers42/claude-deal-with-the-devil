@@ -117,9 +117,9 @@ g_pytest() { _t "$1" -q; }
 
 # --- relevance --------------------------------------------------------------
 
-WEB=$(manifest package.json && echo 1 || (has_ext 'ts|tsx|js|jsx' && echo 1 || echo 0) )
-GO=$(manifest go.mod && echo 1 || (has_ext 'go' && echo 1 || echo 0) )
-RUST=$(manifest Cargo.toml && echo 1 || (has_ext 'rs' && echo 1 || echo 0) )
+WEB=$(manifest package.json && echo 1 || (has_ext 'ts|tsx|js|jsx' && echo 1 || echo 0))
+GO=$(manifest go.mod && echo 1 || (has_ext 'go' && echo 1 || echo 0))
+RUST=$(manifest Cargo.toml && echo 1 || (has_ext 'rs' && echo 1 || echo 0))
 PY=$({ manifest pyproject.toml || manifest requirements.txt || has_ext 'py'; } && echo 1 || echo 0)
 SH=$(has_ext 'sh|bash' && echo 1 || echo 0)
 C=$(has_ext 'c|h' && echo 1 || echo 0)
