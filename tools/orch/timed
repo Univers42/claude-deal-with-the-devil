@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# timed <cmd...> — run a timed gate (a long seed sweep, mutation testing, a full gate.sh) under a
+# host-wide lock so only one runs at a time: parallel branches otherwise starve it past its own
+# timeout (seen: a 1000-seed sweep timed out at 2700 s with mutants running alongside).
+# Untimed builds and tests do not take the lock. Env: TIMED_LOCK (default /tmp/timed-$USER.lock).
+set -euo pipefail
+exec flock "${TIMED_LOCK:-/tmp/timed-$USER.lock}" "$@"

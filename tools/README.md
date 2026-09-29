@@ -20,6 +20,7 @@ the "read-by-query" discipline (`AGENTS.md`) made executable.
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/`, `workflows/` |
 | `ponytail.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
+| `orch/` | "Delegate bulk work to headless OpenCode builders and check it" — launch, watch (`oc-status.sh`), gate before merge | job journals under `<worktree>/target/wf/` — see `orch/README.md` |
 
 ## Use
 
