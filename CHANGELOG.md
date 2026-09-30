@@ -11,6 +11,8 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-30
+
 ### Removed
 
 - The `ponytail` tombstone skill, retired in 1.0.0 and kept one minor as announced. Use
