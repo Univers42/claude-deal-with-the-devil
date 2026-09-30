@@ -46,7 +46,7 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 - The seven workflows are commands now (`commands/<name>.md` with
   `metadata.kind: workflow`), so `/devil:deal`, `/devil:feature` and the rest load;
   a plugin never loaded the old `workflows/` directory. Every doc cites `/devil:<name>`
-  and `devil <tool>` instead of `/workflow:<name>` and `.claude/tools/<tool>.sh`.
+  and `devil <tool>` instead of the old workflow slash names and `.claude/tools/<tool>.sh`.
 - `architect`, `benchmarker` and `devil` carry `memory: project`, which the docs already
   claimed.
 - The host config moved to `templates/settings.json` and `templates/mcp.json`: a plugin
