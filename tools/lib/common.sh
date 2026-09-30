@@ -152,6 +152,32 @@ fm_block() {
   awk 'NR==1 && $0=="---" {inside=1; next} inside && $0=="---" {exit} inside' "$1"
 }
 
+# Everything after the closing frontmatter fence: the body, fences excluded.
+# The two exporter libraries both need it and neither should own it.
+fm_body() {
+  awk 'NR == 1 && $0 == "---" { inside = 1; next } inside && $0 == "---" { body = 1; next } body' "$1"
+}
+
+# A Claude `tools:` value, one name per line: a comma list, or a YAML block
+# list. Read by both exporters, since both dialects grant per tool.
+# Caveat: line-oriented. A flow list (`tools: [Read, Bash]`) is not parsed and
+# yields no grants, and a name no target action exists for is dropped there, so
+# the caller decides whether that means read-only or over-privileged.
+claude_tools() {
+  fm_block "$1" | awk '
+    /^tools:[[:space:]]*\[/ { gsub(/^\[|\].*$/, ""); print; exit }
+    /^tools:[[:space:]]*[^[:space:]]/ {
+      sub(/^tools:[[:space:]]*/, "")
+      gsub(/[\[\]]/, "")
+      print
+      exit
+    }
+    /^tools:[[:space:]]*$/ { inside = 1; next }
+    inside && /^[[:space:]]*-[[:space:]]+/ { sub(/^[[:space:]]*-[[:space:]]*/, ""); print; next }
+    inside { exit }
+  ' | tr ',' '\n' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | grep -v '^$'
+}
+
 # Trim surrounding whitespace, then one pair of matching quotes.
 _fm_unquote() { sed -E "s/^[[:space:]]+//; s/[[:space:]]+\$//; s/^([\"'])(.*)\1\$/\2/"; }
 

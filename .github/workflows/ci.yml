@@ -83,6 +83,8 @@ jobs:
       # fails when it drifts from the Claude sources.
       - name: tools/export.sh --check opencode
         run: bash tools/export.sh --check opencode
+      - name: tools/export.sh --check gemini
+        run: bash tools/export.sh --check gemini
 
   # The root must load as a Claude Code plugin. Validating plugin.json also reads
   # hooks/hooks.json; validating the root would pick marketplace.json and skip it.

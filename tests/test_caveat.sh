@@ -126,7 +126,11 @@ fi
 # the table exists, and hiding the name would leave a dangling reference instead.
 extra='skills/caveat/SKILL.md|CHANGELOG.md|README.md'
 allow="tools/caveat.sh|tests/test_caveat.sh|rules/caveat.md|skills/ponytail/SKILL.md"
-hits="$(cd "$ROOT" && grep -rniIl ponytail . --exclude-dir=.git --exclude-dir=target |
+# dist/ is skipped on purpose: a generated harness copy inherits the word from
+# the source it was generated from, that source is checked here, and
+# `tools/export.sh --check` is what proves the copy still matches it. Grepping
+# the copy would only prove the generator ran.
+hits="$(cd "$ROOT" && grep -rniIl ponytail . --exclude-dir=.git --exclude-dir=target --exclude-dir=dist |
   sed 's|^\./||' | grep -vE "^($allow|$(echo "$extra" | tr '|' '\n' | paste -sd'|' -))$")"
 if [ -z "$hits" ]; then ok "ponytail survives only in the allowlist"; else
   no "ponytail also appears in: $(echo "$hits" | tr '\n' ' ')"

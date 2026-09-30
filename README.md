@@ -125,11 +125,14 @@ copy from drifting.
 | Harness | State |
 | --- | --- |
 | **OpenCode 2.x** | supported. `devil export opencode` writes `dist/opencode/`: 11 subagents with their `tools:` list mapped to V2 permissions, 13 commands, the 12 always-on rules, and a plugin that bridges `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing and `bin/` on the agent's `PATH` all work. Verified live on 2.0.18. Start at [`dist/opencode/README.md`](dist/opencode/README.md) |
-| Copilot CLI, Gemini CLI, Codex CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
+| **Gemini CLI** | supported, with three measured gaps. `devil export gemini` writes `dist/gemini/` as a real extension: `gemini-extension.json` with the version read from `plugin.json`, the 12 rules as its `contextFileName`, 18 commands as TOML with `{{args}}`, 23 skills copied verbatim, 11 sub-agents with only the keys Gemini's `.strict()` schema accepts, and `hooks/hooks.json` calling a translator that puts `hooks.py` behind Gemini's payload. Verified against 0.62.0. What is degraded: the post-edit gate cannot run on an *edit* (Gemini's `replace` reports no path), the session briefing needs `tools/` which is not shipped, and `bin/` is not on the agent's `PATH`. Start at [`dist/gemini/README.md`](dist/gemini/README.md) |
+| Copilot CLI, Codex CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
 
 ```sh
 devil export opencode            # write dist/opencode
 devil export --check opencode    # exit 1 on drift; CI runs this
+devil export gemini              # write dist/gemini
+devil export --check gemini      # exit 1 on drift; CI runs this
 ```
 
 ---
