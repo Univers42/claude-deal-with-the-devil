@@ -36,12 +36,20 @@ def session_start(data):
 
 
 def pre_compact(data):
-    """Compaction drops detail. Say what is worth carrying across it."""
+    """Compaction drops detail. Say what is worth carrying across it.
+
+    `/devil:handoff` is named here because a handoff document survives what a
+    compaction cannot: another session, or another harness, starts from it.
+    """
     context(
         "PreCompact",
         "Before compacting, preserve: measured numbers and the command that "
         "produced them, any `devil` verdict and its conditions, the current "
         "done-when, and anything still UNKNOWN. Per rules/memory.md, do NOT "
         "preserve what the kit's `tools/digest.sh` re-derives; re-run it after "
-        "compaction instead of carrying a copy that will be stale.",
+        "compaction instead of carrying a copy that will be stale. If this work "
+        "has to continue in a new session, run `/devil:handoff` first: it writes "
+        "a portable document of pointers (redacted) and ends with the return "
+        "block, which is what survives; compaction keeps the rest in this "
+        "session only.",
     )

@@ -10,3 +10,9 @@ Nothing here is read from the plugin root, on purpose: a root `settings.json` is
 as plugin settings (only `agent` and `subagentStatusLine` survive) and a root `.mcp.json`
 would start every server for every host. `/devil:setup` (coming) seeds these into a
 host's `.claude/`; until then copy them by hand.
+
+- `wizard.sh`: the copy-and-fill library above a `# STAGES` marker, for a procedure
+  only a person can drive.
+- `handoff.md`: the skeleton `/devil:handoff` fills in and writes to
+  `${TMPDIR:-/tmp}/devil-handoff-<repo>-<ts>.md`. It is read by that command, not
+  copied into a host.

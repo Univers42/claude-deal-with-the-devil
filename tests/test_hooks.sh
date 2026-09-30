@@ -211,6 +211,22 @@ case "$out" in
 *) no "SessionStart should brief $HOST_P, got: ${out:0:160}" ;;
 esac
 
+# --- PreCompact names the handoff that outlives the session --------------------
+# What compaction drops is exactly what a fresh session has to re-derive, so the
+# hook has to name the one thing that carries it. The control runs the same match
+# over a payload that returns no context: if it matched there, the case below
+# would pass for the wrong reason.
+out="$(fire '{"hook_event_name":"PreCompact","trigger":"auto"}')"
+case "$out" in
+*/devil:handoff*) ok "PreCompact suggests /devil:handoff" ;;
+*) no "PreCompact must suggest /devil:handoff, got: ${out:0:160}" ;;
+esac
+out="$(fire "$(bash_call 'ls -la')")"
+case "$out" in
+*/devil:handoff*) no "the control payload must not name /devil:handoff" ;;
+*) ok "the control payload carries no handoff hint, so the case above can fail" ;;
+esac
+
 echo
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1

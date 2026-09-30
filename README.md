@@ -60,7 +60,9 @@ For the whole arc in one command: `/devil:feature <description>`. To take existi
 code from "it works" to "it holds": `/devil:harden <module>`. The rest:
 `/devil:deal` (a verdict on a risky plan), `/devil:onboard-app` (move an external app
 onto the project's backend, with a go/no-go gate after recon), `/devil:ship` (the release pipeline), `/devil:migrate-db` (author a
-migration, paired with `/devil:migrate`), `/devil:compat-audit` (endpoint-by-endpoint parity).
+migration, paired with `/devil:migrate`), `/devil:compat-audit` (endpoint-by-endpoint parity),
+`/devil:handoff` (the portable document a fresh session, or another harness, continues from),
+`/devil:retro` (a session or a PR turned into checks to build and rules to propose).
 
 ---
 
@@ -260,7 +262,8 @@ receives, so they live in `templates/` ([`templates/README.md`](templates/README
 - **`hooks/`**: where rules stop being reminders. `hooks/hooks.json` binds the events
   to `hooks/scripts/hooks.py`: `PreToolUse` denies the catastrophic and asks on the
   irreversible; `PostToolUse` gates the file you just edited; `SessionStart` hands over
-  the briefing; `PreCompact` protects the facts worth keeping. Details and limits in
+  the briefing; `PreCompact` protects the facts worth keeping, and names
+  `/devil:handoff` for work that must continue in another session. Details and limits in
   [`hooks/HOOKS-README.md`](hooks/HOOKS-README.md).
 - **`templates/mcp.json`**: copied to the host's `.mcp.json`. It declares
   `playwright`, `context7`, `deepwiki`, and `supermemory` (**off by default**, see
@@ -328,7 +331,8 @@ These hold for everything here, even one-off tasks:
 ├── tools/*.sh         the scripts (digest, quality, selfcheck, …) + lib/common.sh
 ├── tools/orch/        headless OpenCode jobs and their gate (`devil orch …`)
 ├── hooks/             hooks.json bindings and hooks/scripts/hooks.py, the handler
-├── templates/         what a host receives: settings.json, mcp.json, wizard.sh
+├── templates/         what a host receives: settings.json, mcp.json, wizard.sh,
+│                      plus the skeletons a command fills in (handoff.md)
 ├── settings.local.json.example  machine-local toggles for a host
 ├── scripts/           REGISTRY.md — the vetted external script library
 ├── tests/             regression tests for the tools, hooks, dispatcher and templates
@@ -367,7 +371,10 @@ numbers, and skip filler words like "simply" or "just".
 - **Commands** — frontmatter with one `description:` ending in `Usage: /devil:<name> <args>`
   and a block map `metadata:` holding `kind: command` (written as two lines; the
   selfcheck reader skips a flow map). The body opens with `<Label>: $ARGUMENTS` and uses
-  phased `## Workflow` sections.
+  phased `## Workflow` sections. A command only a person may run adds
+  `argument-hint:` and `disable-model-invocation: true` (`commands/handoff.md`,
+  `commands/retro.md`), and no other asset's body may `/`-reference one, because the
+  Skill tool cannot reach it.
 - **Skills** — a directory `skills/<name>/` whose `SKILL.md` frontmatter `name` matches
   the directory. `description:` ends in `Auto-triggers on: "phrase", "phrase"`. Tool
   restriction is `allowed-tools:` — **not** `tools:`, which is an agent field. Keep the
