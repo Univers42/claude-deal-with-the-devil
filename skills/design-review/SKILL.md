@@ -1,13 +1,14 @@
 ---
 name: design-review
 description: >
-  Judge an interface the way a design engineer does — hierarchy, rhythm, type, states,
-  and the empty/loading/error cases nobody built. Names what is wrong and why, not "make
-  it pop". Auto-triggers on: "review this design", "does this look right", "improve the
-  UI", "critique this", "the design feels off", "make this look better"
+  Judges an interface by hierarchy, rhythm, type, consistency and the states nobody
+  built, then names the smallest fix for each. Use when a design is described as
+  feeling off, crowded or unfinished and the cause has not been named yet.
+  Auto-triggers on: "review this design", "does this look right", "improve the UI",
+  "critique this", "the design feels off", "make this look better"
 allowed-tools: Read, Edit, Grep, Glob, Bash
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 

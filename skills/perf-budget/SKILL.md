@@ -1,13 +1,14 @@
 ---
 name: perf-budget
 description: >
-  Set the number before you optimise, then measure against it. Stops both premature
-  optimisation and the endless tuning that never ships. Auto-triggers on: "make it
-  faster", "is this fast enough", "optimize this", "performance budget", "it feels slow",
-  "reduce latency"
+  Fixes a performance target before any optimisation starts, then measures against it
+  until it passes. Use when something is slow and the work should stay bounded, or
+  when an optimisation is proposed with no number attached to it.
+  Auto-triggers on: "make it faster", "is this fast enough", "optimize this",
+  "performance budget", "it feels slow", "reduce latency"
 allowed-tools: Read, Edit, Bash, Grep, Glob
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 

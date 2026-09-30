@@ -1,13 +1,15 @@
 ---
 name: frontend
 description: >
-  Build UI that holds up — component and state boundaries, design tokens, responsive and
-  theme behaviour, and the accessibility gate. Auto-triggers on: "build a component",
-  "add a page", "style this", "make it responsive", "dark mode", "the layout breaks",
-  "frontend", "this UI"
+  Builds UI that holds up at every width, in both themes, with real data, and for
+  someone on a keyboard. Use when a page or a component is being added or restyled,
+  when a layout breaks on a narrow screen or in dark mode, or when a view has no
+  empty, loading or error state.
+  Auto-triggers on: "build a component", "add a page", "style this",
+  "make it responsive", "dark mode", "the layout breaks"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 
