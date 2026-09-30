@@ -58,13 +58,13 @@ row() {
 }
 
 # A bare x.y.z: no pre-release, no build metadata, no leading v.
-# Ponytail: the regex reads a string, not a file. A version split across JSON
+# Caveat: the regex reads a string, not a file. A version split across JSON
 # lines, `v0.9.0` or `0.9` is rejected here, and nothing here says whether the
 # version was the one actually shipped.
 semver() { [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; }
 
 # A top-level string field of a JSON file, jq when installed else sed.
-# Ponytail: the sed read matches the first `"key": "..."` on a line anywhere in
+# Caveat: the sed read matches the first `"key": "..."` on a line anywhere in
 # the file, so a nested or commented `"version"` is read as the plugin's, and a
 # value broken across lines is not matched at all (it then reads as empty).
 json_str() {
@@ -78,7 +78,7 @@ json_str() {
 
 # The newest released version: the first `## [x.y.z]` heading. An
 # `## [Unreleased]` above it is expected and ignored.
-# Ponytail: matched line by line, so `### [1.0.0]`, `## [1.0.0](url)` or a
+# Caveat: matched line by line, so `### [1.0.0]`, `## [1.0.0](url)` or a
 # differently bracketed heading reads as absent and the check FAILs as a
 # mismatch rather than as a missing release.
 changelog_heading() {
@@ -87,7 +87,7 @@ changelog_heading() {
 }
 
 # The first line of the changelog carrying both needles, matched as substrings.
-# Ponytail: substring, not word, matching: `ghost` also satisfies `ghostly`, and
+# Caveat: substring, not word, matching: `ghost` also satisfies `ghostly`, and
 # a long line mentioning the asset in one clause and its replacement in another
 # counts. It proves the two are named together, not that the entry explains it.
 changelog_line_with() {
@@ -99,7 +99,7 @@ changelog_line_with() {
 
 # Retired assets as `<name> <replaced-by>` lines. Skills and commands are the two
 # kinds that carry a tombstone body.
-# Ponytail: only `skills/*/SKILL.md` and `commands/*.md` are read, so a retired
+# Caveat: only `skills/*/SKILL.md` and `commands/*.md` are read, so a retired
 # agent or rule is invisible here, and the values come from fm_meta, which is
 # itself line-oriented YAML (its caveat is in lib/common.sh).
 retired_pairs() {
@@ -129,7 +129,7 @@ check_version() {
 }
 
 # How many plugins[] entries carry their own version key.
-# Ponytail: exact under jq. The sed fallback counts lines, not entries, and reads
+# Caveat: exact under jq. The sed fallback counts lines, not entries, and reads
 # a `version` quoted inside a description string as a violation, while an
 # unquoted `version: 1.0.0` in the file would be missed.
 market_versions() {
@@ -172,7 +172,7 @@ check_retired() {
 # --- the bump ---------------------------------------------------------------
 
 # The next x.y.z: major resets minor and patch, minor resets patch.
-# Ponytail: string surgery on the semver core, so `1.0.0-rc.1` carries its
+# Caveat: string surgery on the semver core, so `1.0.0-rc.1` carries its
 # suffix into the result and `1.0` yields an empty patch. The caller refuses a
 # current version that is not a bare x.y.z before this runs.
 next_version() {
@@ -198,7 +198,7 @@ open_release() {
 
 # Write the version into plugin.json. jq rewrites the file; the sed fallback only
 # rewrites the value of a `version` key already on one line.
-# Ponytail: the sed fallback leaves the file byte-identical when the key is
+# Caveat: the sed fallback leaves the file byte-identical when the key is
 # missing or the value spans lines, and its first-match-wins is wrong for a
 # nested `version`. The caller re-reads the field and refuses to commit unless
 # it round-trips, so a silent no-op fails the bump instead of shipping.

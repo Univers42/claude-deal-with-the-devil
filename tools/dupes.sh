@@ -3,7 +3,7 @@
 # candidates: pull each into the project library, test once, reuse everywhere
 # (see rules/library-first.md). Caches to .claude/cache/dupes.md.
 #
-# Ponytail: sliding-window of WINDOW normalized lines, hashed and counted. It
+# Caveat: sliding-window of WINDOW normalized lines, hashed and counted. It
 # finds copy-paste, not semantic clones. Tune WINDOW for sensitivity.
 #
 # Usage: dupes.sh [--summary] [--refresh] [--window N]

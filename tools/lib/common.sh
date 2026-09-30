@@ -156,7 +156,7 @@ fm_block() {
 _fm_unquote() { sed -E "s/^[[:space:]]+//; s/[[:space:]]+\$//; s/^([\"'])(.*)\1\$/\2/"; }
 
 # Value of a top-level frontmatter key, trimmed. Empty when absent.
-# Ponytail: line-oriented, so it reads a scalar (`model: opus`) but not a
+# Caveat: line-oriented, so it reads a scalar (`model: opus`) but not a
 # multi-line block (use fm_desc) or a nested map (use fm_meta).
 fm_field() {
   fm_block "$1" | sed -n "s/^$2:[[:space:]]*//p" | head -1 | _fm_unquote
@@ -172,7 +172,7 @@ fm_flag() { [ "$(fm_field "$1" "$2")" = true ]; }
 
 # Value of `metadata.<key>`, the map that carries an asset's own labels (kind,
 # stage, since). A top-level <key>: is a different field and is never read.
-# Ponytail: line-oriented YAML with a two-space indent. A map indented by four,
+# Caveat: line-oriented YAML with a two-space indent. A map indented by four,
 # a flow map (`metadata: {kind: workflow}`) or a CRLF file (fm_block never sees
 # the `---` fence) all read as absent, and a nested map under metadata is
 # skipped, not flattened. Absent is the failure direction: a tagged command is
@@ -192,7 +192,7 @@ fm_meta() {
 # The full `description:` on one line, however it was written: a scalar, a
 # folded block (> or >-) or a literal block (|). Block lines are joined with
 # single spaces because the / listing shows every description on one line.
-# Ponytail: line-oriented YAML. It takes the first `description:` at column 0
+# Caveat: line-oriented YAML. It takes the first `description:` at column 0
 # and stops at the next unindented line, so a duplicate key hides the later
 # one, a nested map under description: is flattened into the text, a value
 # carrying a literal `description:` at column 0 (invalid YAML) ends the block
@@ -252,8 +252,9 @@ asset_names() {
   esac
 }
 
-# Best-effort top-level symbol matches (regex, not AST — ponytail: good enough
-# to navigate; the agent reads the real file before editing).
+# Caveat: regex over source, not an AST, so it misses a method declared inside
+# an impl block and picks up a bare `foo()` call in a body. Good enough to
+# navigate; the agent reads the real file before editing.
 symbols_of() {
   local f="$1" pat
   case "$(lang_of "$f")" in

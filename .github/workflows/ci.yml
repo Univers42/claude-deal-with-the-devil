@@ -67,8 +67,8 @@ jobs:
         run: bash tools/selfcheck.sh --strict
       - name: tools/context.sh
         run: bash tools/context.sh --summary
-      - name: tools/ponytail.sh --strict
-        run: bash tools/ponytail.sh --strict
+      - name: tools/caveat.sh --strict
+        run: bash tools/caveat.sh --strict
       - name: tools/release.sh --check
         run: bash tools/release.sh --check
 

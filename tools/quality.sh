@@ -43,7 +43,7 @@ RAN=0
 
 # --- helpers ----------------------------------------------------------------
 
-# Ponytail: 180s is a flat bound on the network gates, not a measurement. A
+# Caveat: 180s is a flat bound on the network gates, not a measurement. A
 # genuinely slow audit on a large lockfile is killed and recorded FAIL, which
 # reads as "vulnerable" when it means "did not finish" — re-run the named tool
 # directly before acting on it. Without `timeout` installed there is no bound at

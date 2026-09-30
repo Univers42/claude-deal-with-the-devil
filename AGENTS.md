@@ -57,7 +57,7 @@ Every subagent obeys these, even for a one-off slice:
 - **Verify before you run** — `preflight` the config, never hang (`run-safely`); the quality gate is green before "done".
 - **Report faithfully** — failures stated, skips stated; a clean result claimed only when verified.
 - **Say what you get wrong** — a heuristic, sample or estimate ships its limitation
-  (`rules/ponytail.md`). A subagent returning a best-effort answer says so, or the caller
+  (`rules/caveat.md`). A subagent returning a best-effort answer says so, or the caller
   will act on it as a fact.
 - **Remember the expensive facts only** — a measured number or a verdict, never what
   `devil digest` re-derives (`rules/memory.md`).
@@ -115,7 +115,7 @@ that touched it:
 ```sh
 bash tools/selfcheck.sh      # every documented name resolves; frontmatter is one Claude Code reads
 bash tools/context.sh        # what the change costs every future session
-bash tools/ponytail.sh --strict
+bash tools/caveat.sh --strict
 for t in tests/test_*.sh; do bash "$t" || echo "FAILED: $t"; done
 ```
 

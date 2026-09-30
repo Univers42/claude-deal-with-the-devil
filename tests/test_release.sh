@@ -70,7 +70,7 @@ retired_entry() { echo "- \`ghost\` is retired; use \`demo\` instead" >>"$1/CHAN
 
 # Read the version back with grep, so the suite needs no jq and the assertion
 # stays independent of the tool's own reader.
-# Ponytail: substring matching on a hand-written fixture file; it reads the first
+# Caveat: substring matching on a hand-written fixture file; it reads the first
 # `"version"` on any line, which is all a two-key fixture can contain.
 version_of() { grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$1" | head -1 | cut -d'"' -f4; }
 

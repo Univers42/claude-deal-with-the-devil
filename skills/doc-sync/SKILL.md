@@ -71,7 +71,7 @@ the `write-test` skill. Do not invent an example to fill the hole.
 - Keep file headers true — this repo's convention is a block comment stating the why,
   the trick, or the bug that motivated the code. When the behaviour changes, the header
   changes in the same commit (`rules/minimalism-markers.md`).
-- New limitation? It gets a `Ponytail:` line (`rules/ponytail.md`).
+- New limitation? It gets a `Caveat:` line (`rules/caveat.md`).
 
 ## 5. Do not overreach
 

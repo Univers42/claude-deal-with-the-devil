@@ -73,7 +73,7 @@ _docs() {
 # Matches `agents/devil.md`, `bin/devil`, `skills/debug/SKILL.md` inside
 # backticks or plain. A path char before the prefix means someone else's path
 # (`/usr/bin/env`, `.github/workflows/ci.yml`), so it is not read as ours.
-# Ponytail: prefix-anchored, so a path split across a line break is missed,
+# Caveat: prefix-anchored, so a path split across a line break is missed,
 # and only bin/ is checked without an extension: `tools/orch/timed` is not.
 # It finds the real class of drift; it is not a link checker.
 check_dangling() {
@@ -228,7 +228,7 @@ check_layout() {
 # `devil <name>` in backticks is how a doc cites a tool, so it must reach
 # tools/<name>.sh, and `devil orch <sub>` tools/orch/<sub>[.sh], the files
 # bin/devil would exec. A placeholder (`devil <tool>`) is not a name.
-# Ponytail: backtick-anchored. A fenced code line `devil ghost` and a citation
+# Caveat: backtick-anchored. A fenced code line `devil ghost` and a citation
 # wrapped across two lines are not read, so a renamed tool can leave a stale
 # example in a code block. The other way, a code span that opens with the
 # agent's name (`devil verdict`) reads as a tool citation and fails.

@@ -3,7 +3,7 @@
 # parent of the current git top-level, i.e. the directory holding the worktrees): worktree, label,
 # state, minutes since the last event, session id, and the last text the model wrote (≤200 chars).
 # Never prints a transcript. States: RUNNING · done(rc=N) · DEAD (process gone, no rc) · STALLED.
-# Ponytail: STALLED is mtime-based (>OC_STALL_MIN, default 30, minutes without a journal write); a
+# Caveat: STALLED is mtime-based (>OC_STALL_MIN, default 30, minutes without a journal write); a
 # job thinking silently for longer is reported stalled. Look at the session in the OpenCode UI
 # (`opencode -s <id>`, from the worktree) before interrupting it.
 set -uo pipefail

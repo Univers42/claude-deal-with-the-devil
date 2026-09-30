@@ -1,6 +1,6 @@
 """risk.py: PreToolUse. Refuse the catastrophic, ask on the irreversible (rules/risk.md).
 
-Ponytail: the PreToolUse matcher is regex over the command string, not a shell
+Caveat: the PreToolUse matcher is regex over the command string, not a shell
 parser. It misses obfuscation trivially — `rm -r -f`, a path built from a
 variable, anything behind `eval` or a script file. It is a seatbelt against the
 common accident, NOT a security boundary, and must never be treated as one.

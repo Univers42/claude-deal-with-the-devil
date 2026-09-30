@@ -14,7 +14,7 @@
 # Exit: 0 after `finish`; 2 on misuse. Not -e: a failed command in a stage
 #   must not skip the tail, so the agent still gets what was captured.
 #
-# Ponytail: INTERACTIVE. Never run it under tools/watch.sh: the idle timeout
+# Caveat: INTERACTIVE. Never run it under tools/watch.sh: the idle timeout
 # kills it while the person is still reading. Captured values are free text
 # typed by a person; they are testimony, not facts, and the agent verifies
 # them before acting on them.

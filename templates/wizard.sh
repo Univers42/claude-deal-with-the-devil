@@ -20,7 +20,7 @@
 #
 # Never prints a secret value: only names, and `set -x` is never turned on.
 #
-# Ponytail: open_url detects WSL from /proc/version and otherwise trusts
+# Caveat: open_url detects WSL from /proc/version and otherwise trusts
 # `xdg-open`/`open` to exist only where a browser does. An SSH session without
 # display forwarding, a container that ships xdg-open, or a headless CI runner
 # all look like a desktop to it: the URL is printed in every case, so the

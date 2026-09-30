@@ -27,7 +27,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `selfcheck.sh` | "Does this config tell the truth about itself?" (the drift gate) | every doc + every frontmatter block |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` |
-| `ponytail.sh` | "Which approximations here don't admit they're approximations?" | every source file |
+| `caveat.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
 | `orch/` | "Delegate bulk work to headless OpenCode builders and check it" — launch, watch (`devil orch oc-status`), gate before merge | job journals under `<worktree>/target/wf/` — see `orch/README.md` |
 
@@ -46,7 +46,7 @@ devil selfcheck                      # this config's own integrity (exit 1 = dri
 devil release --check                # one version source: plugin.json == changelog heading
 devil release bump patch             # cut a release: edit, commit, tag, never push
 devil context                        # always-on vs lazy bytes, per file
-devil ponytail --strict              # approximations with no stated limitation
+devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
 ```
 
@@ -66,7 +66,7 @@ which is the *success* case for a negative check. Every tool declares its own op
 - **Cached + fingerprinted.** Output caches to the host's `.claude/cache/` (gitignored), keyed to
   `git HEAD` + dirty tree; a stale cache rebuilds itself.
 - **Best-effort, honest.** Symbol / dup / coverage extraction is regex-heuristic (marked
-  `ponytail`), not an AST. It points you at the file; you read the file.
+  `caveat`), not an AST. It points you at the file; you read the file.
 
 ## Extending
 

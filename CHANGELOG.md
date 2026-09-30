@@ -49,6 +49,10 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   and `devil <tool>` instead of the old workflow slash names and `.claude/tools/<tool>.sh`.
 - `architect`, `benchmarker` and `devil` carry `memory: project`, which the docs already
   claimed.
+- The limitation marker is `Caveat:` (rule `rules/caveat.md`, skill `caveat`, tool
+  `devil caveat`). The tool matches case-sensitively and still accepts the legacy
+  `Ponytail:` marker, reported as INFO; a lowercase `ponytail:` note from another
+  tool no longer silences a finding, as the case-insensitive match did.
 - The host config moved to `templates/settings.json` and `templates/mcp.json`: a plugin
   cannot ship host permissions, and a plugin `.mcp.json` would start the memory server
   for every installer who never asked for it.
@@ -70,6 +74,7 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 - The root `settings.json` and `.mcp.json`. They are not deleted so much as relocated:
   a plugin may not carry them, and setup seeds them into the host.
 - The `workflows/` directory; its files moved to `commands/`.
+- The `ponytail` skill: retired in 1.0.0, replaced by `caveat`. A tombstone stays for one minor.
 
 ## [0.9.0] - 2026-09-29
 

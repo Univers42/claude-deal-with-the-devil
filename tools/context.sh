@@ -44,7 +44,7 @@ done
 ROOT="$(claude_root)"
 cd "$ROOT" || exit 1
 
-# Ponytail: bytes/4 is the usual English-prose rule of thumb for tokens. It is
+# Caveat: bytes/4 is the usual English-prose rule of thumb for tokens. It is
 # an estimate, not a count — no tokenizer runs here. Trust the BYTES column;
 # treat tokens as the order of magnitude. /skill-doctor reports real numbers.
 _tok() { echo $(($1 / 4)); }

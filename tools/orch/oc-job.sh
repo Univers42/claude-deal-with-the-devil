@@ -8,7 +8,7 @@
 #       · 3 another OpenCode job already works in this worktree (one agent per worktree).
 # Env: OC_COMMON_PROMPT (file prepended to every body), OC_COMMIT_MSG (default "updated"),
 #      OC_GIT_NAME / OC_GIT_EMAIL (default: git's configured identity), plus oc-run.sh's.
-# Ponytail: `status: done` is the agent's own claim, and without a rows file nothing checks it
+# Caveat: `status: done` is the agent's own claim, and without a rows file nothing checks it
 # before the push — pass rows, or re-run the gates yourself before merging the branch.
 set -uo pipefail
 [[ $# -ge 4 ]] || {

@@ -8,7 +8,7 @@
 #   --idle S     kill if no output for S seconds — catches hangs (default 120; 0 disables)
 #
 # Exit: the command's own code on clean exit; 124 when the watchdog killed it.
-# Ponytail: liveness is output-based — a genuinely silent long task needs a larger
+# Caveat: liveness is output-based — a genuinely silent long task needs a larger
 # --idle (or --idle 0). Wrap builds/tests/installs/deploys; never an interactive REPL.
 set -uo pipefail
 

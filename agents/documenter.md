@@ -47,7 +47,7 @@ Order a document by what the reader needs, not by how the code is organized:
 - **One source of truth.** A concept is explained in exactly one place and linked from
   everywhere else. Two explanations drift; the reader finds the stale one.
 - **Say what it does NOT do.** Limits, caveats and known-wrong cases belong in the doc
-  (`rules/ponytail.md`). Documentation that only describes the happy path is marketing.
+  (`rules/caveat.md`). Documentation that only describes the happy path is marketing.
 - **Keep the headers true.** This repo's convention is a block comment before a
   function or file explaining the why, the trick, or the bug that motivated it, usually
   with the measurement that proved it. When behavior changes, the header changes.

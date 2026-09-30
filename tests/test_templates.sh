@@ -34,7 +34,7 @@ skip() {
 library() { sed -n '1,/^# STAGES$/p' "$1"; }
 stages() { sed '1,/^# STAGES$/d' "$1"; }
 
-# Ponytail: a regex over shell source, not a parser. It drops quoted strings
+# Caveat: a regex over shell source, not a parser. It drops quoted strings
 # and comments, then takes the first word of every `;` `&&` `||` `|` `(` `{`
 # segment below the marker as a command, after peeling the keywords and
 # VAR=value prefixes that may precede one. It reads a heredoc body and a `case`

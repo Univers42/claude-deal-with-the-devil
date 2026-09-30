@@ -30,7 +30,7 @@ subprocesses at 4 s.
 **`PreToolUse` is a seatbelt, not a security boundary.** It is regex over the command
 string, not a shell parser, so it misses obfuscation trivially: `rm -r -f`, a path built
 from a variable, anything behind `eval` or inside a script file. It catches the common
-accident. Do not build a trust model on it (`rules/ponytail.md`).
+accident. Do not build a trust model on it (`rules/caveat.md`).
 
 It also over-matches — `rm -rf ./node_modules` trips the same rule as `rm -rf /` — which
 is why most patterns **ask** rather than deny.
