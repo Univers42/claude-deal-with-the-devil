@@ -5,13 +5,17 @@
 # `stage_<name>`, takes no argument, and reports one line through note(): a state
 # and how it was reached. It records every file it touches through setup.sh's
 # ensure()/append_line(), so the three modes differ only in whether those write.
-# STAGES, in dependency order: the OpenCode stage points at the rules the rules
-# stage seeded, the CLAUDE.md block names the tools the settings stage allowed.
+# STAGES, in dependency order: the OpenCode stage (lib/seed-opencode.sh, sourced
+# next) drops the rules glob this file's RULES_GLOB used to seed, the CLAUDE.md
+# block names the tools the settings stage allowed.
 
 CLAUDE_MD_START='<!-- devil:start -->'
 CLAUDE_MD_END='<!-- devil:end -->'
-# The layout the rules stage seeds, relative to the host root. OpenCode reads the
-# same glob, so the two never disagree about where the rules live.
+# The layout the rules stage seeds, relative to the host root. OpenCode read the
+# same glob through the `instructions` key until 2.x proved that key resolves
+# nothing, so the value survives only as the exact string the opencode stage
+# removes from a host that ran an older version of it.
+# shellcheck disable=SC2034  # read by lib/seed-opencode.sh, sourced right after
 RULES_GLOB='./.claude/rules/devil/*.md'
 
 # The version of record (A12): .claude-plugin/plugin.json, read as release.sh
@@ -186,42 +190,9 @@ _claude_md_render() {
   ' "$1"
 }
 
-# --- 4. opencode: only when the host already has an opencode.json. This stage
-# adds to a config that exists; it does not create one for a host that does not use
-# the harness. The second half writes .claude/devil.env, what a headless worker
-# sources to get `devil` on its PATH (A3).
-# Caveat: `instructions` is read as an array, so a host that wrote it as a single
-# string has it turned into a one-element array, because the seeded glob has to
-# join it. The PATH line is a fixed system default, not the PATH setup.sh ran
-# under: a host whose toolchain lives in a venv must append it, and the line is
-# rewritten on every apply, so an edit there is lost.
-stage_opencode() {
-  local file="$HOST/opencode.json" merged
-  if [ ! -f "$file" ]; then
-    note skip "no opencode.json in this host" "nothing to wire"
-    return 0
-  fi
-  if ! have jq; then
-    note cannot "jq is not installed" "cannot wire opencode.json without losing its keys"
-    return 0
-  fi
-  merged="$(jq --indent 2 --arg rules "$RULES_GLOB" --arg skills "$KIT/skills" '
-      .instructions = ((((.instructions // []) | if type == "array" then . else [.] end) + [$rules]) | unique)
-      | .skills = ((.skills // {}) + { paths: ((((.skills.paths // [])) + [$skills]) | unique) })
-    ' "$file" 2>/dev/null)" || merged=""
-  [ -n "$merged" ] || {
-    note cannot "jq could not read opencode.json" "malformed host file?"
-    return 0
-  }
-  ensure "$file" "write opencode.json (rules glob + skills.paths)" < <(printf '%s\n' "$merged")
-  ensure "$HOST/.claude/devil.env" "write .claude/devil.env (DEVIL_ROOT, PATH)" < <(
-    echo "# written by devil setup; the next apply rewrites this file"
-    echo "DEVIL_ROOT=$KIT"
-    echo "PATH=$KIT/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-  )
-  note ok "instructions $RULES_GLOB, skills.paths $KIT/skills" "opencode.json found"
-  return 0
-}
+# --- 4. opencode lives in lib/seed-opencode.sh, which this file is sourced
+# before: it grew past what a stage-shaped function can hold (the config merge,
+# one link per generated file, and the sweep of a retired one).
 
 # --- 5. tracker: which tracker the three abstract verbs map onto. `gh` installed
 # and a github.com remote is a real signal; anything else is local, which works.

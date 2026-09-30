@@ -31,6 +31,8 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$DIR/lib/common.sh"
 # shellcheck source=lib/seed.sh
 . "$DIR/lib/seed.sh"
+# shellcheck source=lib/seed-opencode.sh
+. "$DIR/lib/seed-opencode.sh"
 
 MODE=dry
 HOST=""

@@ -212,6 +212,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   without anyone saying it was old.
 - The tool cache is written under the host's `.claude/cache/` instead of beside the
   tools, so the plugin root holds versioned source and no writable state.
+- The `opencode` stage of `devil setup` wires the shape OpenCode 2.x actually reads.
+  It moved out of `tools/lib/seed.sh` into `tools/lib/seed-opencode.sh` and now
+  merges `{"skills": ["<kit>/skills"]}` as the array V2 reads, converting a V1
+  `skills.paths` object, and links one symlink per generated agent, per generated
+  command and for `plugins/devil.js` under `.opencode/` instead of replacing the
+  directories. A host file of the same name is left byte-identical and named in
+  the report; a link into `dist/opencode/` whose target is gone is drift that
+  `--check` reports and `--apply` removes; `opencode.jsonc` is `cannot` because
+  jq reads JSON and not JSONC. It never writes the host's `AGENTS.md` and never
+  links `.claude/skills`. The seeded `instructions` rules glob is gone from a
+  host that ran the old stage, since V2 resolves nothing in that key and the
+  bridge injects the rules; every other entry of it is left as the host wrote it.
 - `tools/context.sh` reads descriptions through `fm_desc` and stops counting an asset
   that disables model invocation.
 - The hook timeout and the briefing cut are now stated as approximations rather than

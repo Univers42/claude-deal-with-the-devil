@@ -49,22 +49,37 @@ The committed `opencode.json` in this directory is the same fragment with `@KIT_
 where the absolute path goes. It is a fragment to merge, never a file to copy over the
 host's.
 
-### What the setup stage has to write
+### What the setup stage writes
 
-The setup tool is a later slice and is not in this tree yet, so nothing here names its
-file. These are the paths and the key it will have to write, and this table is the
-contract between the two slices.
+`devil setup` writes all of this, in its `opencode` stage, only into a host that
+already has an `opencode.json`. The implementation is `tools/lib/seed-opencode.sh`.
 
 | Path in the host | Value | Why |
 |---|---|---|
-| `.opencode/agents` | symlink to `<kit>/dist/opencode/agents` | the subagents |
-| `.opencode/commands` | symlink to `<kit>/dist/opencode/commands` | the commands and workflows |
+| `.opencode/agents/<name>.md` | one symlink per generated agent | the subagents, linked file by file so a host that owns the directory keeps it |
+| `.opencode/commands/<name>.md` | one symlink per generated command | the commands and workflows, same reason |
 | `.opencode/plugins/devil.js` | symlink to `<kit>/dist/opencode/plugins/devil.js` | the hook bridge |
 | `opencode.json` | merge in `{"skills": ["<kit>/skills"]}` | loads the skills |
+| `.claude/devil.env` | `DEVIL_ROOT` and `PATH` | a headless worker gets `devil` on its PATH |
 | `AGENTS.md` | do not touch | the host owns it, and the bridge already injects the rules |
 
+A host file of the same name wins: it is left byte-identical and named in the
+stage's report. A link into `dist/opencode/` whose target is gone (a retired
+command) is reported by `--check` and removed by `--apply`; a link that points
+anywhere else is never touched. `opencode.jsonc` is reported as `cannot`, because
+jq reads JSON and not JSONC.
+
+The links are per file, not per directory, which is the one place this differs
+from the three symlinks above: graph_render owns `.opencode/agents`, and one link
+to the kit's directory would hide it.
+
 An existing `opencode.json` is merged, never replaced: the key to write is `skills`, and
-every other key in the host's file stays as it is.
+every other key in the host's file stays as it is. An older version of the setup
+stage seeded `skills.paths` and the `./.claude/rules/devil/*.md` glob in
+`instructions`; the stage reads the V1 object form of `skills` and converts it to
+the array, and it removes exactly that one glob, because the bridge injects the
+rules and V2 resolves nothing in `instructions` ([L16]). No other entry of either
+key is touched.
 
 ## What works
 
