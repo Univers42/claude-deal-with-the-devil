@@ -1,7 +1,9 @@
 ---
 description: >
   Author and land a new database migration safely.
-  Usage: /workflow:migrate-db <what the migration does>
+  Usage: /devil:migrate-db <what the migration does>
+metadata:
+  kind: workflow
 ---
 
 # Migrate DB
@@ -22,7 +24,7 @@ Change: $ARGUMENTS
 
 ## 3. Apply
 
-- Run the project's migrate command (detect it with `.claude/tools/facts.sh`, run it under `.claude/tools/watch.sh`).
+- Run the project's migrate command (detect it with `devil facts`, run it under `devil watch`).
 - Confirm it applied via the project's migrate-status command.
 
 ## 4. Gate

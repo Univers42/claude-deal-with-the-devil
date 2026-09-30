@@ -9,13 +9,13 @@ workflow, and agent here. `AGENTS.md` applies the same discipline to subagents.
 
 ## Input — before you act
 
-- **Facts first.** Run `.claude/tools/digest.sh` (or the relevant tool) before
+- **Facts first.** Run `devil digest` (or the relevant tool) before
   forming a plan. Decide from the digest, not from a guess about the tree.
 - **Read by query.** `rg` / `jq` / the cached `codemap` return the conclusion.
   Never slurp a whole file or tree to answer what a query answers.
 - **Restate as a contract.** Echo the task back as inputs → outputs → done-when.
   If the done-when is unstateable, the request is underspecified — sharpen it
-  (run `/prompt`) before writing code.
+  (run `/devil:prompt`) before writing code.
 - **Surface unknowns; never paper over them.** A missing fact is named, not assumed.
 
 ## Output — what you return

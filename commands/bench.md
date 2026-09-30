@@ -1,11 +1,13 @@
 ---
-description: Run comparative benchmarks (the project vs the reference baseline) and flag regressions. Usage: /bench [load|capacity|footprint|mem|startup]
+description: Run comparative benchmarks (the project vs the reference baseline) and flag regressions. Usage: /devil:bench [load|capacity|footprint|mem|startup]
+metadata:
+  kind: command
 ---
 
 Scope: $ARGUMENTS
 
 Run the canonical benchmark for the given scope on the current branch through the project's task runner
-(detect it with `.claude/tools/facts.sh`, run it under `.claude/tools/watch.sh`).
+(detect it with `devil facts`, run it under `devil watch`).
 
 ## Workflow
 

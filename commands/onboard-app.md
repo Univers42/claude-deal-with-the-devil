@@ -1,7 +1,9 @@
 ---
 description: >
   Take an external app and migrate it to run entirely on the project.
-  Usage: /workflow:onboard-app <repo-url-or-path>
+  Usage: /devil:onboard-app <repo-url-or-path>
+metadata:
+  kind: workflow
 ---
 
 # Onboard External App to the Project
@@ -79,7 +81,7 @@ Target: $ARGUMENTS
    - Realtime updates (if applicable)
    - Permission checks (can a non-owner edit? should they?)
 4. Run the app's existing test suite if it has one
-5. Run `/bench` against the project with the new schema under load
+5. Run `/devil:bench` against the project with the new schema under load
 
 ## Phase 5 — Report
 

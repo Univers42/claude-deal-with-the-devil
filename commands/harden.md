@@ -1,7 +1,9 @@
 ---
 description: >
   Take an existing module from "it works" to "it holds" — cover it, attack it, bound it,
-  then gate it. Usage: /workflow:harden <module or path>
+  then gate it. Usage: /devil:harden <module or path>
+metadata:
+  kind: workflow
 ---
 
 # Harden
@@ -12,18 +14,18 @@ For code that already works and now has to survive contact with reality: untrust
 input, scale, concurrency, and the 3am page. This changes behavior as little as
 possible — hardening that rewrites the module is a rewrite, not a hardening.
 
-If `$ARGUMENTS` is empty, run `.claude/tools/untested.sh` and propose the top candidate.
+If `$ARGUMENTS` is empty, run `devil untested` and propose the top candidate.
 
 ## 1. Establish the baseline — before you change anything
 
 You cannot claim an improvement without a before.
 
-- `.claude/tools/digest.sh` for the map; `.claude/tools/untested.sh` for what has no test.
+- `devil digest` for the map; `devil untested` for what has no test.
 - Run the existing suite and record the result. Green now, or fix that first.
 - Record the current numbers if this is a hot path: latency p50/p95/p99, memory,
   allocations (`agents/benchmarker.md`). Save the artifact — every later claim cites it.
 - **Nothing below is allowed to change behavior.** If a step reveals a behavior change
-  is needed, that is a feature: stop and run `/workflow:feature`.
+  is needed, that is a feature: stop and run `/devil:feature`.
 
 ## 2. Cover it first
 
@@ -78,11 +80,11 @@ The failures that page you are the unbounded ones:
 
 ## 6. Prove it held
 
-- `.claude/tools/quality.sh --with-tests` green at the strictest flags.
+- `devil quality --with-tests` green at the strictest flags.
 - `reviewer` on the full diff.
 - Re-run the step-1 benchmark: hardening costs something, and the honest number is the
   deliverable. A regression over 5% on a hot path needs a stated reason or a fix.
-- `.claude/tools/dupes.sh` — hardening often duplicates a guard three times. Extract it.
+- `devil dupes` — hardening often duplicates a guard three times. Extract it.
 
 ## 7. Report
 

@@ -1,5 +1,7 @@
 ---
-description: Turn a rough request into a precise, fact-grounded spec the builder can execute. Usage: /prompt <rough request>
+description: Turn a rough request into a precise, fact-grounded spec the builder can execute. Usage: /devil:prompt <rough request>
+metadata:
+  kind: command
 ---
 
 Request: $ARGUMENTS
@@ -11,7 +13,7 @@ done-when a test can check. If $ARGUMENTS is empty, ask for the request and stop
 
 ### Phase 1 — Ground
 
-- Run `.claude/tools/digest.sh` for the real toolchain, codemap, untested list, and
+- Run `devil digest` for the real toolchain, codemap, untested list, and
   duplication candidates. Don't guess the stack — read it.
 - If digest reports no source (not a code repo), say so and proceed with what's known.
 
@@ -31,10 +33,10 @@ Emit the refined prompt, ready to hand to `agents/builder.md`:
   scope, primitives that already exist.
 - **Constraints** — the binding rules that apply (`library-first`, `quality-bar`,
   `dsa-and-memory`, `test-frameworks`, the per-tech `refactor-<tech>`).
-- **Done-when** — the verifiable gate: the test that must pass, `quality.sh` green.
+- **Done-when** — the verifiable gate: the test that must pass, `devil quality` green.
 - **Output contract** — what the builder returns (`rules/prompt-contract.md`).
 
 ### Phase 4 — Handoff
 
-- Offer to execute it with the builder. Don't start building from `/prompt` — this
+- Offer to execute it with the builder. Don't start building from `/devil:prompt` — this
   command produces the spec; the builder consumes it.

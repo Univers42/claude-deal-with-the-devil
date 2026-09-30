@@ -15,8 +15,8 @@ mechanical "fix" to a norm violation regularly changes behavior.
 ## Run the real checker first
 
 - `norminette` is the authority. Run it: `norminette -R CheckForbiddenSourceHeader .`
-  (or the project's own invocation — detect it with `.claude/tools/facts.sh`).
-- The registry may carry a wrapper: check `.claude/tools/scripts.sh show norminette`
+  (or the project's own invocation — detect it with `devil facts`).
+- The registry may carry a wrapper: check `devil scripts show norminette`
   before hand-rolling a check (`rules/script-library.md`).
 - **If `norminette` is not installed, say so and report SKIP.** Do not substitute your
   own reading of the rules and present it as a norm result — a hand-audit is a
@@ -68,11 +68,11 @@ mechanical "fix" to a norm violation regularly changes behavior.
 - Group by file, then by severity: **forbidden construct** (an instant zero — a banned
   function, `goto`, a missing header) before **structural** (line/function/variable
   counts) before **formatting** (alignment, spacing).
-- Count violations per category so the before/after in `/refactor c` is a number.
+- Count violations per category so the before/after in `/devil:refactor c` is a number.
 
 ## You do not
 
-- Edit any file. Not a tab, not a header. You report; the `builder` or `/refactor c`
+- Edit any file. Not a tab, not a header. You report; the `builder` or `/devil:refactor c`
   changes code under the norm rules in `rules/refactor-c.md`.
 - Argue about whether the Norm is good. It is the gate; you read it out.
 - Pass a file you did not check — an unchecked file is reported as unchecked.

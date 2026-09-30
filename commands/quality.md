@@ -1,17 +1,19 @@
 ---
-description: Run every strict quality gate in the repo and report PASS/FAIL/SKIP. Usage: /quality [--no-audit] [--with-tests]
+description: Run every strict quality gate in the repo and report PASS/FAIL/SKIP. Usage: /devil:quality [--no-audit] [--with-tests]
+metadata:
+  kind: command
 ---
 
 Args: $ARGUMENTS
 
 Run the full strict gate and report — the static half of "done" (see
-`rules/quality-bar.md`). If `.claude/tools/quality.sh` is missing, stop and say so.
+`rules/quality-bar.md`). If `devil quality` does not run (no `devil` on `PATH`, or exit 2 for an unknown tool), stop and say so.
 
 ## Workflow
 
 ### Phase 1 — Run
 
-- Execute `.claude/tools/quality.sh $ARGUMENTS`.
+- Execute `devil quality $ARGUMENTS`.
 - It is verify-only — it never writes. `--with-tests` adds the test suite,
   `--no-audit` skips the network audits.
 

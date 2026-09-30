@@ -1,6 +1,8 @@
 ---
 description: >
-  Full release pipeline. Usage: /workflow:ship <major|minor|patch>
+  Full release pipeline. Usage: /devil:ship <major|minor|patch>
+metadata:
+  kind: workflow
 ---
 
 # Ship
@@ -28,7 +30,7 @@ Bump type: $ARGUMENTS
 ## 4. Version bump
 
 - Bump version in all manifests
-- Update CHANGELOG.md (invoke /changelog)
+- Update CHANGELOG.md
 
 ## 5. Final commit
 

@@ -1,12 +1,14 @@
 ---
-description: Run or inspect the project's migrations across backends. Usage: /migrate <status|all|backend>
+description: Run or inspect the project's migrations across backends. Usage: /devil:migrate <status|all|backend>
+metadata:
+  kind: command
 ---
 
 Action: $ARGUMENTS
 
-Drive the migration lifecycle through the project's task runner (detect it with `.claude/tools/facts.sh`,
-run it under `.claude/tools/watch.sh`). Do NOT hand-edit migrations here — to
-AUTHOR a new migration use `/workflow:migrate-db`.
+Drive the migration lifecycle through the project's task runner (detect it with `devil facts`,
+run it under `devil watch`). Do NOT hand-edit migrations here — to
+AUTHOR a new migration use `/devil:migrate-db`.
 
 ## Workflow
 

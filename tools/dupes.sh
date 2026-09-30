@@ -86,7 +86,7 @@ build_summary() {
   fi
   echo "- $n repeated block(s) — extraction candidates for the project library"
   printf '%s\n' "$blocks" | head -5 | awk -F'\t' '{printf "- ×%s `%s` — %s\n",$1,$2,substr($3,1,48)}'
-  echo "- full list: \`.claude/tools/dupes.sh\`"
+  echo "- full list: \`devil dupes\`"
 }
 
 case "$MODE" in

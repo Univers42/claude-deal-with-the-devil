@@ -3,7 +3,7 @@
 The vetted subset of `git@github.com:Univers42/scripts.git`, pinned to
 `2bb05b4f819c7f231ff00fb45cfe0d427af0f399` (`main`, 2026-09-20).
 
-`.claude/tools/scripts.sh` reads the table below and will run **only** what is in it.
+`devil scripts` reads the table below and will run **only** what is in it.
 Nothing is copied into this repo; the cache lives in `.claude/cache/scripts/` and is
 fetched on first use.
 
@@ -85,5 +85,5 @@ Not a judgement on the code — these are the ones an agent should not reach for
 2. Run it on a throwaway tree. Record the command and the output.
 3. Add the row, with the **real** args and exit codes — not the ones the name implies.
 4. Move it into the verification table with the evidence.
-5. Re-pin only deliberately: `scripts.sh sync --pin <sha>`, then re-verify. A new sha
+5. Re-pin only deliberately: `devil scripts sync --pin <sha>`, then re-verify. A new sha
    is new code, and the registry's claims are about the old one.

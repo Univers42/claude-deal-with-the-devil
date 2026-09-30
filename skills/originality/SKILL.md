@@ -21,10 +21,10 @@ deletes a week.
 ## 1. Search inward first — the cheapest win
 
 ```sh
-.claude/tools/codemap.sh          # where a symbol already lives
-.claude/tools/dupes.sh            # blocks already repeated
-.claude/tools/facts.sh            # what the project already scripts
-.claude/tools/scripts.sh list     # the vetted external script registry
+devil codemap       # where a symbol already lives
+devil dupes         # blocks already repeated
+devil facts         # what the project already scripts
+devil scripts list  # the vetted external script registry
 rg -i '<the concept, and its synonyms>'
 ```
 

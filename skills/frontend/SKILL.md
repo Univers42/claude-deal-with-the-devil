@@ -19,12 +19,12 @@ them when you reach that step, not before.
 
 ## 1. Look before you add
 
-- `.claude/tools/facts.sh` for the framework, the test runner and the lint setup. Do
+- `devil facts` for the framework, the test runner and the lint setup. Do
   not introduce a second styling approach, state library or component kit — that is a
   fork in the codebase (`rules/minimalism-ladder.md` rung 4).
 - Find the nearest existing component and mirror its structure, naming and file layout.
   The codebase's convention beats your preference.
-- `.claude/tools/dupes.sh` — a third copy of the same button is an extraction
+- `devil dupes` — a third copy of the same button is an extraction
   (`rules/library-first.md`).
 
 ## 2. Draw the boundaries first
@@ -74,7 +74,7 @@ custom controls.
 - **See it running.** The `browser-testing` skill drives a real browser: render it,
   resize it, tab through it, read the console. A screenshot is evidence; "should work"
   is not.
-- `.claude/tools/quality.sh --with-tests` green.
+- `devil quality --with-tests` green.
 
 ## Report
 

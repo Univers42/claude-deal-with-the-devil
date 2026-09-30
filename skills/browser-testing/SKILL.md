@@ -19,7 +19,7 @@ Playwright in the repo otherwise.
 
 ## 1. Get it running
 
-- `.claude/tools/preflight.sh` — a missing `.env` fails here, not after a browser is
+- `devil preflight` — a missing `.env` fails here, not after a browser is
   open (`rules/run-safely.md`).
 - Start the dev server **as a background task** so its log stays readable, and wait for
   the port to actually answer. A fixed `sleep` is a flake generator.

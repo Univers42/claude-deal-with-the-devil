@@ -1,11 +1,13 @@
 ---
-description: Run the feature-parity comparison against the reference baseline for the project. Usage: /compat [feature-area]
+description: Run the feature-parity comparison against the reference baseline for the project. Usage: /devil:compat [feature-area]
+metadata:
+  kind: command
 ---
 
 Feature area: $ARGUMENTS
 
 Compare the project against the reference implementation for the given feature area (or all if none given). For a deep,
-endpoint-by-endpoint pass, use `/workflow:compat-audit`.
+endpoint-by-endpoint pass, use `/devil:compat-audit`.
 
 ## Workflow
 

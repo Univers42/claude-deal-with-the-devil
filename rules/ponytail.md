@@ -40,5 +40,5 @@ number is labelled estimated. A conclusion resting on an unverified assumption n
 - **Not instead of a fix.** "Ponytail: wrong for empty input" is a defect with a label
   on it. Caveats cover *approximation*, never *breakage*.
 
-The `ponytail` skill applies this to a diff. `.claude/tools/ponytail.sh` finds code that
+The `ponytail` skill applies this to a diff. `devil ponytail` finds code that
 owes a marker — and its own header says how it fails, in both directions.

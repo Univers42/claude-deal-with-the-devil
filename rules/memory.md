@@ -23,7 +23,7 @@ One question decides it: **would re-deriving this cost real work, and is it stab
 
 - **Anything git records** — what changed, when, by whom.
 - **Anything a tool re-derives cheaply** — the language mix, the build command, the
-  codemap, the untested list. `.claude/tools/facts.sh` and `digest.sh` answer these in
+  codemap, the untested list. `devil facts` and `devil digest` answer these in
   milliseconds and are fingerprinted to the tree, so they are never stale. A remembered
   copy always is. This is the biggest source of bad agent memory.
 - **Anything in the code, CLAUDE.md or the README.** Read the file; it is authoritative.

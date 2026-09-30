@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# common.sh — shared helpers for .claude/tools/*.
+# common.sh — shared helpers for the kit's tools/*.sh (run as `devil <tool>`).
 # Source it; never execute it. This is the project library for the tools:
 # every tool stays thin glue over these functions (see rules/library-first.md).
 
@@ -233,7 +233,7 @@ _workflow_commands() {
 # Names of this config's assets, one per line, sorted.
 #   agents|rules|commands -> <dir>/<name>.md  ->  name
 #   workflows             -> commands/<name>.md tagged `metadata.kind: workflow`,
-#                            plus legacy workflows/<name>.md until they move over
+#                            plus a legacy workflows/<name>.md (selfcheck fails one)
 #   skills                -> skills/<name>/SKILL.md -> name
 #   tools                 -> tools/<name>.sh  ->  name
 #   bin|templates         -> every file under <dir>/, as its path inside it

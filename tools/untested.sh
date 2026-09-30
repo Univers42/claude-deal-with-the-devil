@@ -67,7 +67,7 @@ build_summary() {
   echo "- $n of $total source files have no test naming their stem"
   [ "$n" -gt 0 ] && printf '%s\n' "$gaps" | sed 's#/[^/]*$##' | sort | uniq -c | sort -rn | head -5 |
     awk '{printf "- %s untested under `%s/`\n",$1,$2}'
-  echo "- full list: \`.claude/tools/untested.sh\`"
+  echo "- full list: \`devil untested\`"
 }
 
 case "$MODE" in

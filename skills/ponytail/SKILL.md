@@ -19,8 +19,8 @@ The rule is `rules/ponytail.md`. This is how to apply it to a diff.
 ## 1. Find what owes a line
 
 ```sh
-.claude/tools/ponytail.sh            # whole tree
-.claude/tools/ponytail.sh path/to/changed.go
+devil ponytail  # whole tree
+devil ponytail path/to/changed.go
 ```
 
 It flags a file that reads as best-effort and carries no `Ponytail:` marker. Read its
@@ -86,4 +86,4 @@ The caveat belongs where the reader is, not only in the source:
 - Each approximation found, at `file:line`, and the marker added.
 - Anything flagged that turned out to be exact — and why you left it alone.
 - Anything that was breakage rather than approximation, routed to a fix instead.
-- `.claude/tools/ponytail.sh` before → after.
+- `devil ponytail` before → after.

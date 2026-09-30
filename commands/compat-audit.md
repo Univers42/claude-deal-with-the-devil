@@ -1,7 +1,9 @@
 ---
 description: >
   Behavioral parity audit against a reference spec.
-  Usage: /workflow:compat-audit
+  Usage: /devil:compat-audit
+metadata:
+  kind: workflow
 ---
 
 # Behavioral Parity Audit

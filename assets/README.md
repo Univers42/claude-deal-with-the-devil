@@ -1,4 +1,5 @@
 # assets
 
-Drop the project mascot here as **`claude-chai.png`** — the root [`README.md`](../README.md) references it
-at `assets/claude-chai.png`. Any square-ish PNG works; ~320px wide renders well.
+The mascot the root [`README.md`](../README.md) shows is `image.png` at the repository
+root (`![mascot](image.png)`), not a file in this directory. A new image for the docs
+goes here and is linked as `assets/<name>.png`.

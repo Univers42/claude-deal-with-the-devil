@@ -1,8 +1,16 @@
-# `.claude/tools/` — the parsing layer
+# `tools/`: the parsing layer, run as `devil <tool>`
 
 Scripts that pre-digest the repo so agents read conclusions, not raw trees. Run one
 command, get structured facts; the cache means you don't re-parse each time. This is
 the "read-by-query" discipline (`AGENTS.md`) made executable.
+
+Every tool is run by name through `bin/devil`, from the directory it should describe:
+`devil <tool> [args]` executes `tools/<tool>.sh`, `devil orch <sub> [args]` executes
+`tools/orch/<sub>.sh` (or `tools/orch/<sub>` when that is the file, as for `timed`),
+and a bare `devil` lists both. The dispatcher finds the kit from its own location,
+through symlinks, never from the current directory. It returns the tool's exit code,
+and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash tool's
+`PATH`; elsewhere, call `bin/devil` by path.
 
 ## The tools
 
@@ -17,26 +25,26 @@ the "read-by-query" discipline (`AGENTS.md`) made executable.
 | `quality.sh` | "Is it the highest quality — strictly?" (the gate) | every strict linter / SAST / audit |
 | `watch.sh` | "Run this without ever hanging" — hard + idle timeouts around any command | wraps a command |
 | `selfcheck.sh` | "Does this config tell the truth about itself?" (the drift gate) | every doc + every frontmatter block |
-| `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/`, `workflows/` |
+| `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` |
 | `ponytail.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
-| `orch/` | "Delegate bulk work to headless OpenCode builders and check it" — launch, watch (`oc-status.sh`), gate before merge | job journals under `<worktree>/target/wf/` — see `orch/README.md` |
+| `orch/` | "Delegate bulk work to headless OpenCode builders and check it" — launch, watch (`devil orch oc-status`), gate before merge | job journals under `<worktree>/target/wf/` — see `orch/README.md` |
 
 ## Use
 
 ```sh
-.claude/tools/digest.sh             # brief yourself first (cached)
-.claude/tools/digest.sh --refresh   # rebuild after big changes
-.claude/tools/codemap.sh            # full queryable index
-.claude/tools/quality.sh            # the strict gate (exit 1 = a real failure)
-.claude/tools/quality.sh --with-tests --no-audit
-.claude/tools/preflight.sh          # verify .env / secrets / toolchain before building
-.claude/tools/watch.sh --idle 60 -- make build   # run anything without hanging (exit 124 = killed)
+devil digest                         # brief yourself first (cached)
+devil digest --refresh               # rebuild after big changes
+devil codemap                        # full queryable index
+devil quality                        # the strict gate (exit 1 = a real failure)
+devil quality --with-tests --no-audit
+devil preflight                      # verify .env / secrets / toolchain before building
+devil watch --idle 60 -- make build  # run anything without hanging (exit 124 = killed)
 
-.claude/tools/selfcheck.sh          # this config's own integrity (exit 1 = drift)
-.claude/tools/context.sh            # always-on vs lazy bytes, per file
-.claude/tools/ponytail.sh --strict  # approximations with no stated limitation
-.claude/tools/scripts.sh list       # the vetted, sha-pinned external script library
+devil selfcheck                      # this config's own integrity (exit 1 = drift)
+devil context                        # always-on vs lazy bytes, per file
+devil ponytail --strict              # approximations with no stated limitation
+devil scripts list                   # the vetted, sha-pinned external script library
 ```
 
 ## A sourced library sets nothing
@@ -52,7 +60,7 @@ which is the *success* case for a negative check. Every tool declares its own op
 - **Pure `bash` + coreutils.** `rg` / `jq` used when present; degrade gracefully when not.
 - **Library-first, dogfooded.** Shared logic lives in `lib/common.sh`; each tool is thin
   glue over it — the rule they enforce (`rules/library-first.md`).
-- **Cached + fingerprinted.** Output caches to `.claude/cache/` (gitignored), keyed to
+- **Cached + fingerprinted.** Output caches to the host's `.claude/cache/` (gitignored), keyed to
   `git HEAD` + dirty tree; a stale cache rebuilds itself.
 - **Best-effort, honest.** Symbol / dup / coverage extraction is regex-heuristic (marked
   `ponytail`), not an AST. It points you at the file; you read the file.
@@ -61,4 +69,5 @@ which is the *success* case for a negative check. Every tool declares its own op
 
 Add a tool? Put shared logic in `lib/common.sh`, support `--summary` (so `digest.sh` can
 compose it) and `--refresh`, emit markdown, cache via `emit_cached`. One concern per tool.
-Register it in the table above and the root `README.md`.
+Register it in the table above and the root `README.md`; `devil <name>` finds it with no
+further wiring.

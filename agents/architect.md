@@ -7,6 +7,7 @@ description: >
   "how should I structure", "design decision"
 tools: Read, Grep, Glob
 model: opus
+memory: project
 ---
 
 You are a systems architect. You think in boundaries,

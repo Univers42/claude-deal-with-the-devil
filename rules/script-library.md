@@ -14,27 +14,27 @@ whether it already exists. Most "quick scripts" are the fourth copy of something
 
 ## The order to look
 
-1. **The project's own scripts.** `.claude/tools/facts.sh` reports the make targets,
+1. **The project's own scripts.** `devil facts` reports the make targets,
    npm scripts and task-runner entries that already exist. A repo almost always has a
    command for the thing you are about to script by hand.
-2. **`.claude/tools/*.sh`.** The parsing and gate layer: `digest`, `facts`, `preflight`,
+2. **`devil <tool>`** (the kit's `tools/*.sh`). The parsing and gate layer: `digest`, `facts`, `preflight`,
    `codemap`, `untested`, `dupes`, `quality`, `watch`, `selfcheck`, `context`,
    `ponytail`. Do not reimplement one of these badly.
-3. **The registry.** `.claude/tools/scripts.sh list` — a vetted, version-pinned subset
+3. **The registry.** `devil scripts list` — a vetted, version-pinned subset
    of an external library (valgrind wrappers, a comment stripper, C-norm helpers,
    header-cycle detection, markdown-to-PDF). `show <name>` gives the real arguments and
    exit codes.
 4. **A one-liner.** `rg`, `jq`, `awk`, `find`. If a pipeline does it, write the
    pipeline, not a script (`rules/minimalism-ladder.md` rung 5).
 5. **Only then write one** — and if it is a recurring check rather than a one-off, it
-   belongs in `.claude/tools/` as a real tool, built by the `forger`.
+   belongs in the kit's `tools/` as a real tool, built by the `forger`.
 
 ## Using the registry
 
 ```sh
-.claude/tools/scripts.sh list             # what is vetted
-.claude/tools/scripts.sh show valgrind-check
-.claude/tools/scripts.sh run valgrind-check -- src/ ./a.out
+devil scripts list  # what is vetted
+devil scripts show valgrind-check
+devil scripts run valgrind-check -- src/ ./a.out
 ```
 
 - **Only registry names run.** An unvetted script is refused, by design: nothing from
@@ -42,7 +42,7 @@ whether it already exists. Most "quick scripts" are the fourth copy of something
 - **The registry names the interpreter**, and `scripts.sh` uses it rather than the
   file's shebang. Upstream's shebangs are frequently absent or wrong; that is a
   property of the library, not a bug you need to work around.
-- **Everything runs under `watch.sh`**, so nothing upstream can hang the session.
+- **Everything runs under `devil watch`**, so nothing upstream can hang the session.
 - **It is pinned to a sha.** A different sha is different code and the registry's
   claims no longer hold — re-verify after `sync --pin`.
 - **Read the verification column.** Entries marked unverified were registered from
