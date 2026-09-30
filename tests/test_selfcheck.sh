@@ -54,6 +54,14 @@ run() {
   bash "$d/tools/selfcheck.sh" --summary "$@" >/dev/null 2>&1
 }
 
+# fails_on <dir> <check> <subject> -> selfcheck exits non-zero AND reports
+# that exact row, so a case cannot pass on some other failure in the fixture.
+fails_on() {
+  local out
+  out="$(bash "$1/tools/selfcheck.sh" --summary 2>&1)" && return 1
+  grep -qF "| FAIL | $2 | \`$3\` |" <<<"$out"
+}
+
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
@@ -136,7 +144,55 @@ if [ "$rows" = 1 ] && grep -q '`commands/demo-flow`' <<<"$out"; then
   ok "an uncited workflow is one orphan row, named by its commands/ path"
 else no "uncited workflow gave $rows orphan rows: $(grep orphan <<<"$out")"; fi
 
-# --- 10. the real payload is clean -------------------------------------------
+# --- 10. layout: a root workflows/ file fails ------------------------------
+fixture "$TMP/oldflow"
+mkdir -p "$TMP/oldflow/workflows"
+printf -- '---\ndescription: legacy. Usage: /devil:old\n---\n\nBody\n' >"$TMP/oldflow/workflows/old.md"
+echo 'See /devil:old.' >>"$TMP/oldflow/README.md"
+if fails_on "$TMP/oldflow" layout workflows/old.md; then ok "a root workflows/*.md fails (layout)"; else
+  no "a root workflows/*.md should fail with a layout row"
+fi
+
+# --- 11. layout: the old host path of the tools fails in any doc -------------
+fixture "$TMP/oldpath"
+echo 'Run `.claude/tools/digest.sh` first.' >"$TMP/oldpath/rules/brief.md"
+if fails_on "$TMP/oldpath" layout rules/brief.md; then ok "a doc citing .claude/tools/ fails (layout)"; else
+  no "a doc citing .claude/tools/ should fail with a layout row"
+fi
+fixture "$TMP/changelog"
+echo '- moved `.claude/tools/selfcheck.sh` to `devil selfcheck`' >"$TMP/changelog/CHANGELOG.md"
+if run "$TMP/changelog"; then ok "CHANGELOG.md may name the old path"; else
+  no "CHANGELOG.md naming the old path was reported"
+fi
+
+# --- 12. a `devil <name>` citation must reach a tool -------------------------
+fixture "$TMP/ghost"
+echo 'Then run `devil ghost --strict`.' >>"$TMP/ghost/README.md"
+if fails_on "$TMP/ghost" dangling 'devil ghost'; then ok "\`devil ghost\` fails (no tools/ghost.sh)"; else
+  no "\`devil ghost\` should fail with a dangling row"
+fi
+fixture "$TMP/orchghost"
+echo 'Then run `devil orch ghost`.' >>"$TMP/orchghost/README.md"
+if fails_on "$TMP/orchghost" dangling 'devil orch ghost'; then ok "\`devil orch ghost\` fails (no tools/orch/ghost[.sh])"; else
+  no "\`devil orch ghost\` should fail with a dangling row"
+fi
+
+# --- 13. the new dangling prefixes: templates/, bin/, hooks/, tests/ --------
+for ref in templates/ghost.sh bin/ghost hooks/ghost.json tests/test_ghost.sh; do
+  fixture "$TMP/prefix"
+  echo "See \`$ref\`." >>"$TMP/prefix/README.md"
+  if fails_on "$TMP/prefix" dangling "$ref"; then ok "dangling $ref fails"; else no "dangling $ref should fail"; fi
+  rm -rf "$TMP/prefix"
+done
+
+# --- 14. bin/* is held to the tool bar -------------------------------------
+fixture "$TMP/binx"
+chmod -x "$TMP/binx/bin/devil"
+if fails_on "$TMP/binx" tool bin/devil; then ok "a non-executable bin/devil fails"; else
+  no "a non-executable bin/devil should fail with a tool row"
+fi
+
+# --- 15. the real payload is clean -------------------------------------------
 if bash "$ROOT/tools/selfcheck.sh" --strict --summary >/dev/null 2>&1; then
   ok "this repo's own payload is clean (--strict)"
 else
@@ -144,7 +200,7 @@ else
   bash "$ROOT/tools/selfcheck.sh" --strict --summary 2>&1 | head -15
 fi
 
-# --- 11. the two layout greps of the plan's section D are empty --------------
+# --- 16. the two layout greps of the plan's section D are empty --------------
 hits="$(cd "$ROOT" && grep -rn '\.claude/tools/' --include='*.md' --exclude-dir=.git . | grep -v CHANGELOG.md)"
 if [ -z "$hits" ]; then ok "no doc cites .claude/tools/"; else no "docs cite .claude/tools/: $hits"; fi
 hits="$(cd "$ROOT" && grep -rn '/workflow:' --include='*.md' --exclude-dir=.git .)"

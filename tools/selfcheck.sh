@@ -6,16 +6,18 @@
 # because nothing was checking. For a config whose thesis is "evidence, not
 # adjectives", that is the worst possible defect — so it is now a gate.
 #
-# Three classes of drift, each one a real bug that shipped here:
-#   1. DANGLING   a doc names agents/x.md, rules/x.md, tools/x.sh ... that is absent.
-#      This is the one that bit us: /devil:refactor <tech> reads
-#      rules/refactor-<tech>.md by exact filename, so a documented-but-missing
-#      rule fails at use time.
+# Four classes of drift, each one a real bug that shipped here:
+#   1. DANGLING   a doc names agents/x.md, rules/x.md, tools/x.sh ... that is absent,
+#      or cites `devil <name>` with no tools/<name>.sh behind it. This is the one
+#      that bit us: /devil:refactor <tech> reads rules/refactor-<tech>.md by exact
+#      filename, so a documented-but-missing rule fails at use time.
 #   2. FRONTMATTER  a field Claude Code does not read. Skills took `tools:`
 #      (the field is `allowed-tools:`); rules took Cursor's `globs:`/`alwaysApply:`
 #      (the field is `paths:`, and its absence means "load every session").
 #      Both parse fine and both silently do nothing.
 #   3. ORPHAN     an asset on disk that no doc mentions — invisible, so unused.
+#   4. LAYOUT     a shape the plugin no longer has: a root workflows/*.md, or a doc
+#      citing the old host path of the tools instead of `devil <name>`.
 #
 # Usage: selfcheck.sh [--summary] [--strict]
 #   --summary  only the failing rows plus the totals
@@ -68,21 +70,21 @@ _docs() {
 
 # --- 1. dangling references -------------------------------------------------
 # Pull every self-referential path out of the prose and prove it resolves.
-# Matches `agents/devil.md`, `skills/debug/SKILL.md` inside backticks or
-# plain. A path char before the prefix means someone else's path
-# (`.github/workflows/ci.yml`, `hooks/scripts/hooks.py` read from `scripts/`),
-# so it is not read as ours. Ponytail: prefix-anchored, so a path split across
-# a line break is missed. It finds the real class of drift; it is not a link
-# checker.
+# Matches `agents/devil.md`, `bin/devil`, `skills/debug/SKILL.md` inside
+# backticks or plain. A path char before the prefix means someone else's path
+# (`/usr/bin/env`, `.github/workflows/ci.yml`), so it is not read as ours.
+# Ponytail: prefix-anchored, so a path split across a line break is missed,
+# and only bin/ is checked without an extension: `tools/orch/timed` is not.
+# It finds the real class of drift; it is not a link checker.
 check_dangling() {
   local doc ref target seen=""
   while read -r doc; do
     [ -n "$doc" ] || continue
-    grep -oE '(^|[^A-Za-z0-9_./-])(\.claude/)?(agents|rules|commands|workflows|skills|tools|doc|scripts)/[A-Za-z0-9_./-]+' "$doc" 2>/dev/null |
-      sed -E 's|^[^A-Za-z0-9_.]||; s|^\.claude/||' | sort -u | while read -r ref; do
+    grep -oE '(^|[^A-Za-z0-9_./-])(\.claude/)?(agents|rules|commands|workflows|skills|tools|doc|scripts|templates|bin|hooks|tests)/[A-Za-z0-9_./-]+' "$doc" 2>/dev/null |
+      sed -E 's|^[^A-Za-z0-9_.]||; s|^\.claude/||; s|[.]+$||' | sort -u | while read -r ref; do
       case "$ref" in
       */) continue ;;
-      *.md | *.sh | *.py | *.json) target="$ref" ;;
+      *.md | *.sh | *.py | *.json | bin/*) target="$ref" ;;
       *) continue ;; # a bare directory is not a claim about a file
       esac
       # A markdown link is relative to its own file, so resolve both ways:
@@ -158,10 +160,11 @@ check_invocables() {
   done
 }
 
+# bin/devil execs tools by path, so a tool without +x or a shebang fails there.
 check_tools() {
   local f
-  for f in tools/*.sh; do
-    [ -e "$f" ] || continue
+  for f in tools/*.sh bin/*; do
+    [ -f "$f" ] || continue
     [ -x "$f" ] || row FAIL tool "$f" "not executable (chmod +x)"
     head -1 "$f" | grep -q '^#!' || row FAIL tool "$f" "no shebang on line 1"
   done
@@ -202,11 +205,60 @@ check_orphans() {
   done
 }
 
+# --- 4. layout --------------------------------------------------------------
+# The old shapes still parse, so nothing else notices one coming back: a
+# workflows/ file never loads as /devil:<name>, and a doc citing the old host
+# path of the tools sends the reader to a directory a plugin host lacks.
+check_layout() {
+  local f
+  for f in workflows/*.md; do
+    [ -e "$f" ] || continue
+    printf 'FAIL\tlayout\t%s\t%s\n' "$f" \
+      "workflows/ is gone: move it to commands/ with metadata.kind: workflow"
+  done
+  while read -r f; do
+    case "$f" in */CHANGELOG.md) continue ;; esac
+    grep -qF '.claude/tools/' "$f" 2>/dev/null || continue
+    printf 'FAIL\tlayout\t%s\t%s\n' "${f#./}" \
+      "cites the old .claude/tools/ path; cite the tool as devil <name>"
+  done < <(_docs)
+}
+
+# --- 5. devil citations -----------------------------------------------------
+# `devil <name>` in backticks is how a doc cites a tool, so it must reach
+# tools/<name>.sh, and `devil orch <sub>` tools/orch/<sub>[.sh], the files
+# bin/devil would exec. A placeholder (`devil <tool>`) is not a name.
+# Ponytail: backtick-anchored. A fenced code line `devil ghost` and a citation
+# wrapped across two lines are not read, so a renamed tool can leave a stale
+# example in a code block. The other way, a code span that opens with the
+# agent's name (`devil verdict`) reads as a tool citation and fails.
+check_citations() {
+  local doc name sub
+  while read -r doc; do
+    grep -oE '`devil [A-Za-z0-9_-]+( [A-Za-z0-9_-]+)?' "$doc" 2>/dev/null |
+      sort -u | while read -r _ name sub; do
+      if [ "$name" != orch ]; then
+        [ -f "tools/$name.sh" ] && continue
+        echo "$doc|devil $name|tools/$name.sh"
+      elif [ -n "$sub" ]; then
+        [ -f "tools/orch/$sub.sh" ] || [ -f "tools/orch/$sub" ] && continue
+        echo "$doc|devil orch $sub|tools/orch/${sub}.sh or tools/orch/${sub}"
+      fi
+    done
+  done < <(_docs) | sort -u | while IFS='|' read -r doc cite want; do
+    printf 'FAIL\tdangling\t%s\t%s\n' "$cite" "cited by ${doc#./}, no $want"
+  done
+}
+
 # --- run --------------------------------------------------------------------
 while IFS='	' read -r s c sub d; do
   [ -n "${s:-}" ] || continue
   row "$s" "$c" "$sub" "$d"
-done < <(check_dangling)
+done < <(
+  check_dangling
+  check_citations
+  check_layout
+)
 check_agents
 check_skills
 check_rules
