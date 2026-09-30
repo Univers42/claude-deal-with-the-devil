@@ -1,8 +1,10 @@
 ---
 name: write-test
 description: >
-  Generate tests for existing code. Auto-triggers on:
-  "write tests for", "add test coverage", "this needs tests"
+  Generate tests for code that already exists. Use when a module has no tests,
+  coverage is thin, a fix needs a regression test, or a change should land with
+  proof it still works. Auto-triggers on: "write tests for", "add test coverage",
+  "this needs tests"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 metadata:
   stage: beta

@@ -1,11 +1,13 @@
 ---
 name: api-endpoint
 description: >
-  Scaffold a new REST endpoint across the planes. Auto-triggers on:
-  "add an endpoint", "new API route", "expose this over HTTP", "wire a handler"
+  Scaffold a new REST endpoint that mirrors the ones already there. Use when a
+  route is missing, a handler needs wiring, a resource has to be reachable over
+  HTTP, or a client calls the API by hand. Auto-triggers on: "add an endpoint",
+  "new API route", "expose this over HTTP", "wire a handler"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 

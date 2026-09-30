@@ -1,12 +1,14 @@
 ---
 name: commit-craft
 description: >
-  Turn a working tree into a history someone can read, revert and bisect — atomic
-  commits, Conventional Commits, never co-authored. Auto-triggers on: "commit this",
-  "write a commit message", "split these changes", "prepare a PR", "clean up the history"
+  Turn a working tree into a history someone can read, revert and bisect. Use when
+  changes are uncommitted, one commit mixes several concerns, a message does not
+  say what changed, or a branch needs tidying before review. Auto-triggers on:
+  "commit this", "write a commit message", "split these changes", "prepare a PR",
+  "clean up the history"
 allowed-tools: Read, Bash, Grep, Glob
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 
