@@ -125,11 +125,14 @@ copy from drifting.
 | Harness | State |
 | --- | --- |
 | **OpenCode 2.x** | supported. `devil export opencode` writes `dist/opencode/`: 11 subagents with their `tools:` list mapped to V2 permissions, 13 commands, the 12 always-on rules, and a plugin that bridges `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing and `bin/` on the agent's `PATH` all work. Verified live on 2.0.18. Start at [`dist/opencode/README.md`](dist/opencode/README.md) |
-| Copilot CLI, Gemini CLI, Codex CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
+| **Codex CLI** | supported, with two honest gaps. `devil export codex` writes `dist/codex/`: a portable Agent Plugins 1.0 manifest, the twelve hook events Codex actually fires with `command` plus `args` folded into the one command string it runs, and the always-on rules as an `AGENTS.md`. Skills and commands are **not** generated: Codex reads a plugin's `skills/` natively and rewrites `commands/` itself. Measured on 0.159.2 in a container; one of eighteen commands came across, which is the gap. Start at [`dist/codex/README.md`](dist/codex/README.md) |
+| Copilot CLI, Gemini CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
 
 ```sh
 devil export opencode            # write dist/opencode
 devil export --check opencode    # exit 1 on drift; CI runs this
+devil export codex               # write dist/codex
+devil export --check codex       # exit 1 on drift; CI runs this
 ```
 
 ---

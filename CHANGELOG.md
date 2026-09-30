@@ -20,6 +20,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   Set it with `"env": {"DEVIL_AUTONOMY": "1"}` in the host settings
   (`hooks/HOOKS-README.md`).
 
+- `devil export codex` (slice X4): the Codex CLI dialect, generated from the same
+  Claude-format sources into `dist/codex/`. Four files: a portable Agent Plugins
+  1.0 `plugin.json` (version copied from `.claude-plugin/plugin.json`, never
+  written by the generator), `hooks/hooks.json` reduced to the twelve events
+  Codex fires with `command` plus `args` folded into the single command string
+  it runs and `${CLAUDE_PLUGIN_ROOT}` rewritten to `${PLUGIN_ROOT}`, an
+  `AGENTS.md` carrying the twelve always-on rules, and the install contract.
+  Skills, agents and commands are deliberately **not** generated: Codex reads a
+  plugin's `skills/` natively and rewrites `commands/` into skills itself, so a
+  copy would be a second copy of files the harness already reads. Measured on
+  `@openai/codex` 0.159.2 in a `node:22-slim` container; the evidence is in
+  `doc/HARNESSES.md`, section "codex, measured for X4".
 - `tools/index.sh`: the generator behind the README asset tables and the router.
   `--check` (the default) regenerates every block between
   `<!-- devil:index:<kind>:start -->` and `<!-- devil:index:<kind>:end -->` and
