@@ -244,13 +244,13 @@ only on a matching file.
 
 | Skill | Stage | Use when |
 | --- | --- | --- |
-| `api-endpoint` | beta | Scaffold a new REST endpoint across the planes (no Use when yet) |
+| `api-endpoint` | stable | a route is missing, a handler needs wiring, a resource has to be reachable over HTTP, or a client calls the API by hand |
 | `brainstorm` | beta | Generate options properly — diverge wide before judging, then converge on evidence and cost (no Use when yet) |
 | `browser-testing` | beta | Verify a change in a real browser and come back with evidence — navigate, interact, snapshot, read the console (no Use when yet) |
 | `caveat` | beta | a change adds a heuristic, a sample, a bounded read, a timeout, a cache or a derived number, or when you need to know what a piece of code is bad at |
-| `commit-craft` | beta | Turn a working tree into a history someone can read, revert and bisect — atomic commits, Conventional Commits, never co-authored (no Use when yet) |
+| `commit-craft` | stable | changes are uncommitted, one commit mixes several concerns, a message does not say what changed, or a branch needs tidying before review |
 | `context-budget` | beta | Measure and cut what this config costs in context every session — always-on rules, skill descriptions, unused skills (no Use when yet) |
-| `debug` | beta | Find the actual cause of a failure instead of guessing at fixes (no Use when yet) |
+| `debug` | stable | a test fails, a build breaks, a crash has no obvious cause, behaviour differs between machines, or a fix that worked yesterday stopped working |
 | `design-review` | beta | Judge an interface the way a design engineer does — hierarchy, rhythm, type, states, and the empty/loading/error cases nobody built (no Use when yet) |
 | `doc-sync` | beta | Find the documentation a change just made false, and fix it — examples copied from passing tests, never composed (no Use when yet) |
 | `frontend` | beta | Build UI that holds up — component and state boundaries, design tokens, responsive and theme behaviour, and the accessibility gate (no Use when yet) |
@@ -258,7 +258,7 @@ only on a matching file.
 | `originality` | beta | Prior-art pass before writing something new — find what already does this, in the repo and outside it, then say plainly whether to reuse, wrap, or build and why (no Use when yet) |
 | `perf-budget` | beta | Set the number before you optimise, then measure against it (no Use when yet) |
 | `prototype` | beta | an approach's cost, performance or feasibility is unproven, or when a spike, benchmark or quick prototype is asked for |
-| `write-test` | beta | Generate tests for existing code (no Use when yet) |
+| `write-test` | beta | a module has no tests, coverage is thin, a fix needs a regression test, or a change should land with proof it still works |
 
 <!-- devil:index:skills:end -->
 

@@ -162,6 +162,12 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Changed
 
+- Skill descriptions follow `<what>. Use when <conditions>. Auto-triggers on: ...`.
+  A skill is `stable` only with a recorded scenario in `tests/scenarios/<name>.md`
+  (a run without the skill, a run with it, and a verdict naming one added behaviour
+  and one thing still wrong). Promoted: `debug`, `api-endpoint`, `commit-craft`.
+  Recorded and kept `beta`: `write-test` (its approval stop ends an unattended run).
+
 - The `devil` agent writes what its verdict owes: a `docs/adr/NNNN-<slug>.md` from
   `templates/adr.md` for a three-gate decision on BLOCK or PROCEED-WITH-CONDITIONS,
   and a `.out-of-scope/<concept>.md` from `templates/out-of-scope.md` for a concept it
