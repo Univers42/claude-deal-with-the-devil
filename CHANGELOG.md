@@ -29,6 +29,29 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   generated (`bash tools/index.sh --write`) instead of hand-maintained, and
   `index.sh --check` runs in `quality.sh` and in CI next to `selfcheck.sh` and
   `skillcheck.sh`.
+- `tools/export.sh` (`devil export <harness>`, `devil export --check <harness>`): one
+  generator from the Claude-format sources to a harness dialect, with `--check` exiting 1
+  on any drift and 2 on an unknown harness. `opencode` is the first target, in
+  `tools/lib/export-opencode.sh`.
+- `dist/opencode/`: the OpenCode 2.x dialect, committed. 11 subagents with their Claude
+  `tools:` list mapped to a V2 `permissions:` list over a deny-all base, 13 commands with
+  `$ARGUMENTS` kept and `/devil:<name>` rewritten to the `/<name>` V2 registers, the 12
+  always-on rules as `AGENTS.md` plus system injection, and `plugins/devil.js`, a bridge
+  that runs `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing
+  and `bin/` on the agent's `PATH` work outside Claude Code. Its
+  [`README.md`](dist/opencode/README.md) is the install contract, including the paths and
+  the config key the setup stage has to write.
+- `tools/lib/opencode-plugin.js`: the bridge's source. Copied into `dist/`, never edited
+  there. `DEVIL_BRIDGE_DEBUG=<file>` makes it log each hook it serves, because a bridge that
+  fails open cannot otherwise be diagnosed.
+- `tests/test_export.sh` and `tests/opencode-plugin-probe.mjs`: `--check` on the committed
+  tree, a hand edit that must fail it, a fixture kit whose new assets must appear, the
+  read-only permission mapping, the payload mapping and the deny decision, and a PyYAML
+  parse of every generated frontmatter.
+- `doc/HARNESSES.md`, section "OpenCode, measured for X1": twenty local runs that answer the
+  four questions X0 left open, and corrections to five matrix cells they contradicted. The
+  costliest finding is that an unterminated YAML frontmatter block makes every OpenCode agent
+  come back a primary agent, silently.
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: the repo root
   now loads as a plugin, `devil`, served by the self-marketplace `univers42`. Every
   asset is namespaced, so `/devil:debug` and the agent `devil:reviewer` can no longer

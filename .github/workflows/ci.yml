@@ -79,6 +79,10 @@ jobs:
       # frontmatter is a stale claim in the first document a reader opens.
       - name: tools/index.sh --check
         run: bash tools/index.sh --check
+      # A generated copy of the kit is a second source of truth unless something
+      # fails when it drifts from the Claude sources.
+      - name: tools/export.sh --check opencode
+        run: bash tools/export.sh --check opencode
 
   # The root must load as a Claude Code plugin. Validating plugin.json also reads
   # hooks/hooks.json; validating the root would pick marketplace.json and skip it.

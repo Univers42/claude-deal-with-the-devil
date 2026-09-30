@@ -159,6 +159,13 @@ check config index \
   "$([ -f "$DIR/index.sh" ] && [ -f "$ROOT/README.md" ] && echo 1 || echo 0)" \
   "$(resolve bash)" g_index
 
+# A generated harness copy is a second source of truth for the same agents,
+# commands and rules, so it gets the same treatment as the version source.
+g_export() { "$1" "$DIR/export.sh" --check opencode >/dev/null 2>&1; }
+check config export \
+  "$([ -f "$DIR/export.sh" ] && [ -d "$ROOT/dist/opencode" ] && echo 1 || echo 0)" \
+  "$(resolve bash)" g_export
+
 check format prettier "$WEB" "$(resolve prettier)" g_prettier
 check format gofmt "$GO" "$(resolve gofumpt || resolve gofmt)" g_gofmt
 check format rustfmt "$RUST" "$(resolve cargo)" g_rustfmt

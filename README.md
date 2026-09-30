@@ -116,6 +116,24 @@ bash tools/context.sh          # what this config costs you per session
 
 ---
 
+## Other harnesses
+
+The canonical sources are the Claude-format files. A harness that cannot read them gets a
+generated dialect under `dist/<harness>/`, produced by one tool, and `--check` keeps the
+copy from drifting.
+
+| Harness | State |
+| --- | --- |
+| **OpenCode 2.x** | supported. `devil export opencode` writes `dist/opencode/`: 11 subagents with their `tools:` list mapped to V2 permissions, 13 commands, the 12 always-on rules, and a plugin that bridges `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing and `bin/` on the agent's `PATH` all work. Verified live on 2.0.18. Start at [`dist/opencode/README.md`](dist/opencode/README.md) |
+| Copilot CLI, Gemini CLI, Codex CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
+
+```sh
+devil export opencode            # write dist/opencode
+devil export --check opencode    # exit 1 on drift; CI runs this
+```
+
+---
+
 ## The seven layers
 
 Reach for the smallest one that fits.
@@ -167,6 +185,7 @@ directory, so `devil digest` describes the project you are in.
 | `selfcheck.sh` | "Does this config tell the truth about itself?" — the drift gate |
 | `context.sh` | "What does this config cost me every session?" |
 | `caveat.sh` | "Which approximations here don't admit they're approximations?" |
+| `export.sh` | "Has another harness's generated copy drifted from these sources?" |
 | `scripts.sh` | "Is there already a script for this?" — the pinned external registry |
 
 ```sh

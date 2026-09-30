@@ -29,6 +29,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
 | `skillcheck.sh` | "Is this config MANAGED?" (lifecycle, description form, resolving references) | `skills/`, `commands/`, agents, rules, every doc |
 | `index.sh` | "Do the README tables and the router still match the frontmatter?" (the generated index) | the marked blocks of `README.md`, every skill and command |
+| `export.sh` | "Has a harness's generated copy drifted from the Claude sources?" (exit 1 = drift) | `agents/`, `commands/`, `rules/`, `tools/lib/` vs `dist/<harness>/` |
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` (the `paths:` skills count as lazy) |
 | `caveat.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
@@ -54,6 +55,8 @@ devil skillcheck                     # skill and command management (exit 1 = a 
 devil index --check                  # the README tables match the frontmatter (exit 1 = drift)
 devil index --write                  # regenerate those tables from the frontmatter
 devil index --router                 # the same tables, for /devil:guide
+devil export opencode                # regenerate dist/opencode from the Claude sources
+devil export --check opencode        # exit 1 if dist/opencode drifted (CI runs this)
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
@@ -90,3 +93,9 @@ Add a tool? Put shared logic in `lib/common.sh`, support `--summary` (so `digest
 compose it) and `--refresh`, emit markdown, cache via `emit_cached`. One concern per tool.
 Register it in the table above and the root `README.md`; `devil <name>` finds it with no
 further wiring.
+
+Add a harness? Put its emitters in `lib/export-<harness>.sh` and one `case` arm in
+`export.sh`. The Claude-format files stay canonical: the generator is the only place that
+knows another dialect, and `--check` is what keeps the two from drifting. `opencode` is the
+worked example; its install contract and its measured limits are in
+`dist/opencode/README.md`.
