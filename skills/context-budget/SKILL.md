@@ -1,10 +1,12 @@
 ---
 name: context-budget
 description: >
-  Measure and cut what this config costs in context every session — always-on rules,
-  skill descriptions, unused skills. The token-reduction pass.
+  Measure and cut what a config costs in context every session: always-on rules,
+  invocable descriptions, skills that never fire.
+  Use when the window fills before any work starts, a session compacts mid-task, or it
+  is unclear what loads every session.
   Auto-triggers on: "reduce token usage", "context is full", "what is loading",
-  "trim the config", "context budget", "why is my context so big", "compacting too often"
+  "trim the config", "context budget", "why is my context so big"
 allowed-tools: Read, Edit, Grep, Glob, Bash
 metadata:
   stage: beta

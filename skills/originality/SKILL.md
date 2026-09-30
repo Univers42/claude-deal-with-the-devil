@@ -1,13 +1,15 @@
 ---
 name: originality
 description: >
-  Prior-art pass before writing something new — find what already does this, in the repo
-  and outside it, then say plainly whether to reuse, wrap, or build and why.
+  Find what already does this job, in the repo and outside it, then say whether to reuse,
+  wrap, borrow or build.
+  Use when something new is about to be written and nobody has checked whether the
+  stdlib, a dependency or the platform already covers it.
   Auto-triggers on: "has this been done", "is there a library for", "should I build this",
-  "prior art", "am I reinventing", "write a X from scratch"
+  "prior art", "am I reinventing", "build it from scratch"
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 
