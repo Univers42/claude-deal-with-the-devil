@@ -120,8 +120,11 @@ fi
 # The bare word is a retired name and a legacy marker spelling, so it belongs in
 # the tool that accepts it, the test that pins it, the rule that documents it and
 # the retired tombstone. skills/caveat/ is on the list because a skill that
-# rewrites markers has to be able to name the one it must not touch.
-extra='skills/caveat/SKILL.md|CHANGELOG.md'
+# rewrites markers has to be able to name the one it must not touch. README.md is
+# on it because the generated retired table is where a renamed asset stays
+# visible: the row naming the tombstone and its replacement is the whole reason
+# the table exists, and hiding the name would leave a dangling reference instead.
+extra='skills/caveat/SKILL.md|CHANGELOG.md|README.md'
 allow="tools/caveat.sh|tests/test_caveat.sh|rules/caveat.md|skills/ponytail/SKILL.md"
 hits="$(cd "$ROOT" && grep -rniIl ponytail . --exclude-dir=.git --exclude-dir=target |
   sed 's|^\./||' | grep -vE "^($allow|$(echo "$extra" | tr '|' '\n' | paste -sd'|' -))$")"

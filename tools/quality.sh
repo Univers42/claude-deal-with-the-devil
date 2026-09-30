@@ -151,6 +151,14 @@ check config skillcheck \
   "$([ -f "$DIR/skillcheck.sh" ] && [ -d "$ROOT/skills" ] && [ -d "$ROOT/commands" ] && echo 1 || echo 0)" \
   "$(resolve bash)" g_skillcheck
 
+# The README tables and the /devil:guide router come from one generator, so a
+# table that drifted from the frontmatter is a stale claim in the first document
+# a reader opens.
+g_index() { "$1" "$DIR/index.sh" --check >/dev/null 2>&1; }
+check config index \
+  "$([ -f "$DIR/index.sh" ] && [ -f "$ROOT/README.md" ] && echo 1 || echo 0)" \
+  "$(resolve bash)" g_index
+
 check format prettier "$WEB" "$(resolve prettier)" g_prettier
 check format gofmt "$GO" "$(resolve gofumpt || resolve gofmt)" g_gofmt
 check format rustfmt "$RUST" "$(resolve cargo)" g_rustfmt

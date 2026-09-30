@@ -205,28 +205,83 @@ in `agents/<name>.md`.
 
 Skills are the breadth layer. Only a skill's `description` sits in context until it
 fires, so a wide roster is cheap — and `/skill-doctor` prunes what goes unused.
+The table below is generated from the frontmatter (`bash tools/index.sh --write`),
+so it cannot drift from the tree; `/devil:guide` prints the same rows live. The
+seven path-scoped skills are listed under [Rules](#rules) instead, since they load
+only on a matching file.
 
-| Skill | What it does |
-| --- | --- |
-| `debug` | Reproduce, bisect, prove the mechanism, then fix once |
-| `write-test` | Generate coverage in the project's own framework |
-| `api-endpoint` | Scaffold a REST endpoint across the planes |
-| `caveat` | Make every approximation state what it gets wrong |
-| `frontend` | Component and state boundaries, tokens, responsive, theme, a11y |
-| `browser-testing` | Drive a real browser via Playwright and come back with evidence |
-| `brainstorm` | Diverge wide, converge on evidence, leave with a kill criterion |
-| `grill` | Close the frontier: facts gathered, the decisions left put to you in rounds |
-| `prototype` | Time-boxed spike in a throwaway worktree, ends keep or kill |
-| `design-review` | Hierarchy, rhythm, type, states — why it "looks off" |
-| `originality` | Prior-art pass: reuse, wrap, borrow, or build — and say which |
-| `perf-budget` | Set the number before optimising, then measure against it |
-| `context-budget` | Measure and cut what this config costs per session |
-| `commit-craft` | Atomic commits, Conventional Commits, never co-authored |
-| `doc-sync` | Find the docs a change just made false, and fix those |
+<!-- devil:index:skills:start -->
 
-Seven more carry `paths:` and fire only on a matching file, so they are listed under
-[Rules](#rules) rather than here: `refactor-c`, `refactor-go`, `refactor-rust`,
-`refactor-typescript`, `refactor-shell`, `api-convention`, `script-library`.
+| Skill | Stage | Use when |
+| --- | --- | --- |
+| `api-endpoint` | beta | Scaffold a new REST endpoint across the planes (no Use when yet) |
+| `brainstorm` | beta | Generate options properly — diverge wide before judging, then converge on evidence and cost (no Use when yet) |
+| `browser-testing` | beta | Verify a change in a real browser and come back with evidence — navigate, interact, snapshot, read the console (no Use when yet) |
+| `caveat` | beta | a change adds a heuristic, a sample, a bounded read, a timeout, a cache or a derived number, or when you need to know what a piece of code is bad at |
+| `commit-craft` | beta | Turn a working tree into a history someone can read, revert and bisect — atomic commits, Conventional Commits, never co-authored (no Use when yet) |
+| `context-budget` | beta | Measure and cut what this config costs in context every session — always-on rules, skill descriptions, unused skills (no Use when yet) |
+| `debug` | beta | Find the actual cause of a failure instead of guessing at fixes (no Use when yet) |
+| `design-review` | beta | Judge an interface the way a design engineer does — hierarchy, rhythm, type, states, and the empty/loading/error cases nobody built (no Use when yet) |
+| `doc-sync` | beta | Find the documentation a change just made false, and fix it — examples copied from passing tests, never composed (no Use when yet) |
+| `frontend` | beta | Build UI that holds up — component and state boundaries, design tokens, responsive and theme behaviour, and the accessibility gate (no Use when yet) |
+| `grill` | beta | a request is underspecified, the done-when is not stateable, or a rules/risk.md trigger is unresolved before code starts |
+| `originality` | beta | Prior-art pass before writing something new — find what already does this, in the repo and outside it, then say plainly whether to reuse, wrap, or build and why (no Use when yet) |
+| `perf-budget` | beta | Set the number before you optimise, then measure against it (no Use when yet) |
+| `prototype` | beta | an approach's cost, performance or feasibility is unproven, or when a spike, benchmark or quick prototype is asked for |
+| `write-test` | beta | Generate tests for existing code (no Use when yet) |
+
+<!-- devil:index:skills:end -->
+
+---
+
+## Commands and workflows
+
+A command is one focused action, a workflow a gated multi-step procedure; both are
+`commands/<name>.md`, told apart by `metadata.kind`, and both are typed as
+`/devil:<name>`. Generated like the skills table above.
+
+<!-- devil:index:commands:start -->
+
+| Command | Stage | Does | Usage |
+| --- | --- | --- | --- |
+| `bench` | beta | Run comparative benchmarks (the project vs the reference baseline) and flag regressions. | /devil:bench [load\|capacity\|footprint\|mem\|startup] |
+| `compat` | beta | Run the feature-parity comparison against the reference baseline for the project. | /devil:compat [feature-area] |
+| `guide` | beta | Print every asset this plugin ships, with its stage and what it is for. (you run it) | /devil:guide |
+| `handoff` | beta | Write a portable handoff document so a fresh session, or another harness, can continue the work. (you run it) | /devil:handoff |
+| `migrate` | beta | Run or inspect the project's migrations across backends. | /devil:migrate <status\|all\|backend> |
+| `prompt` | beta | Turn a rough request into a precise, fact-grounded spec the builder can execute. | /devil:prompt <rough request> |
+| `quality` | beta | Run every strict quality gate in the repo and report PASS/FAIL/SKIP. | /devil:quality [--no-audit] [--with-tests] |
+| `refactor` | beta | Deep refactor at the strictest standard for the technology. | /devil:refactor <technology> [file or module path] |
+| `retro` | beta | Turn what went wrong in a session or a pull request into checks to build and rules to propose. (you run it) | /devil:retro [<pr> \| <git range>] |
+
+<!-- devil:index:commands:end -->
+
+<!-- devil:index:workflows:start -->
+
+| Command | Stage | Does | Usage |
+| --- | --- | --- | --- |
+| `compat-audit` | beta | Behavioral parity audit against a reference spec. | /devil:compat-audit |
+| `deal` | beta | Deal with the devil — submit a risky plan to the risk magistrate before it becomes code. The decision-quality gate. | /devil:deal <the plan or decision> |
+| `feature` | beta | Build a feature end to end — spec, risk verdict, library-first TDD, strict gate. The default arc for new work. | /devil:feature <description> |
+| `harden` | beta | Take an existing module from "it works" to "it holds" — cover it, attack it, bound it, then gate it. | /devil:harden <module or path> |
+| `migrate-db` | beta | Author and land a new database migration safely. (you run it) | /devil:migrate-db <what the migration does> |
+| `onboard-app` | beta | Take an external app and migrate it to run entirely on the project. | /devil:onboard-app <repo-url-or-path> |
+| `ship` | beta | Full release pipeline. (you run it) | /devil:ship <major\|minor\|patch> |
+
+<!-- devil:index:workflows:end -->
+
+### Retired
+
+A retired name stays resolvable so an old reference answers instead of dead-ending,
+and points at what replaced it. Nothing here is invocable.
+
+<!-- devil:index:retired:start -->
+
+| Retired | In | Use instead |
+| --- | --- | --- |
+| `ponytail` | 1.0.0 | `caveat` |
+
+<!-- devil:index:retired:end -->
 
 ---
 
@@ -243,10 +298,23 @@ the same for words) · **`refactor-common`** (the shared craft discipline) ·
 expensive facts, nothing else).
 
 Loaded only when you touch matching files, so they cost nothing otherwise. They are
-`paths:` skills tagged `metadata.stage: rule`, because a plugin cannot ship `rules/`:
-`refactor-c` · `refactor-go` · `refactor-rust` · `refactor-typescript` ·
-`refactor-shell` · `api-convention` · `script-library`. `/devil:refactor <tech>`
-invokes the `refactor-<tech>` skill.
+`paths:` skills tagged `metadata.stage: rule`, because a plugin cannot ship `rules/`.
+`/devil:refactor <tech>` invokes the `refactor-<tech>` skill. Generated like the
+tables above.
+
+<!-- devil:index:rules:start -->
+
+| Rule skill | Loads for |
+| --- | --- |
+| `api-convention` | **/routes/**, **/handlers/**, **/controllers/**, **/api/**, **/*router*, **/*controller* |
+| `refactor-c` | **/*.c, **/*.h |
+| `refactor-go` | **/*.go |
+| `refactor-rust` | **/*.rs |
+| `refactor-shell` | **/*.sh, **/*.bash |
+| `refactor-typescript` | **/*.ts, **/*.tsx |
+| `script-library` | **/*.sh, **/*.bash, **/*.py, **/Makefile, **/makefile |
+
+<!-- devil:index:rules:end -->
 
 ---
 
@@ -454,18 +522,20 @@ The four stages, one line each:
 - **rule** — a skill, never a command: `paths:` and `user-invocable: false`, so it
   lazy-loads on its globs instead of costing a chunk of every session.
 
-Then run `tools/selfcheck.sh` and `tools/skillcheck.sh`. Selfcheck fails on a documented
-name that doesn't exist, a frontmatter field Claude Code doesn't read, a tool without a
-shebang, and a leftover of the old layout (a `workflows/` file, or a tool cited by its old
-host path instead of `devil <name>`). Skillcheck fails on an untagged or misspelt stage, an
-unquoted `since`, a description off the A14 form or over 1024 bytes, a body with no report
-heading, a `/devil:<name>` reaching nothing, a stable skill with no recorded run, a
-tombstone pointing nowhere, a rule skill that loads every session, and a model-invocable
-asset pointing at a user-only one.
+Then run `tools/selfcheck.sh`, `tools/skillcheck.sh` and `tools/index.sh --write`. Selfcheck
+fails on a documented name that doesn't exist, a frontmatter field Claude Code doesn't read, a
+tool without a shebang, and a leftover of the old layout (a `workflows/` file, or a tool cited
+by its old host path instead of `devil <name>`). Skillcheck fails on an untagged or misspelt
+stage, an unquoted `since`, a description off the A14 form or over 1024 bytes, a body with no
+report heading, a `/devil:<name>` reaching nothing, a stable skill with no recorded run, a
+tombstone pointing nowhere, a rule skill that loads every session, and a model-invocable asset
+pointing at a user-only one. `index.sh --write` regenerates the tables above from the
+frontmatter you just edited, so a new asset appears in them without a hand-written row.
 
 ```sh
 bash tools/selfcheck.sh
 bash tools/skillcheck.sh
+bash tools/index.sh --check
 bash tools/caveat.sh --strict
 for t in tests/test_*.sh; do bash "$t" || echo "FAILED: $t"; done
 bash tools/quality.sh --no-audit
