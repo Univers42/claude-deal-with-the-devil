@@ -52,6 +52,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   generator from the Claude-format sources to a harness dialect, with `--check` exiting 1
   on any drift and 2 on an unknown harness. `opencode` is the first target, in
   `tools/lib/export-opencode.sh`.
+- `dist/gemini/` and `devil export gemini`: the Gemini CLI extension, generated from the
+  same Claude sources and measured against `@google/gemini-cli` 0.62.0 in a throwaway
+  container. `gemini-extension.json` with the version read from `plugin.json` at export
+  time, the 12 always-on rules as its `contextFileName`, 18 commands as TOML with
+  `{{args}}`, 23 skills copied verbatim, 11 sub-agents carrying only the keys Gemini's
+  `.strict()` schema accepts, and `hooks/hooks.json` in Gemini's event names calling a
+  generated translator that puts `hooks/scripts/hooks.py` behind Gemini's hook payload and
+  answer shape. `tests/test_export_gemini.sh` runs the CLI's own `gemini extensions
+  validate` in a `node:22-slim` container and SKIPs, counted and printed, when docker is
+  absent. Every claim and its measurement is in `doc/HARNESSES.md`; the three known gaps
+  (no post-edit gate on an edit, no session briefing, no `bin/` on `PATH`) are in
+  `dist/gemini/README.md`.
 - `dist/opencode/`: the OpenCode 2.x dialect, committed. 11 subagents with their Claude
   `tools:` list mapped to a V2 `permissions:` list over a deny-all base, 13 commands with
   `$ARGUMENTS` kept and `/devil:<name>` rewritten to the `/<name>` V2 registers, the 12

@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""gemini-hook.py: translate Gemini CLI's hook dialect into the kit's.
+
+Gemini CLI and Claude Code disagree on three things and only three: the event
+name, the tool name, and the shape of a deny. hooks/scripts/hooks.py is the
+kit's whole enforcement surface, so this is a translator in front of it, never a
+second implementation of it. The event and tool names below are the reverse of
+the mapping `@google/gemini-cli` 0.62.0 itself applies when it migrates a
+Claude `hooks.json` (`gemini hooks migrate`), so the two agree by construction
+rather than by guess.
+
+Caveat: the three maps were read out of the installed 0.62.0 bundle and its
+hooks documentation, and this file's translation is proved by feeding it
+fixture payloads (tests/test_export_gemini.sh). What is NOT proved is that the
+CLI ever runs it: every `gemini` subcommand that would fire a hook boots a
+model session first, and no account was available, so the firing is UNVERIFIED.
+See doc/HARNESSES.md, section "Gemini CLI, measured for X3".
+
+Caveat: `replace`, Gemini's edit tool, has no path parameter at all (its
+parameters are instruction, old_string, new_string, allow_multiple), so an edit
+arrives with no file to gate. The post-edit gate therefore fires on
+`write_file` and never on `replace`. The keys probed for a path are the four
+the CLI's own path extractor tries, so a future write_file that reports
+`absolute_path` would slip past it.
+"""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+# Gemini event name -> the Claude name hooks.py dispatches on. The reverse of
+# the CLI's own EVENT_MAPPING, so an event both harnesses know keeps its name.
+EVENT_TO_CLAUDE = {
+    "BeforeTool": "PreToolUse",
+    "AfterTool": "PostToolUse",
+    "SessionStart": "SessionStart",
+    "PreCompress": "PreCompact",
+}
+
+# Gemini tool name -> the Claude name risk.py and gates.py branch on. The
+# reverse of the CLI's TOOL_NAME_MAPPING, which is the list it rewrites Claude
+# tool names into; a Gemini tool absent here reaches no rule, which is the
+# fail-open direction and is stated rather than hidden.
+TOOL_TO_CLAUDE = {
+    "run_shell_command": "Bash",
+    "write_file": "Write",
+    "replace": "Edit",
+    "read_file": "Read",
+    "read_many_files": "Read",
+    "glob": "Glob",
+    "grep": "Grep",
+    "ls": "LS",
+    "google_web_search": "WebSearch",
+    "web_fetch": "WebFetch",
+    "activate_skill": "Skill",
+}
+
+# Claude's permissionDecision -> Gemini's top-level decision. Gemini reads a
+# blocking answer as `deny` or `block` and an interactive one as `ask`; the two
+# harnesses have no other spelling.
+DECISIONS = {"deny": "deny", "block": "deny", "ask": "ask", "allow": "allow"}
+
+# The keys the CLI's own path extractor probes, in its order.
+PATH_KEYS = ("file_path", "path", "filePath", "file")
+
+# hooks.py holds a hook to a few seconds on every harness. Under four here so a
+# slow digest cannot outlive the extension hook's own budget.
+BUDGET_SECONDS = 4
+
+
+def load(raw):
+    """The payload as a dict, or None when it is absent or unparseable."""
+    if not raw.strip():
+        return None
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def tool_input(tool, inp):
+    """Gemini's tool arguments under the key name the kit reads.
+
+    A write reports its path; an edit reports none, so this is a no-op for
+    `replace` and the post-edit gate does not fire on it. Stated in the module
+    docstring rather than papered over with a guess.
+    """
+    out = dict(inp) if isinstance(inp, dict) else {}
+    if tool in ("Write", "Edit", "NotebookEdit") and not out.get("file_path"):
+        for key in PATH_KEYS:
+            if isinstance(inp.get(key), str):
+                out["file_path"] = inp[key]
+                break
+    return out
+
+
+def claude_payload(data):
+    """The Claude-shaped object hooks.py expects, or {} when it has no handler."""
+    event = data.get("hook_event_name", "")
+    if event not in EVENT_TO_CLAUDE:
+        return {}
+    payload = {"hook_event_name": EVENT_TO_CLAUDE[event]}
+    tool = TOOL_TO_CLAUDE.get(data.get("tool_name", ""))
+    if tool:
+        payload["tool_name"] = tool
+        payload["tool_input"] = tool_input(tool, data.get("tool_input") or {})
+    return payload
+
+
+def run_hooks(payload):
+    """hooks.py's stdout, or "" when it declined to answer."""
+    script = Path(__file__).resolve().parent / "scripts" / "hooks.py"
+    try:
+        done = subprocess.run(
+            [sys.executable, str(script)],
+            input=json.dumps(payload),
+            capture_output=True,
+            text=True,
+            timeout=BUDGET_SECONDS,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return done.stdout
+
+
+def gemini_answer(answer):
+    """One Gemini hook answer built from hooks.py's Claude one."""
+    spec = answer.get("hookSpecificOutput") or {}
+    if not isinstance(spec, dict):
+        return {}
+    decision = spec.get("permissionDecision")
+    if decision in DECISIONS:
+        return {
+            "decision": DECISIONS[decision],
+            "reason": spec.get("permissionDecisionReason", ""),
+        }
+    text = spec.get("additionalContext")
+    if isinstance(text, str) and text:
+        return {"hookSpecificOutput": {"additionalContext": text}}
+    return {}
+
+
+def translate(out):
+    """The answer to print on stdout, or {} meaning print nothing at all.
+
+    Gemini's rule is that stdout carries the JSON object and nothing else, so
+    an unparseable or absent answer prints no bytes rather than noise: noise is
+    parsed as a failure and degrades to Allow anyway.
+    """
+    if not out.strip():
+        return {}
+    try:
+        answer = json.loads(out)
+    except json.JSONDecodeError:
+        return {}
+    return gemini_answer(answer) if isinstance(answer, dict) else {}
+
+
+def main():
+    data = load(sys.stdin.read())
+    if data is None:
+        return
+    payload = claude_payload(data)
+    if not payload:
+        return
+    answer = translate(run_hooks(payload))
+    if answer:
+        sys.stdout.write(json.dumps(answer))
+    sys.stdout.flush()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        pass  # fail open, the same contract hooks.py keeps
+    sys.exit(0)

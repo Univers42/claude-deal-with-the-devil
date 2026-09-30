@@ -30,6 +30,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `skillcheck.sh` | "Is this config MANAGED?" (lifecycle, description form, resolving references) | `skills/`, `commands/`, agents, rules, every doc |
 | `index.sh` | "Do the README tables and the router still match the frontmatter?" (the generated index) | the marked blocks of `README.md`, every skill and command |
 | `export.sh` | "Has a harness's generated copy drifted from the Claude sources?" (exit 1 = drift) | `agents/`, `commands/`, `rules/`, `tools/lib/` vs `dist/<harness>/` |
+| `lib/export-gemini.sh` | the Gemini CLI dialect: a Gemini extension with a manifest, TOML commands, a strict-schema sub-agent per agent and a hook translator | `dist/gemini/` — see [`dist/gemini/README.md`](../dist/gemini/README.md) |
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` (the `paths:` skills count as lazy) |
 | `caveat.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
@@ -59,6 +60,8 @@ devil export opencode                # regenerate dist/opencode from the Claude 
 devil export --check opencode        # exit 1 if dist/opencode drifted (CI runs this)
 devil export codex                   # regenerate dist/codex from the Claude sources
 devil export --check codex           # exit 1 if dist/codex drifted (CI runs this)
+devil export gemini                  # regenerate dist/gemini: a Gemini CLI extension
+devil export --check gemini          # exit 1 if dist/gemini drifted (CI runs this)
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
@@ -97,8 +100,11 @@ compose it) and `--refresh`, emit markdown, cache via `emit_cached`. One concern
 Register it in the table above and the root `README.md`; `devil <name>` finds it with no
 further wiring.
 
-Add a harness? Put its emitters in `lib/export-<harness>.sh` and one `case` arm in
-`export.sh`. The Claude-format files stay canonical: the generator is the only place that
-knows another dialect, and `--check` is what keeps the two from drifting. `opencode` is the
-worked example; its install contract and its measured limits are in
-`dist/opencode/README.md`.
+Add a harness? Put its emitters in `lib/export-<harness>.sh`, one `case` arm in
+`export.sh`, one `check config export_<harness>` row in `quality.sh` and one
+`tests/test_export_<harness>.sh`. The Claude-format files stay canonical: the generator is the
+only place that knows another dialect, and `--check` is what keeps the two from drifting. A new
+target also needs its own row in `README.md` under "Other harnesses" and its own measured
+section in `doc/HARNESSES.md`; a claim nobody measured is UNVERIFIED, never a row in "what
+works". `opencode` and `gemini` are the worked examples, and their install contracts and
+measured limits are in `dist/<harness>/README.md`.

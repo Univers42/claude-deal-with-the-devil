@@ -22,7 +22,7 @@ for a in "$@"; do
   case "$a" in
   --check) CHECK=1 ;;
   -h | --help)
-    echo "usage: export.sh [--check] <harness>   (harnesses: opencode, codex)"
+    echo "usage: export.sh [--check] <harness>   (harnesses: opencode, codex, gemini)"
     exit 0
     ;;
   -*)
@@ -61,8 +61,21 @@ codex)
     cx_readme
   }
   ;;
+gemini)
+  # shellcheck source=lib/export-gemini.sh
+  . "$DIR/lib/export-gemini.sh"
+  generate() {
+    gmanifest
+    gcontext
+    gcommands
+    gskills
+    gagents
+    ghooks
+    greadme
+  }
+  ;;
 *)
-  echo "export.sh: unknown harness '$HARNESS' (known: opencode, codex)" >&2
+  echo "export.sh: unknown harness '$HARNESS' (known: opencode, codex, gemini)" >&2
   exit 2
   ;;
 esac
