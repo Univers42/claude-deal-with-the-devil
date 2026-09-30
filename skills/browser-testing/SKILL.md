@@ -1,13 +1,14 @@
 ---
 name: browser-testing
 description: >
-  Verify a change in a real browser and come back with evidence — navigate, interact,
-  snapshot, read the console. Turns "should work" into an artifact.
+  Verifies a change in a real browser and returns the artifact: the steps, the
+  viewport, the console. Use when a page is claimed to work but only a unit test
+  says so, or when a flow must be clicked through.
   Auto-triggers on: "test in the browser", "does the page work", "check the console",
   "screenshot", "click through", "playwright", "verify the UI", "e2e test"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 
