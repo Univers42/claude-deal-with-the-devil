@@ -25,7 +25,8 @@ everyone on the repo.
 
 - A file path: read it whole, and any file it points at.
 - An issue number: fetch it through the tracker adapter you will publish with
-  (github: `gh issue view <n> --comments`; local: no issues exist, so say so and
+  (github: `gh issue view <n> --comments`; gitlab: `glab issue view <iid>
+  --comments`; local: no issues exist, so say so and
   stop).
 - No argument: ask which spec and stop.
 
@@ -130,6 +131,7 @@ decides how the body is delivered.
 Use the adapter's `create-ticket` verb, and nothing else:
 
 - github: `gh issue create --title "<title>" --body "<body>" --label ready-for-agent`.
+- gitlab: `glab issue create --title "<title>" --description "<body>" --label ready-for-agent`.
 - local: write `.scratch/tickets/NNN-slug.md`, NNN the next free number.
 
 Keep file paths and code out of the body. A path is stale the moment the code

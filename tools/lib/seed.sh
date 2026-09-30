@@ -202,33 +202,10 @@ _claude_md_render() {
 # before: it grew past what a stage-shaped function can hold (the config merge,
 # one link per generated file, and the sweep of a retired one).
 
-# --- 5. tracker: which tracker the three abstract verbs map onto. `gh` installed
-# and a github.com remote is a real signal; anything else is local, which works.
-# Caveat: the remote test greps `git remote -v` for the literal `github.com`, so a
-# GitHub Enterprise host, an SSH alias for github, or a worktree whose remote is
-# unreachable all read as local. Pass --tracker to say so.
-stage_tracker() {
-  local kind="$TRACKER" why
-  if [ ! -f "$KIT/templates/tracker/github.md" ] || [ ! -f "$KIT/templates/tracker/local.md" ]; then
-    note cannot "templates/tracker/{github,local}.md are missing" "from the kit"
-    return 0
-  fi
-  if [ -z "$kind" ]; then
-    if have gh && git -C "$HOST" remote -v 2>/dev/null | grep -q 'github\.com'; then
-      kind=github
-      why="gh installed, github.com remote"
-    else
-      kind=local
-      why="no gh or no github.com remote"
-    fi
-  else
-    why="--tracker $kind"
-  fi
-  ensure "$HOST/.claude/devil/tracker.md" "write .claude/devil/tracker.md" \
-    <"$KIT/templates/tracker/$kind.md"
-  note ok "ticket tracker: $kind" "$why"
-  return 0
-}
+# --- 5. tracker: lives in lib/seed-tracker.sh, sourced by setup.sh after this
+# file. It moved out because the third adapter kind (gitlab) did not fit in a file
+# already at the 300-line ceiling, and a stage that has to be read on its own is
+# better off in the file named after it.
 
 # --- 6. mcp: opt-in, because a server is a network call and a supply-chain
 # surface. Seeding it unasked would start four processes in every host that

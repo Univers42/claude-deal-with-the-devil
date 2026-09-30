@@ -291,11 +291,12 @@ for h in Blocks Seams; do
   has_shape "$TMP/ticket-no$h.md" ticket && no "a ticket body without '## $h' must fail the check" ||
     ok "a ticket body with '## $h' removed fails the check"
 done
-# both tracker adapters point at the one body shape
-for t in github local; do
-  grep -q 'templates/ticket.md' "$ROOT/templates/tracker/$t.md" &&
-    ok "templates/tracker/$t.md references templates/ticket.md" ||
-    no "templates/tracker/$t.md must reference templates/ticket.md"
+# every tracker adapter points at the one body shape
+for t in github gitlab local; do
+  f="$ROOT/templates/tracker/$t.md"
+  grep -v 'templates/ticket.md' "$f" >"$TMP/no-ref-$t.md"
+  grep -q 'templates/ticket.md' "$f" && ok "templates/tracker/$t.md references templates/ticket.md" || no "templates/tracker/$t.md must reference templates/ticket.md"
+  grep -q 'templates/ticket.md' "$TMP/no-ref-$t.md" && no "the $t adapter assertion must fail without the reference" || ok "the $t adapter assertion fails on a copy without the reference"
 done
 
 # --- j. wayfinder-map.md: the map is an index over four sections --------------

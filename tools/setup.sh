@@ -16,7 +16,7 @@
 # applied state, `--apply` writes. They share it on purpose: a check that
 # recomputes differently from the write is a check that lies.
 #
-# Usage: setup.sh [--check | --apply] [--host <dir>] [--tracker github|local]
+# Usage: setup.sh [--check | --apply] [--host <dir>] [--tracker github|gitlab|local]
 #                 [--seed-mcp] [--skip <stage>]... [--only <stage>]
 #   (no mode)  dry run, writes nothing, exit 0
 #   --check    one row per stage, exit 1 if any stage is not applied
@@ -33,6 +33,8 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$DIR/lib/seed.sh"
 # shellcheck source=lib/seed-opencode.sh
 . "$DIR/lib/seed-opencode.sh"
+# shellcheck source=lib/seed-tracker.sh
+. "$DIR/lib/seed-tracker.sh"
 
 MODE=dry
 HOST=""
@@ -50,7 +52,7 @@ warn() { printf 'setup.sh: %s\n' "$*" >&2; }
 
 usage() {
   cat <<'USAGE'
-usage: setup.sh [--check | --apply] [--host <dir>] [--tracker github|local]
+usage: setup.sh [--check | --apply] [--host <dir>] [--tracker github|gitlab|local]
                 [--seed-mcp] [--skip <stage>]... [--only <stage>]
 
 Seeds the rules, settings, CLAUDE.md block, OpenCode wiring, tracker adapter and
@@ -60,7 +62,7 @@ gitignore lines a plugin cannot ship into a host repo.
   --check    exit 1 unless every selected stage is already applied
   --apply    write
   --host     the repo to seed; default the git top-level of the cwd
-  --tracker  override the detected ticket tracker
+  --tracker  override the detected ticket tracker: github, gitlab or local
   --seed-mcp also seed templates/mcp.json into the host's .mcp.json
   --skip     stage to leave out (repeatable)
   --only     the one stage to run
@@ -110,8 +112,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$TRACKER" in
-"" | github | local) ;;
-*) warn "--tracker takes github or local, not '$TRACKER'" && exit 2 ;;
+"" | github | gitlab | local) ;;
+*) warn "--tracker takes github, gitlab or local, not '$TRACKER'" && exit 2 ;;
 esac
 
 # Two roots, never confused (tools/lib/seed.sh keeps the same rule): the kit is

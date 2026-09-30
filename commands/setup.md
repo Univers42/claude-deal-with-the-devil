@@ -2,8 +2,8 @@
 description: >
   Seed into this repo what the plugin cannot ship: the always-on rules, the
   permissions, the CLAUDE.md block, the OpenCode wiring and the gitignore lines.
-  Usage: /devil:setup [--check] [--apply] [--tracker github|local] [--seed-mcp] [--skip <stage>]
-argument-hint: "[--check] [--apply] [--tracker github|local] [--seed-mcp] [--skip <stage>]"
+  Usage: /devil:setup [--check] [--apply] [--tracker github|gitlab|local] [--seed-mcp] [--skip <stage>]
+argument-hint: "[--check] [--apply] [--tracker github|gitlab|local] [--seed-mcp] [--skip <stage>]"
 disable-model-invocation: true
 metadata:
   kind: command
@@ -23,6 +23,18 @@ With no flag it is a dry run: every stage prints what it would change and writes
 nothing, exit 0. Use that first so the person can read the plan. `--check` is the
 same computation with an exit code (1 when a stage is not in its applied state),
 which is what CI wants. `--apply` writes.
+
+The tracker stage picks one of three adapters for `.claude/devil/tracker.md`:
+`--tracker github`, `--tracker gitlab` or `--tracker local`. Without the flag it
+detects: `gh` plus a `github.com` remote gives github, `glab` plus a `gitlab.com`
+remote gives gitlab, anything else gives local. Both tests have to pass, so a
+self-hosted GitLab reads as local until someone passes `--tracker gitlab`. Say
+which adapter was chosen and why the row says so; never restate it as a fact about
+the repo when the person may know better.
+
+Caveat: without `--tracker` the row is a function of this run's inputs, so a host
+seeded with an explicit `--tracker gitlab` on a repo detection reads as local will
+report `change` on the next bare `--check`. Pass the same `--tracker` in CI.
 
 ## 2. Show the rows
 
