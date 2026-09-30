@@ -30,6 +30,20 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   released heading here, the marketplace carries no version, every retired asset is
   named with its replacement) and `bump <level>`, which edits, commits
   `chore(release): vX.Y.Z`, tags, and never pushes.
+- `commands/handoff.md` (`/devil:handoff`): writes a portable handoff document to
+  `${TMPDIR:-/tmp}/devil-handoff-<repo>-<UTC timestamp>.md` and prints the path.
+  Pointers, not copies (`file:line`, branch, `git log --oneline -10`, the commands to
+  re-run, `devil digest` for the repo facts), the decisions and the open questions, a
+  redaction pass that keeps secret names and drops their values, and the return block
+  (`status` / `gates` / `changed` / `deviations` / `next`) at the end, which is what
+  `devil orch oc-job` greps. The `PreCompact` hook now names it.
+- `commands/retro.md` (`/devil:retro [<pr> | <git range>]`): reads a session or a pull
+  request, lists what went wrong or cost time with the evidence that made it a
+  finding, then splits them. A mechanical finding becomes a brief for the `forger`
+  agent naming the check, the tool that owns the concern and the fixture that must
+  fail; a judgement finding becomes a proposed one-line bullet and its target file. It
+  proposes and writes nothing.
+- `templates/handoff.md`: the skeleton `/devil:handoff` fills in.
 - `bin/devil`: one dispatcher for every tool, on the agent's PATH when the plugin is
   loaded. `devil <tool>` runs `tools/<tool>.sh`, `devil orch <sub>` the OpenCode
   orchestration scripts; an unknown name exits 2.
