@@ -13,6 +13,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Added
 
+- `templates/tracker/gitlab.md`: the GitLab adapter for `to-tickets`, the third of
+  the three abstract verbs mapped onto a real tracker (`glab issue create --title
+  --description --label ready-for-agent`, `glab issue list --label ready-for-agent`,
+  `glab issue note` plus `glab issue close <iid>`). Every command is marked
+  UNVERIFIED in the file: it was written on a host with no `glab`, so no
+  `--help` output was ever read. `devil setup --tracker gitlab` seeds it, and
+  setup now detects it when `glab` is installed and a remote names `gitlab.com`
+  (a self-hosted GitLab reads as local until someone passes the flag; a repo with
+  both remotes still gets github). The tracker stage moved to
+  `tools/lib/seed-tracker.sh`, seed.sh having been at the 300-line ceiling.
+  Covered by `tests/test_setup_tracker.sh`, with a negative control per case.
+
 - `tools/index.sh`: the generator behind the README asset tables and the router.
   `--check` (the default) regenerates every block between
   `<!-- devil:index:<kind>:start -->` and `<!-- devil:index:<kind>:end -->` and

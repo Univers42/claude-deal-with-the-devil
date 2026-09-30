@@ -283,7 +283,7 @@ A command is one focused action, a workflow a gated multi-step procedure; both a
 | `quality` | beta | Run every strict quality gate in the repo and report PASS/FAIL/SKIP. | /devil:quality [--no-audit] [--with-tests] |
 | `refactor` | beta | Deep refactor at the strictest standard for the technology. | /devil:refactor <technology> [file or module path] |
 | `retro` | beta | Turn what went wrong in a session or a pull request into checks to build and rules to propose. (you run it) | /devil:retro [<pr> \| <git range>] |
-| `setup` | beta | Seed into this repo what the plugin cannot ship: the always-on rules, the permissions, the CLAUDE.md block, the OpenCode wiring and the gitignore lines. (you run it) | /devil:setup [--check] [--apply] [--tracker github\|local] [--seed-mcp] [--skip <stage>] |
+| `setup` | beta | Seed into this repo what the plugin cannot ship: the always-on rules, the permissions, the CLAUDE.md block, the OpenCode wiring and the gitignore lines. (you run it) | /devil:setup [--check] [--apply] [--tracker github\|gitlab\|local] [--seed-mcp] [--skip <stage>] |
 | `to-tickets` | beta | Split a spec into vertical-slice tickets with blocking edges and publish them to the tracker. (you run it) | /devil:to-tickets <spec file or issue> |
 
 <!-- devil:index:commands:end -->

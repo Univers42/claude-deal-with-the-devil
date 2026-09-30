@@ -76,8 +76,9 @@ which is the *success* case for a negative check. Every tool declares its own op
 - **Library-first, dogfooded.** Shared logic lives in `lib/common.sh`; each tool is thin
   glue over it — the rule they enforce (`rules/library-first.md`). `setup.sh` keeps the
   same shape: argument parsing and the write helpers above, one `stage_<name>` function
-  per stage in `lib/seed.sh`, and one code path so `--check` cannot disagree with
-  `--apply`.
+  per stage in `lib/seed.sh` (the tracker stage moved to `lib/seed-tracker.sh` when the
+  third adapter kind did not fit in a file already at the 300-line ceiling), and one code
+  path so `--check` cannot disagree with `--apply`.
 - **Cached + fingerprinted.** Output caches to the host's `.claude/cache/` (gitignored), keyed to
   `git HEAD` + dirty tree; a stale cache rebuilds itself.
 - **Best-effort, honest.** Symbol / dup / coverage extraction is regex-heuristic (marked
