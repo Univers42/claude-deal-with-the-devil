@@ -23,10 +23,12 @@ repo_root() { git rev-parse --show-toplevel 2>/dev/null || pwd; }
 # Directory holding the tools (.claude/tools), resolved from this file.
 _tools_dir() { cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd; }
 
-# Cache lives at .claude/cache — next to the tools, so it survives any CWD.
+# Cache lives under the HOST repo at .claude/cache: the digest describes that
+# tree, so it belongs to it, not to wherever the tools happen to be checked out.
+# Outside git, repo_root() falls back to the CWD and so does the cache.
 cache_dir() {
   local d
-  d="$(_tools_dir)/../cache"
+  d="$(repo_root)/.claude/cache"
   mkdir -p "$d"
   (cd "$d" && pwd)
 }
@@ -150,29 +152,103 @@ fm_block() {
   awk 'NR==1 && $0=="---" {inside=1; next} inside && $0=="---" {exit} inside' "$1"
 }
 
+# Trim surrounding whitespace, then one pair of matching quotes.
+_fm_unquote() { sed -E "s/^[[:space:]]+//; s/[[:space:]]+\$//; s/^([\"'])(.*)\1\$/\2/"; }
+
 # Value of a top-level frontmatter key, trimmed. Empty when absent.
 # Ponytail: line-oriented, so it reads a scalar (`model: opus`) but not a
-# multi-line block or a nested map — which is all any field here uses.
+# multi-line block (use fm_desc) or a nested map (use fm_meta).
 fm_field() {
-  fm_block "$1" | sed -n "s/^$2:[[:space:]]*//p" | head -1 |
-    sed 's/^["'"'"']//; s/["'"'"']$//; s/[[:space:]]*$//'
+  fm_block "$1" | sed -n "s/^$2:[[:space:]]*//p" | head -1 | _fm_unquote
 }
 
 # True when the frontmatter declares a `paths:` key (scalar or YAML list),
 # i.e. the rule/skill lazy-loads instead of costing context every session.
 fm_has_paths() { fm_block "$1" | grep -q '^paths:'; }
 
+# True when a top-level key is exactly `true`; case-sensitive, the way Claude
+# Code reads `disable-model-invocation:`.
+fm_flag() { [ "$(fm_field "$1" "$2")" = true ]; }
+
+# Value of `metadata.<key>`, the map that carries an asset's own labels (kind,
+# stage, since). A top-level <key>: is a different field and is never read.
+# Ponytail: line-oriented YAML with a two-space indent. A map indented by four,
+# a flow map (`metadata: {kind: workflow}`) or a CRLF file (fm_block never sees
+# the `---` fence) all read as absent, and a nested map under metadata is
+# skipped, not flattened. Absent is the failure direction: a tagged command is
+# treated as untagged, never the reverse.
+fm_meta() {
+  fm_block "$1" | awk -v key="$2" '
+    /^metadata:[[:space:]]*$/ { inside = 1; next }
+    inside && /^[A-Za-z]/ { exit }
+    inside && index($0, "  " key ":") == 1 {
+      sub(/^  [^:]*:[[:space:]]*/, "")
+      print
+      exit
+    }
+  ' | _fm_unquote
+}
+
+# The full `description:` on one line, however it was written: a scalar, a
+# folded block (> or >-) or a literal block (|). Block lines are joined with
+# single spaces because the / listing shows every description on one line.
+# Ponytail: line-oriented YAML. It takes the first `description:` at column 0
+# and stops at the next unindented line, so a duplicate key hides the later
+# one, a nested map under description: is flattened into the text, a value
+# carrying a literal `description:` at column 0 (invalid YAML) ends the block
+# early, and a CRLF file yields nothing because fm_block never sees the fence.
+fm_desc() {
+  fm_block "$1" | awk -v sq="'" '
+    /^description:/ && !seen {
+      seen = 1
+      s = $0
+      sub(/^description:[[:space:]]*/, "", s)
+      sub(/[[:space:]]+$/, "", s)
+      if (s == "" || s ~ /^[>|]-?$/) { grab = 1; next }
+      if (s ~ /^".*"$/ || s ~ ("^" sq ".*" sq "$")) s = substr(s, 2, length(s) - 2)
+      print s
+      exit
+    }
+    grab && /^[^[:space:]]/ { exit }
+    grab && NF {
+      sub(/^[[:space:]]+/, "")
+      sub(/[[:space:]]+$/, "")
+      out = out (out == "" ? "" : " ") $0
+    }
+    END { if (out != "") print out }
+  '
+}
+
+_md_names() { find "$1" -maxdepth 1 -name '*.md' -printf '%f\n' 2>/dev/null | sed 's/\.md$//' | sort; }
+
+# Commands tagged `metadata.kind: workflow`, by name.
+_workflow_commands() {
+  local f
+  for f in "$1"/commands/*.md; do
+    [ -e "$f" ] || continue
+    if [ "$(fm_meta "$f" kind)" = workflow ]; then basename "$f" .md; fi
+  done
+}
+
 # Names of this config's assets, one per line, sorted.
-#   agents|rules|commands|workflows -> <dir>/<name>.md  ->  name
-#   skills                          -> skills/<name>/SKILL.md -> name
-#   tools                           -> tools/<name>.sh  ->  name
+#   agents|rules|commands -> <dir>/<name>.md  ->  name
+#   workflows             -> commands/<name>.md tagged `metadata.kind: workflow`,
+#                            plus legacy workflows/<name>.md until they move over
+#   skills                -> skills/<name>/SKILL.md -> name
+#   tools                 -> tools/<name>.sh  ->  name
+#   bin|templates         -> every file under <dir>/, as its path inside it
 asset_names() {
   local root
   root="$(claude_root)"
   case "$1" in
   skills) find "$root/skills" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort ;;
   tools) find "$root/tools" -maxdepth 1 -name '*.sh' -printf '%f\n' 2>/dev/null | sed 's/\.sh$//' | sort ;;
-  *) find "$root/$1" -maxdepth 1 -name '*.md' -printf '%f\n' 2>/dev/null | sed 's/\.md$//' | sort ;;
+  bin | templates) find "$root/$1" -type f -printf '%P\n' 2>/dev/null | sort ;;
+  workflows) {
+    _workflow_commands "$root"
+    _md_names "$root/workflows"
+  } | sort -u ;;
+  *) _md_names "$root/$1" ;;
   esac
 }
 

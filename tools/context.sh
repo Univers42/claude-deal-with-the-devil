@@ -10,11 +10,13 @@
 #
 # What loads when (the model this tool encodes):
 #   ALWAYS  rules/*.md with no `paths:`         — full text, every session
-#   ALWAYS  the description: of every skill,    — the listing Claude matches
-#           command and workflow                  intent against
+#   ALWAYS  the description: of every skill     — the listing Claude matches
+#           and command                           intent against
 #   LAZY    rules/*.md with `paths:`            — only when a matching file is touched
-#   LAZY    a skill/command/workflow body       — only when invoked
+#   LAZY    a skill/command body                — only when invoked
 #   LAZY    an agent definition                 — only in that agent's own context
+#   NEVER   a description under `disable-model-invocation: true`: it sits in
+#           the / menu for the user, not in the model's context
 #
 # So the lever is: keep always-on text short, put everything else behind
 # `paths:` or an invocation. Pair with the bundled /skill-doctor, which reports
@@ -49,14 +51,14 @@ _tok() { echo $(($1 / 4)); }
 
 _bytes() { wc -c <"$1" 2>/dev/null | tr -d ' ' || echo 0; }
 
-# The description: block of an invocable — the part that is always in context.
-# Folded (`description: >`) blocks run until the next top-level key.
+# Bytes of an invocable's description as the listing shows it: one line, YAML
+# folding already applied. Zero when the model never sees it.
 _desc_bytes() {
-  fm_block "$1" | awk '
-    /^description:/ {grab=1; print; next}
-    grab && /^[a-zA-Z_-]+:/ {grab=0}
-    grab {print}
-  ' | wc -c | tr -d ' '
+  if fm_flag "$1" disable-model-invocation; then
+    echo 0
+    return 0
+  fi
+  fm_desc "$1" | wc -c | tr -d ' '
 }
 
 ALWAYS=0
@@ -77,19 +79,14 @@ for f in rules/*.md; do
   fi
 done
 
-for kind in skills commands workflows; do
-  case "$kind" in
-  skills) files=(skills/*/SKILL.md) ;;
-  *) files=("$kind"/*.md) ;;
-  esac
-  for f in "${files[@]}"; do
-    [ -e "$f" ] || continue
-    b=$(_bytes "$f")
-    d=$(_desc_bytes "$f")
-    DESC=$((DESC + d))
-    LAZY=$((LAZY + b - d))
-    ROWS_LAZY+="${kind%s}	$f	$b	$d B of description always in context"$'\n'
-  done
+for f in skills/*/SKILL.md commands/*.md; do
+  [ -e "$f" ] || continue
+  kind="${f%%/*}"
+  b=$(_bytes "$f")
+  d=$(_desc_bytes "$f")
+  DESC=$((DESC + d))
+  LAZY=$((LAZY + b - d))
+  ROWS_LAZY+="${kind%s}	$f	$b	$d B of description always in context"$'\n'
 done
 
 AGENTS_B=0

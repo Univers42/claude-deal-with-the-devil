@@ -104,7 +104,17 @@ if run "$TMP/relative"; then ok "relative link resolves from its own directory";
   no "relative link wrongly reported dangling"
 fi
 
-# --- 8. the real payload is clean -------------------------------------------
+# --- 8. generated output under .claude/cache is not a doc -------------------
+# In a standalone checkout cache_dir() is ./.claude/cache; a codemap cached
+# there names paths in its own words and must never count as drift.
+fixture "$TMP/cached"
+mkdir -p "$TMP/cached/.claude/cache"
+echo 'Symbols: `scripts/hooks.py` `agents/ghost.md`' >"$TMP/cached/.claude/cache/codemap.md"
+if run "$TMP/cached"; then ok "a cached codemap under .claude/ is not scanned"; else
+  no "generated output under .claude/cache was scanned as a doc"
+fi
+
+# --- 9. the real payload is clean -------------------------------------------
 if bash "$ROOT/tools/selfcheck.sh" --summary >/dev/null 2>&1; then
   ok "this repo's own payload is clean"
 else
