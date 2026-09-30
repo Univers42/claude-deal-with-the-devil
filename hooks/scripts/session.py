@@ -21,6 +21,9 @@ def session_start(data):
     if digest.is_file():
         # The digest describes the host project, so it runs there.
         rc, out = run(["bash", str(digest)], cwd=host_root())
+        # Ponytail: the briefing is cut at 4000 characters, so a long digest loses
+        # its last sections (untested, duplication) silently; `devil digest`
+        # prints the whole of it.
         if rc == 0 and out:
             parts.append(out[:4000])
     if parts:

@@ -11,8 +11,7 @@ from pathlib import Path
 # Two roots, never confused. The kit's own files (tools/, hooks/config) live
 # under the plugin root: the directory above hooks/, wherever the plugin was
 # installed or copied. The project being worked on is the host root, which
-# Claude Code passes as CLAUDE_PROJECT_DIR; the cwd is the fallback for a hook
-# run by hand.
+# Claude Code passes as CLAUDE_PROJECT_DIR; a hook run by hand uses the cwd.
 HOOK_DIR = Path(__file__).resolve().parent.parent
 PLUGIN_ROOT = HOOK_DIR.parent
 CONFIG_DIR = HOOK_DIR / "config"

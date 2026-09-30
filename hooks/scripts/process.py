@@ -2,6 +2,10 @@
 
 import subprocess
 
+# Ponytail: a tool slower than TIMEOUT is killed and returns (124, "timed out").
+# The PostToolUse file gate then reports a clean file as not clean (over-reports),
+# while the kit selfcheck and the SessionStart briefing are dropped without a word
+# (under-reports). Raise it together with the timeouts in hooks/hooks.json.
 TIMEOUT = 4  # seconds; hooks/hooks.json gives the harness 5
 
 
