@@ -331,6 +331,19 @@ These hold for everything here, even one-off tasks:
 
 ---
 
+## Releasing
+
+`.claude-plugin/plugin.json` is the only version source; `CHANGELOG.md` repeats it as a
+`## [x.y.z]` heading and `tools/release.sh --check` proves the two agree.
+
+```sh
+bash tools/release.sh bump patch     # edit, commit chore(release): vX.Y.Z, tag vX.Y.Z
+```
+
+The bump never pushes. Push the branch first, then the tag, by hand.
+
+---
+
 ## Extending it
 
 When you add something, match the existing examples: `agents/devil.md`,

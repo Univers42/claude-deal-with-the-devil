@@ -136,6 +136,13 @@ check config selfcheck \
   "$([ -f "$DIR/selfcheck.sh" ] && [ -d "$ROOT/rules" ] && [ -d "$ROOT/agents" ] && echo 1 || echo 0)" \
   "$(resolve bash)" g_selfcheck
 
+# One version source, proved: plugin.json against the changelog heading, and no
+# second version hiding in the marketplace manifest.
+g_release() { "$1" "$DIR/release.sh" --check >/dev/null 2>&1; }
+check config release \
+  "$([ -f "$DIR/release.sh" ] && manifest .claude-plugin/plugin.json && echo 1 || echo 0)" \
+  "$(resolve bash)" g_release
+
 check format prettier "$WEB" "$(resolve prettier)" g_prettier
 check format gofmt "$GO" "$(resolve gofumpt || resolve gofmt)" g_gofmt
 check format rustfmt "$RUST" "$(resolve cargo)" g_rustfmt
