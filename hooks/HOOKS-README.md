@@ -35,6 +35,31 @@ accident. Do not build a trust model on it (`rules/caveat.md`).
 It also over-matches — `rm -rf ./node_modules` trips the same rule as `rm -rf /` — which
 is why most patterns **ask** rather than deny.
 
+### Deferring to the session's permission mode
+
+An **ask** is a prompt, and a prompt ignores the session's permission mode: a session you
+started to run unattended stops on every push, every `publish`, every `.env`. `DEVIL_AUTONOMY=1`
+turns the ask into no decision at all, so the session's own permission mode decides what
+happens next. Set it where the session inherits its environment:
+
+```jsonc
+// ~/.claude/settings.json, or the host project's .claude/settings.json
+{
+  "env": { "DEVIL_AUTONOMY": "1" }
+}
+```
+
+Only the exact value `1` counts. Unset, `0`, `true`, `yes` and every typo keep the prompts,
+so a mistyped switch fails towards the safer behaviour rather than the faster one.
+
+What it costs: the ask is the *confirm the target is what you think it is* half of
+`rules/risk.md`, and with it gone an irreversible aimed at the wrong branch, the wrong
+registry or the wrong database runs with nobody in the loop. Give the go-ahead per session
+you have already decided about, not to a session that is still deciding.
+
+The **deny** patterns are not part of that deal: `rm -rf /`, a force-push to `main`, `mkfs`,
+a fork bomb keep refusing under the knob, and `deny()` is unreachable from it.
+
 ## 2. Notification
 
 A sound per event, if sounds are installed. **None ship with this repo** and the feature
