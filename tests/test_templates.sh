@@ -212,6 +212,10 @@ shape() {
   ticket)
     printf '%s\n' '^## Objective$' '^## Done when$' '^## Blocks$' '^## Seams$' '^## Notes$'
     ;;
+  wayfinder-map)
+    printf '%s\n' '^## Goal$' '^## Tickets$' '^## Fog$' '^## Log$' \
+      '^- \[ \] <name>:' 'blocked by:' 'graduates into a ticket'
+    ;;
   *) return 1 ;;
   esac
 }
@@ -230,6 +234,7 @@ drop() {
   case "$1" in
   adr) printf '^## Consequences$\n' ;;
   out-of-scope) printf '^## Why not$\n' ;;
+  wayfinder-map) printf '^## Fog$\n' ;;
   *) printf '^## Facts$\n' ;;
   esac
 }
@@ -291,6 +296,30 @@ for t in github local; do
   grep -q 'templates/ticket.md' "$ROOT/templates/tracker/$t.md" &&
     ok "templates/tracker/$t.md references templates/ticket.md" ||
     no "templates/tracker/$t.md must reference templates/ticket.md"
+done
+
+# --- j. wayfinder-map.md: the map is an index over four sections --------------
+# A map that loses Fog has nowhere to put an unknown, so the next session either
+# invents a ticket for something it cannot state or drops the unknown. It is also
+# the only template an adapter may not re-shape, so both adapters are checked for
+# naming it.
+MAPF="$ROOT/templates/wayfinder-map.md"
+has_shape "$MAPF" wayfinder-map && ok "templates/wayfinder-map.md carries its four sections" ||
+  no "templates/wayfinder-map.md is missing one of: $(shape wayfinder-map | tr '\n' ' ')"
+[ "$(wc -l <"$MAPF")" -le 40 ] && ok "templates/wayfinder-map.md is at most 40 lines" ||
+  no "templates/wayfinder-map.md exceeds 40 lines"
+grep -vE -- "$(drop wayfinder-map)" "$MAPF" >"$TMP/no-fog.md"
+has_shape "$TMP/no-fog.md" wayfinder-map && no "a map without '## Fog' must fail the check" ||
+  ok "a map with '## Fog' removed fails the check"
+for t in github local; do
+  a="$ROOT/templates/tracker/$t.md"
+  grep -q 'templates/wayfinder-map.md' "$a" &&
+    ok "templates/tracker/$t.md names templates/wayfinder-map.md" ||
+    no "templates/tracker/$t.md must name templates/wayfinder-map.md"
+  grep -v 'templates/wayfinder-map.md' "$a" >"$TMP/adapter-$t.md"
+  grep -q 'templates/wayfinder-map.md' "$TMP/adapter-$t.md" &&
+    no "an adapter without the map reference must fail the check" ||
+    ok "templates/tracker/$t.md loses the map reference in the negative control"
 done
 
 echo

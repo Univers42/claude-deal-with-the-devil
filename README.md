@@ -64,7 +64,8 @@ migration, paired with `/devil:migrate`), `/devil:compat-audit` (endpoint-by-end
 `/devil:handoff` (the portable document a fresh session, or another harness, continues from),
 `/devil:retro` (a session or a PR turned into checks to build and rules to propose),
 `/devil:to-tickets` (a spec cut into vertical-slice tickets with blocking edges, published
-to the host's tracker once you approve the list).
+to the host's tracker once you approve the list), `/devil:wayfinder` (an effort too big for one
+session, charted on the tracker as a map of decision tickets and worked one per session).
 
 ---
 
@@ -293,6 +294,7 @@ A command is one focused action, a workflow a gated multi-step procedure; both a
 | `retro` | beta | Turn what went wrong in a session or a pull request into checks to build and rules to propose. (you run it) | /devil:retro [<pr> \| <git range>] |
 | `setup` | beta | Seed into this repo what the plugin cannot ship: the always-on rules, the permissions, the CLAUDE.md block, the OpenCode wiring and the gitignore lines. (you run it) | /devil:setup [--check] [--apply] [--tracker github\|local] [--seed-mcp] [--skip <stage>] |
 | `to-tickets` | beta | Split a spec into vertical-slice tickets with blocking edges and publish them to the tracker. (you run it) | /devil:to-tickets <spec file or issue> |
+| `wayfinder` | beta | Chart a multi-session effort as a map of decision tickets on the tracker, then clear one per session. (you run it) | /devil:wayfinder [<map ticket \| the idea to chart>] |
 
 <!-- devil:index:commands:end -->
 
