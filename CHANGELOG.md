@@ -47,6 +47,22 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 - `bin/devil`: one dispatcher for every tool, on the agent's PATH when the plugin is
   loaded. `devil <tool>` runs `tools/<tool>.sh`, `devil orch <sub>` the OpenCode
   orchestration scripts; an unknown name exits 2.
+- `tools/setup.sh` (`devil setup`, and `/devil:setup`): seeds into a host repo the
+  three things a plugin cannot ship, in seven stages. `rules` copies the 12
+  always-on rules into `.claude/rules/devil/` and stamps `.version` with the plugin
+  version and a sha256 of the copy; `settings` merges `templates/settings.json` with
+  the host's own file winning key by key and the permission lists unioned;
+  `claude-md` keeps one block between `<!-- devil:start -->` and `<!-- devil:end -->`;
+  `opencode` adds the seeded rules glob and the kit's `skills/` to a host that has an
+  `opencode.json`, and writes `.claude/devil.env`; `tracker` picks the GitHub or the
+  local adapter and writes `.claude/devil/tracker.md`; `mcp` is opt-in behind
+  `--seed-mcp`; `gitignore` adds three lines, each at most once. No flag is a dry run,
+  `--check` exits 1 when a stage is not applied, `--apply` writes, and all three take
+  one code path so the check cannot disagree with the write.
+- `templates/claude-md-block.md` and `templates/tracker/{github,local}.md`: the block
+  setup writes into a host's `CLAUDE.md`, and the two adapters that turn the abstract
+  verbs `create-ticket`, `list-ready` and `close-ticket` into `gh issue` commands or
+  files under `.scratch/tickets/`.
 - selfcheck FAILs a root `workflows/` file, a tool cited by its old `.claude/tools/`
   path, and a backticked `devil <name>` citation that names no tool.
 - `skills/grill/` (`grill`): the frontier interview. It states what is decided and
@@ -100,7 +116,14 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   tool no longer silences a finding, as the case-insensitive match did.
 - The host config moved to `templates/settings.json` and `templates/mcp.json`: a plugin
   cannot ship host permissions, and a plugin `.mcp.json` would start the memory server
-  for every installer who never asked for it.
+  for every installer who never asked for it. The template's two stale allow entries,
+  `Bash(.claude/tools/*.sh:*)` and `Bash(./tools/*.sh:*)`, are now the single
+  `Bash(devil:*)` a host actually needs, and `Bash(devil orch:*)` is on the `ask` list
+  because an orch job can commit and push.
+- The SessionStart hook names the drift when a host's seeded rules predate the plugin:
+  `seeded devil rules are from <old>, plugin is <new>: run /devil:setup --apply`. A
+  plugin cannot ship rules, so the copy in the host would otherwise be enforced forever
+  without anyone saying it was old.
 - The tool cache is written under the host's `.claude/cache/` instead of beside the
   tools, so the plugin root holds versioned source and no writable state.
 - `tools/context.sh` reads descriptions through `fm_desc` and stops counting an asset

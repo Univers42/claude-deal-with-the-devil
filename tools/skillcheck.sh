@@ -47,10 +47,10 @@ DESC_HARD_MAX=1024
 DESC_SOFT_MAX=400
 SCENARIO_HEADINGS=('## Scenario' '## Baseline' '## With skill' '## Verdict')
 
-# A name a doc may cite before the slice that writes it lands (`/devil:setup` is
-# documented by README; slice M5 writes the command). Caveat: a promise the gate
-# cannot check, so delete the entry the day the file exists.
-PENDING="setup"
+# A name a doc may cite before the slice that writes it lands (`/devil:guide` is
+# cited by templates/claude-md-block.md; slice M2 writes the command). Caveat: a
+# promise the gate cannot check, so delete the entry the day the file exists.
+PENDING="guide"
 
 _has() { [[ " $1 " == *" $2 "* ]]; }
 

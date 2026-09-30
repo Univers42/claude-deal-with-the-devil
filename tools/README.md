@@ -25,6 +25,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `quality.sh` | "Is it the highest quality — strictly?" (the gate) | every strict linter / SAST / audit |
 | `watch.sh` | "Run this without ever hanging" — hard + idle timeouts around any command | wraps a command |
 | `selfcheck.sh` | "Does this config tell the truth about itself?" (the drift gate) | every doc + every frontmatter block |
+| `setup.sh` | "What is this host still missing from the kit?" — seeds rules, permissions, CLAUDE.md, OpenCode wiring, tracker, gitignore | the host's `.claude/`, `opencode.json`, `.gitignore` |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
 | `skillcheck.sh` | "Is this config MANAGED?" (lifecycle, description form, resolving references) | `skills/`, `commands/`, agents, rules, every doc |
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` (the `paths:` skills count as lazy) |
@@ -44,6 +45,8 @@ devil preflight                      # verify .env / secrets / toolchain before 
 devil watch --idle 60 -- make build  # run anything without hanging (exit 124 = killed)
 
 devil selfcheck                      # this config's own integrity (exit 1 = drift)
+devil setup --check                  # is this host fully seeded? (exit 1 = a stage differs)
+devil setup --apply                  # seed it: rules, permissions, CLAUDE.md, OpenCode, tracker
 devil release --check                # one version source: plugin.json == changelog heading
 devil release bump patch             # cut a release: edit, commit, tag, never push
 devil skillcheck                     # skill and command management (exit 1 = a finding)
@@ -64,11 +67,18 @@ which is the *success* case for a negative check. Every tool declares its own op
 
 - **Pure `bash` + coreutils.** `rg` / `jq` used when present; degrade gracefully when not.
 - **Library-first, dogfooded.** Shared logic lives in `lib/common.sh`; each tool is thin
-  glue over it — the rule they enforce (`rules/library-first.md`).
+  glue over it — the rule they enforce (`rules/library-first.md`). `setup.sh` keeps the
+  same shape: argument parsing and the write helpers above, one `stage_<name>` function
+  per stage in `lib/seed.sh`, and one code path so `--check` cannot disagree with
+  `--apply`.
 - **Cached + fingerprinted.** Output caches to the host's `.claude/cache/` (gitignored), keyed to
   `git HEAD` + dirty tree; a stale cache rebuilds itself.
 - **Best-effort, honest.** Symbol / dup / coverage extraction is regex-heuristic (marked
   `caveat`), not an AST. It points you at the file; you read the file.
+- **Setup never deletes.** `setup.sh` seeds what the plugin cannot ship into a host repo. It
+  overwrites only the files it wrote (inside the markers of a CLAUDE.md block, and by content
+  match elsewhere), and a `.gitignore` line is added at most once. A file you wrote is
+  reported, never removed.
 
 ## Extending
 

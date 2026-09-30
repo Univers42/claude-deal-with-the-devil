@@ -82,6 +82,14 @@ asset is namespaced by the plugin: `/devil:prompt`, `/devil:quality`, the agents
 `devil:builder`, `devil:reviewer`, and so on. The bindings in `hooks/hooks.json` start
 enforcing as soon as the plugin is enabled.
 
+Then seed the repo, because the plugin cannot carry the always-on rules, the
+permissions, or a `CLAUDE.md` fragment:
+
+```sh
+devil setup --check      # one row per stage, exit 1 if this repo is not seeded yet
+devil setup --apply      # write it; re-run after every plugin update
+```
+
 To work on the kit itself, load the checkout for one session without installing it:
 
 ```sh
@@ -91,9 +99,10 @@ claude --plugin-dir .
 A plugin cannot carry `rules/` (there is no rules component), the permissions and other
 keys of `settings.json`, or a `CLAUDE.md` fragment. It can carry MCP servers, but this
 kit keeps its four in `templates/` as well: a server the plugin ships is on for every
-host, and the `supermemory` opt-out lives in the host's settings. `/devil:setup`
-(coming) seeds `rules/` and `templates/` into a host's `.claude/`; until then copy them
-by hand (`templates/README.md`).
+host, and the `supermemory` opt-out lives in the host's settings. `devil setup` seeds
+`rules/`, `templates/settings.json` and the rest into a host's `.claude/`
+(`templates/README.md` names every file); `--seed-mcp` adds the MCP servers, opt-in,
+because a server is a network call.
 
 Check the plugin is well-formed:
 

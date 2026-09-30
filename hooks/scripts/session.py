@@ -2,11 +2,57 @@
 survive compaction.
 """
 
+import json
 import sys
+from pathlib import Path
 
 from kit import PLUGIN_ROOT, host_root
 from process import run
 from respond import context
+
+# Where setup.sh stamps the version of the rules it seeded, and where the
+# plugin's own version lives (A12: one version source).
+STAMP = ".claude/rules/devil/.version"
+PLUGIN_JSON = ".claude-plugin/plugin.json"
+
+
+def _stamp_version():
+    """The version the host's seeded rules were written by, or "" if unseeded."""
+    try:
+        lines = (Path(host_root()) / STAMP).read_text().splitlines()
+    except OSError:
+        return ""
+    return next((ln[8:].strip() for ln in lines if ln.startswith("version=")), "")
+
+
+def _plugin_version():
+    """The plugin's version of record, or "" when the manifest is unreadable."""
+    try:
+        manifest = json.loads((PLUGIN_ROOT / PLUGIN_JSON).read_text())
+        return str(manifest["version"])
+    except Exception:
+        return ""
+
+
+def rules_drift():
+    """One line when the seeded rules predate the plugin, else "".
+
+    A plugin cannot ship `.claude/rules/*.md`, so the host's rules are a copy
+    that a plugin update leaves behind. Without this the agent enforces the rules
+    of whichever version seeded them, and never learns the kit moved on.
+
+    Caveat: the stamp's version is read as a string, never resolved, so a host
+    on a fork with its own `.version`, or one seeded in a layout whose stamp is
+    not at this path, is compared against this plugin's manifest and reported as
+    drift, or read as unseeded and reported as nothing. It is a warning, never a
+    gate: the direction it is wrong in is "no warning".
+    """
+    old, new = _stamp_version(), _plugin_version()
+    if not old or not new or old == new:
+        return ""
+    return (
+        f"seeded devil rules are from {old}, plugin is {new}: run /devil:setup --apply"
+    )
 
 
 def session_start(data):
@@ -17,6 +63,7 @@ def session_start(data):
     go stale over a memory that can).
     """
     parts = []
+    preamble = ""
     digest = PLUGIN_ROOT / "tools" / "digest.sh"
     if digest.is_file():
         # The digest describes the host project, so it runs there.
@@ -25,13 +72,18 @@ def session_start(data):
         # its last sections (untested, duplication) silently; `devil digest`
         # prints the whole of it.
         if rc == 0 and out:
+            preamble = (
+                f"Project briefing from `{digest}` (cached, fingerprinted to "
+                "git state; no need to re-derive it):\n\n"
+            )
             parts.append(out[:4000])
+    drift = rules_drift()
+    # The drift line rides along with the briefing, and is delivered on its own
+    # when there is no briefing: re-seeding the rules is the point of this hook.
+    if drift:
+        parts.append(drift)
     if parts:
-        context(
-            "SessionStart",
-            f"Project briefing from `{digest}` (cached, fingerprinted to "
-            "git state; no need to re-derive it):\n\n" + "\n\n".join(parts),
-        )
+        context("SessionStart", preamble + "\n\n".join(parts))
     sys.exit(0)
 
 
