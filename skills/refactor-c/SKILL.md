@@ -1,7 +1,16 @@
 ---
+name: refactor-c
+description: >
+  C norms: file and function shape, manual memory with a named owner for every
+  allocation, header hygiene and the warning-free build. Use when editing C source or
+  header files.
 paths:
   - "**/*.c"
   - "**/*.h"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # C Refactoring

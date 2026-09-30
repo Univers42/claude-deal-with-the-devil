@@ -1,6 +1,14 @@
 ---
+name: refactor-go
+description: >
+  Go norms: idioms that keep a package boring, hexagonal port boundaries, error values
+  over panics and goroutine leaks. Use when editing Go files.
 paths:
   - "**/*.go"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # Go Refactoring

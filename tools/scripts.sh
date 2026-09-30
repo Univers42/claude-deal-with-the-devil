@@ -18,7 +18,7 @@
 #   2. Invokes with an EXPLICIT interpreter from the registry, never by shebang
 #      or executable bit — which is why the two defects above stop mattering.
 #   3. Refuses any name not in scripts/REGISTRY.md. An unvetted script is not a
-#      tool; the registry is the review record (`rules/script-library.md`).
+#      tool; the registry is the review record (the `script-library` skill).
 #
 # Everything runs under watch.sh, so nothing from upstream can hang a session.
 #

@@ -95,6 +95,28 @@ if run "$TMP/skilltools"; then no "'tools:' on a skill should fail"; else
   ok "'tools:' on a skill fails (the field is allowed-tools:)"
 fi
 
+# --- 4b. a path-scoped rule is a skill: Cursor fields fail there too --------
+# The 7 path-scoped rules moved to skills/<n>/SKILL.md with paths:, so a
+# `globs:` on a skill is exactly the dead field it was on a rule.
+fixture "$TMP/skillcursor"
+printf -- '---\nname: demo\ndescription: d\nglobs: ["**/*.go"]\nalwaysApply: true\npaths:\n  - "**/*.go"\nmetadata:\n  stage: rule\n---\n\n# Demo\n' \
+  >"$TMP/skillcursor/skills/demo/SKILL.md"
+if fails_on "$TMP/skillcursor" skill demo; then
+  ok "globs:/alwaysApply: on a paths: skill fails as it did on a rule"
+else
+  no "globs:/alwaysApply: on a skill should fail with a skill row"
+fi
+
+# --- 4c. a skill without paths: is NOT held to the rule bar ----------------
+# The negative control for 4b: only Cursor keys are dead, absence of paths: is
+# normal for a skill that fires on a trigger phrase.
+fixture "$TMP/nopaths"
+printf -- '---\nname: demo\ndescription: a demo skill\n---\n\n# Demo\n' \
+  >"$TMP/nopaths/skills/demo/SKILL.md"
+if run "$TMP/nopaths"; then ok "a skill with no paths: is not a rule-bar failure"; else
+  no "a skill with no paths: should pass: $(bash "$TMP/nopaths/tools/selfcheck.sh" --summary 2>&1 | grep FAIL)"
+fi
+
 # --- 5. a skill whose name != its directory fails ---------------------------
 fixture "$TMP/mismatch"
 printf -- '---\nname: wrong-name\ndescription: d\n---\n\n# Demo\n' \
@@ -198,6 +220,29 @@ if bash "$ROOT/tools/selfcheck.sh" --strict --summary >/dev/null 2>&1; then
 else
   no "this repo's own payload has drift"
   bash "$ROOT/tools/selfcheck.sh" --strict --summary 2>&1 | head -15
+fi
+
+# --- 15b. the 7 path-scoped rules ship as paths: skills ---------------------
+# Each is `metadata.stage: rule` with user-invocable: false and a `paths:` list,
+# and none of the 7 names survives as rules/<name>.md.
+n=0
+for s in refactor-c refactor-go refactor-rust refactor-typescript refactor-shell \
+  api-convention script-library; do
+  f="$ROOT/skills/$s/SKILL.md"
+  if [ ! -f "$f" ]; then
+    no "skills/$s/SKILL.md is missing"
+    continue
+  fi
+  n=$((n + 1))
+  if ! grep -q '^paths:' "$f"; then no "$s skill has no paths:"; fi
+  if ! grep -q '^user-invocable: false$' "$f"; then no "$s skill is not user-invocable: false"; fi
+  if ! grep -q '^  stage: rule$' "$f"; then no "$s skill is not tagged stage: rule"; fi
+  [ -e "$ROOT/rules/$s.md" ] && no "rules/$s.md still exists alongside the skill"
+done
+if [ "$n" = 7 ]; then ok "all 7 path-scoped rules are paths: skills with stage: rule"; fi
+hits="$(cd "$ROOT" && git grep -n 'rules/\(refactor-\(c\|go\|rust\|typescript\|shell\)\|api-convention\|script-library\)\.md' -- . ':!CHANGELOG.md')"
+if [ -z "$hits" ]; then ok "no doc points at the 7 old rules/*.md paths"; else
+  no "docs still cite the old rule paths: $hits"
 fi
 
 # --- 16. the two layout greps of the plan's section D are empty --------------

@@ -34,7 +34,7 @@ them when you reach that step, not before.
 - **Server state is not UI state.** Cache, loading and error belong to a data layer, not
   to twelve `useState` calls.
 - **Derive during render; do not sync with an effect.** Most `useEffect` that sets state
-  is a computed value in disguise (`rules/refactor-typescript.md`).
+  is a computed value in disguise (the `refactor-typescript` skill).
 - **Presentational components take data and callbacks**, and fetch nothing. They are the
   ones that stay testable.
 

@@ -1,10 +1,19 @@
 ---
+name: script-library
+description: >
+  `library-first` applied to tooling: check the project's own scripts, then `devil <tool>`,
+  then the vetted external registry, before writing a shell or Python utility. Use when
+  editing shell or Python scripts, or a Makefile.
 paths:
   - "**/*.sh"
   - "**/*.bash"
   - "**/*.py"
   - "**/Makefile"
   - "**/makefile"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # Script library — check the registry before you write a script

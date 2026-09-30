@@ -1,6 +1,14 @@
 ---
+name: refactor-rust
+description: >
+  Rust norms: borrowing over cloning, newtypes over primitive obsession, module layout
+  that mirrors the domain and no panics on a public path. Use when editing Rust files.
 paths:
   - "**/*.rs"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # Rust Refactoring
@@ -18,7 +26,7 @@ paths:
 - Newtypes over primitive obsession: `struct UserId(u64)` makes the wrong argument a
   compile error.
 - Modules mirror the domain, not the layer. `pub(crate)` by default; `pub` is a
-  contract (`rules/api-convention.md`).
+  contract (the `api-convention` skill).
 
 ## Errors are types, not strings
 

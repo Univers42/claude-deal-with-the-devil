@@ -109,7 +109,7 @@ Reach for the smallest one that fits.
 
 | Layer | Where | What it is | How it runs |
 | --- | --- | --- | --- |
-| **Rules** | `rules/*.md` | Standing constraints, the craft discipline | automatic, by scope |
+| **Rules** | `rules/*.md` | Standing constraints, the craft discipline | automatic, every session |
 | **Commands** | `commands/*.md` | One focused action | you type `/devil:<name> <args>` |
 | **Skills** | `skills/<name>/SKILL.md` | A capability that triggers on intent | a trigger phrase, or by name |
 | **Workflows** | `commands/*.md` tagged `metadata.kind: workflow` | Multi-step playbooks | `/devil:<name> <args>` |
@@ -220,6 +220,10 @@ fires, so a wide roster is cheap — and `/skill-doctor` prunes what goes unused
 | `commit-craft` | Atomic commits, Conventional Commits, never co-authored |
 | `doc-sync` | Find the docs a change just made false, and fix those |
 
+Seven more carry `paths:` and fire only on a matching file, so they are listed under
+[Rules](#rules) rather than here: `refactor-c`, `refactor-go`, `refactor-rust`,
+`refactor-typescript`, `refactor-shell`, `api-convention`, `script-library`.
+
 ---
 
 ## Rules
@@ -234,10 +238,11 @@ the same for words) · **`refactor-common`** (the shared craft discipline) ·
 **`caveat`** (name what your heuristic gets wrong) · **`memory`** (remember the
 expensive facts, nothing else).
 
-Loaded only when you touch matching files, so they cost nothing otherwise:
+Loaded only when you touch matching files, so they cost nothing otherwise. They are
+`paths:` skills tagged `metadata.stage: rule`, because a plugin cannot ship `rules/`:
 `refactor-c` · `refactor-go` · `refactor-rust` · `refactor-typescript` ·
-`refactor-shell` · `api-convention` · `script-library`.
-`/devil:refactor <tech>` reads `rules/refactor-<tech>.md` by exact filename.
+`refactor-shell` · `api-convention` · `script-library`. `/devil:refactor <tech>`
+invokes the `refactor-<tech>` skill.
 
 ---
 
@@ -313,11 +318,12 @@ These hold for everything here, even one-off tasks:
 ├── AGENTS.md          multi-agent discipline
 ├── .claude-plugin/    plugin.json and marketplace.json
 ├── agents/*.md        specialist personas (builder, forger, devil, reviewer, …)
-├── rules/*.md         always-on and path-scoped constraints
+├── rules/*.md         always-on constraints (12)
 ├── commands/*.md      actions and multi-phase workflows, all /devil:<name>
 │                      (kind: command → /devil:prompt, /devil:quality, …;
 │                       kind: workflow → /devil:feature, /devil:harden, /devil:deal, …)
-├── skills/<n>/SKILL.md  capabilities that trigger on intent (debug, frontend, …)
+├── skills/<n>/SKILL.md  capabilities that trigger on intent (debug, frontend, …);
+│                      the 7 path-scoped constraints ship here too (stage: rule)
 ├── bin/devil          the dispatcher: `devil <tool>`, `devil orch <sub>`
 ├── tools/*.sh         the scripts (digest, quality, selfcheck, …) + lib/common.sh
 ├── tools/orch/        headless OpenCode jobs and their gate (`devil orch …`)
@@ -352,9 +358,12 @@ When you add something, match the existing examples: `agents/devil.md`,
 numbers, and skip filler words like "simply" or "just".
 
 - **Rules** — a universal rule has **no frontmatter** (that is the signal for
-  always-load). A path-scoped rule has `paths:` and nothing else. `globs:` and
-  `alwaysApply:` are Cursor fields — Claude Code ignores them, and the rule then loads
-  every session anyway.
+  always-load) and lives in `rules/`. A constraint scoped to file types is a
+  `paths:` skill under `skills/<name>/` tagged `metadata.stage: rule` with
+  `user-invocable: false`, because a plugin cannot ship `rules/` and a skill with
+  `paths:` lazy-loads on exactly the same mechanism. `globs:` and `alwaysApply:`
+  are Cursor fields: Claude Code ignores them, and the file then loads every
+  session anyway.
 - **Commands** — frontmatter with one `description:` ending in `Usage: /devil:<name> <args>`
   and a block map `metadata:` holding `kind: command` (written as two lines; the
   selfcheck reader skips a flow map). The body opens with `<Label>: $ARGUMENTS` and uses

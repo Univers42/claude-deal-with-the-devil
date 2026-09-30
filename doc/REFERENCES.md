@@ -36,6 +36,20 @@ Its numbers are dated and Claude Code moves. Re-check against
 
 ---
 
+## Claude Code docs
+
+<https://code.claude.com/docs/en/plugins/components.md>,
+`plugins/manifest-reference.md`, `skills.md`, `claude-directory.md`, read 2026-09-30.
+
+| Fact | Where it came from | What it fixed here |
+|---|---|---|
+| A plugin ships commands, agents, skills, hooks and MCP, but **not** `.claude/rules/*.md`, `settings.json` permissions or a `CLAUDE.md` fragment | `plugins/components.md` | The 7 path-scoped rules moved to `paths:` skills tagged `stage: rule`; the always-on rules are seeded into a host by `/devil:setup` |
+| A skill carries `paths:` and then loads only when matching files are touched, the same mechanism rules use | `skills.md` | The lazy-loading guarantee survived the move; `tools/context.sh` counts those bodies as lazy |
+| `SKILL.md` frontmatter takes `paths:`, `user-invocable:` and a `metadata:` map; unknown keys parse and do nothing | `skills.md` | `tools/selfcheck.sh` fails a skill carrying Cursor's `globs:`/`alwaysApply:` |
+| Plugin skills are namespaced `plugin:skill`; a `skills` array in the manifest only selects a subset | `plugins/manifest-reference.md` | Assets are cited as `/devil:<name>` throughout |
+
+---
+
 ## `Univers42/scripts`
 
 <https://github.com/Univers42/scripts> — pinned at

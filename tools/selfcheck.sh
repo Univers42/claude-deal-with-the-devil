@@ -9,12 +9,12 @@
 # Four classes of drift, each one a real bug that shipped here:
 #   1. DANGLING   a doc names agents/x.md, rules/x.md, tools/x.sh ... that is absent,
 #      or cites `devil <name>` with no tools/<name>.sh behind it. This is the one
-#      that bit us: /devil:refactor <tech> reads rules/refactor-<tech>.md by exact
-#      filename, so a documented-but-missing rule fails at use time.
+#      that bit us: /devil:refactor <tech> reads refactor-<tech> by exact
+#      name, so a documented-but-missing rule fails at use time.
 #   2. FRONTMATTER  a field Claude Code does not read. Skills took `tools:`
-#      (the field is `allowed-tools:`); rules took Cursor's `globs:`/`alwaysApply:`
-#      (the field is `paths:`, and its absence means "load every session").
-#      Both parse fine and both silently do nothing.
+#      (the field is `allowed-tools:`); rules and path-scoped skills took Cursor's
+#      `globs:`/`alwaysApply:` (the field is `paths:`, and its absence means
+#      "load every session"). Both parse fine and both silently do nothing.
 #   3. ORPHAN     an asset on disk that no doc mentions — invisible, so unused.
 #   4. LAYOUT     a shape the plugin no longer has: a root workflows/*.md, or a doc
 #      citing the old host path of the tools instead of `devil <name>`.
@@ -135,9 +135,16 @@ check_skills() {
     if fm_block "$d/SKILL.md" | grep -q '^tools:'; then
       row FAIL skill "$name" "uses 'tools:' — not a skill field; use 'allowed-tools:'"
     fi
+    # A path-scoped rule is a skill carrying paths:, so a Cursor field that
+    # silently does nothing is just as dead here as it was in rules/.
+    if fm_block "$d/SKILL.md" | grep -qE '^(globs|alwaysApply):'; then
+      row FAIL skill "$name" "Cursor field (globs/alwaysApply); Claude Code reads 'paths:'"
+    fi
   done
 }
 
+# Only rules are held to "frontmatter but no paths:": a skill with no paths: is
+# an ordinary on-invocation skill, not text that leaks into every session.
 check_rules() {
   local f
   for f in rules/*.md; do

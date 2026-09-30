@@ -39,6 +39,14 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Changed
 
+- The 7 path-scoped rules (`refactor-c`, `refactor-go`, `refactor-rust`,
+  `refactor-typescript`, `refactor-shell`, `api-convention`, `script-library`) are
+  `skills/<name>/SKILL.md` now, tagged `metadata.stage: rule` with `paths:` on the same
+  globs and `user-invocable: false`. A plugin cannot ship `.claude/rules/*.md`, and a
+  skill carrying `paths:` loads on exactly the same lazy mechanism, so they still cost
+  nothing until a matching file is touched. `rules/` keeps the 12 always-on
+  constraints, and `tools/selfcheck.sh` fails a `globs:`/`alwaysApply:` on a skill just
+  as it did on a rule.
 - The hook handler moved under `hooks/` and was split into per-phase modules in
   `hooks/scripts/` to stay under the 300-line file limit. Behaviour is identical on the
   payloads it was replayed against; details in

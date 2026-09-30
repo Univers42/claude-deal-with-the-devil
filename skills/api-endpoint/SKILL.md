@@ -8,7 +8,7 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 
 # API Endpoint
 
-DO NOT add a route before reading the nearest existing handler and `.claude/rules/api-convention.md`.
+DO NOT add a route before reading the nearest existing handler and the `api-convention` skill.
 
 ## 1. Locate
 
