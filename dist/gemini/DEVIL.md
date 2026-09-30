@@ -42,8 +42,8 @@ matched **case-sensitively** and reported as INFO, never as a failure. A lowerca
 `ponytail: <ceiling>` is a minimalism note from a different tool, and a lowercase
 `caveat:` is the same kind of stray note: neither is a marker and neither counts, so
 neither can silence an unrelated finding. The old match was `grep -qi 'ponytail:'`,
-which is how such a note used to hide one. The retired skill is
-`skills/ponytail/SKILL.md`, a tombstone pointing here.
+which is how such a note used to hide one. The `ponytail` skill was retired in 1.0.0
+and removed in 1.1.0; `caveat` replaces it.
 
 ## It travels with the output
 

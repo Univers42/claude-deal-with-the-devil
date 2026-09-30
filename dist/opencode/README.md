@@ -155,4 +155,4 @@ actually shown.
 
 ---
 
-Generated from: 11 agents, 19 commands, 23 skills, 12 always-on rules, 7 path-scoped rule skills.
+Generated from: 11 agents, 19 commands, 22 skills, 12 always-on rules, 7 path-scoped rule skills.

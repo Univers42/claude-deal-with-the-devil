@@ -50,6 +50,23 @@ else
   no "restore must put the tree back in sync"
 fi
 
+# A file the sources no longer produce is drift, and a write must delete it:
+# a removed skill once outlived its source in dist/.
+STALE="$ROOT/dist/opencode/stale-by-test.md"
+echo stale >"$STALE"
+if (cd "$ROOT" && bash tools/export.sh --check opencode >/dev/null 2>&1); then
+  no "a file with no source must fail --check"
+else
+  ok "a file with no source fails --check"
+fi
+(cd "$ROOT" && bash tools/export.sh opencode >/dev/null 2>&1)
+if [ ! -e "$STALE" ]; then
+  ok "a write removes a file with no source"
+else
+  rm -f "$STALE"
+  no "a write must remove a file with no source"
+fi
+
 # An unknown harness is exit 2, never a silent pass.
 (cd "$ROOT" && bash tools/export.sh --check nosuch >/dev/null 2>&1)
 [ $? -eq 2 ] && ok "unknown harness exits 2" || no "unknown harness must exit 2"

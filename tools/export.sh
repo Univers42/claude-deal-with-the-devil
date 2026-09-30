@@ -113,8 +113,13 @@ if [ "$CHECK" = 1 ]; then
   exit 1
 fi
 
-mkdir -p "$DEST" || exit 2
-XOUT="$DEST"
+# The write generates into a fresh tree and swaps it in, so an asset deleted from
+# the sources leaves no stale copy behind (a removed skill once survived in dist/).
+TMP="$(mktemp -d)" || exit 2
+trap 'rm -rf "$TMP"' EXIT
+XOUT="$TMP/$HARNESS"
+mkdir -p "$XOUT" || exit 2
 generate || exit 2
+rm -rf "$DEST" && mkdir -p "$(dirname "$DEST")" && mv "$XOUT" "$DEST" || exit 2
 n="$(find "$DEST" -type f | wc -l | tr -d ' ')"
 echo "wrote dist/$HARNESS ($n files) from the kit's Claude-format sources"

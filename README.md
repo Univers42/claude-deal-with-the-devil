@@ -321,7 +321,6 @@ and points at what replaced it. Nothing here is invocable.
 
 | Retired | In | Use instead |
 | --- | --- | --- |
-| `ponytail` | 1.0.0 | `caveat` |
 
 <!-- devil:index:retired:end -->
 

@@ -128,7 +128,7 @@ fi
 # rules/caveat.md: a generated file that strips the word would be a second version
 # of the rule, and a second version of a rule is what this kit exists to prevent.
 extra='skills/caveat/SKILL.md|CHANGELOG.md|README.md|dist/copilot/copilot-instructions.md'
-allow="tools/caveat.sh|tests/test_caveat.sh|rules/caveat.md|skills/ponytail/SKILL.md"
+allow="tools/caveat.sh|tests/test_caveat.sh|rules/caveat.md"
 # dist/ is skipped on purpose: a generated harness copy inherits the word from
 # the source it was generated from, that source is checked here, and
 # `tools/export.sh --check` is what proves the copy still matches it. Grepping

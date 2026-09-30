@@ -11,6 +11,16 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+### Removed
+
+- The `ponytail` tombstone skill, retired in 1.0.0 and kept one minor as announced. Use
+  `caveat`; `devil caveat` still accepts the legacy `Ponytail:` marker.
+
+### Fixed
+
+- `devil export <harness>` rebuilds `dist/<harness>/` from scratch, so an asset deleted from
+  the sources no longer leaves a stale copy behind.
+
 ## [1.0.0] - 2026-09-30
 
 ### Added
