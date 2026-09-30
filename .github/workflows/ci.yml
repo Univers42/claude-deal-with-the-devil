@@ -21,6 +21,8 @@ jobs:
           find . -name '*.sh' -not -path './cache/*' \
                  -not -path './claude-code-best-practice/*' \
             -print0 | xargs -0 shellcheck -e SC1091
+          # Executables without a .sh suffix, which the find above cannot see.
+          shellcheck -e SC1091 bin/devil tools/orch/timed
 
       - name: shfmt
         if: always()
@@ -31,6 +33,7 @@ jobs:
           find . -name '*.sh' -not -path './cache/*' \
                  -not -path './claude-code-best-practice/*' \
             -exec /tmp/shfmt -d -i 2 {} +
+          /tmp/shfmt -d -i 2 bin/devil tools/orch/timed
 
       - name: markdownlint
         if: always()

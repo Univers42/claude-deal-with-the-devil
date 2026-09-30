@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# devil: run a kit tool by name, so docs and hosts cite `devil digest` instead
+# of a path that differs between a checkout, a submodule and a plugin cache.
+#
+# Usage: devil                    list every tool and orch subcommand
+#        devil <tool> [args]      exec tools/<tool>.sh
+#        devil orch <sub> [args]  exec tools/orch/<sub>.sh, else tools/orch/<sub>
+# Exit: the tool's own code; 2 for an unknown or malformed name.
+set -uo pipefail
+
+# The kit is wherever this file really lives. It is called through a PATH
+# entry or a symlink from the host's cwd, which the tool must keep: digest
+# describes the host, so neither side may be taken from the other.
+kit_root() {
+  local src="${BASH_SOURCE[0]}" dir
+  while [ -L "$src" ]; do
+    dir="$(cd -P "$(dirname "$src")" && pwd)"
+    src="$(readlink "$src")"
+    case "$src" in /*) ;; *) src="$dir/$src" ;; esac
+  done
+  cd -P "$(dirname "$src")/.." && pwd
+}
+
+# Executables directly under <dir>, one name per line, `.sh` dropped.
+names_in() {
+  local f
+  for f in "$1"/*; do
+    [ -f "$f" ] && [ -x "$f" ] && basename "$f" .sh
+  done
+}
+
+list() {
+  echo "usage: devil <tool> [args] | devil orch <sub> [args]"
+  names_in "$KIT/tools" | sed 's/^/  /'
+  names_in "$KIT/tools/orch" | sed 's/^/  orch /'
+}
+
+# A name is a bare word: `devil ../x` must not reach outside tools/.
+die_unknown() {
+  echo "devil: unknown $1 '$2' (run 'devil' for the list)" >&2
+  exit 2
+}
+
+KIT="$(kit_root)"
+[ $# -gt 0 ] || {
+  list
+  exit 0
+}
+case "$1" in
+-h | --help)
+  list
+  exit 0
+  ;;
+orch)
+  shift
+  [[ "${1:-}" =~ ^[A-Za-z0-9_-]+$ ]] || die_unknown "orch subcommand" "${1:-}"
+  for f in "$KIT/tools/orch/$1.sh" "$KIT/tools/orch/$1"; do
+    [ -f "$f" ] && [ -x "$f" ] && shift && exec "$f" "$@"
+  done
+  die_unknown "orch subcommand" "$1"
+  ;;
+esac
+[[ "$1" =~ ^[A-Za-z0-9_-]+$ ]] && [ -x "$KIT/tools/$1.sh" ] || die_unknown tool "$1"
+tool="$KIT/tools/$1.sh"
+shift
+exec "$tool" "$@"
