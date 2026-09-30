@@ -126,6 +126,9 @@ stage_rules() {
 # to read top-down gets it back alphabetised (order means nothing to Claude Code).
 # Every other key is merged with jq's `*`, a deep merge: where both sides set the
 # same nested key the host wins and the template's siblings stay.
+# A host whose own env sets DEVIL_AUTONOMY=1 keeps its own `ask` list: an ask rule
+# prompts even in bypass mode, so seeding the template's list would undo the
+# unattended-session choice the hooks already honour (hooks/HOOKS-README.md).
 # A host with no settings.json is merged against an empty object rather than
 # copied, because `unique` sorts: a plain copy would keep the template's own
 # order, so the next apply re-sorted the file it had just written and two applies
@@ -135,7 +138,9 @@ MERGE_PERMS='
 def u($a; $b): [(($a // [])[]), (($b // [])[])] | unique;
 .[0] as $t | .[1] as $h | $t * $h
 | (if .permissions? then .permissions.allow = u($t.permissions.allow; $h.permissions.allow) else . end)
-| (if .permissions? then .permissions.ask = u($t.permissions.ask; $h.permissions.ask) else . end)
+| (if .permissions? then .permissions.ask =
+    (if $h.env.DEVIL_AUTONOMY? == "1" then ($h.permissions.ask // []) | unique
+     else u($t.permissions.ask; $h.permissions.ask) end) else . end)
 | (if .permissions? then .permissions.deny = u($t.permissions.deny; $h.permissions.deny) else . end)'
 
 stage_settings() {

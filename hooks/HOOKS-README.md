@@ -52,6 +52,10 @@ happens next. Set it where the session inherits its environment:
 Only the exact value `1` counts. Unset, `0`, `true`, `yes` and every typo keep the prompts,
 so a mistyped switch fails towards the safer behaviour rather than the faster one.
 
+When the host's own `.claude/settings.json` sets it, `devil setup` stops adding the template's
+`permissions.ask` list there too: an ask rule prompts in bypass mode just like the hook does.
+The host's own ask entries are kept.
+
 What it costs: the ask is the *confirm the target is what you think it is* half of
 `rules/risk.md`, and with it gone an irreversible aimed at the wrong branch, the wrong
 registry or the wrong database runs with nobody in the loop. Give the go-ahead per session

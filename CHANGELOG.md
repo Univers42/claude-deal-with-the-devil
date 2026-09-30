@@ -11,6 +11,11 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+### Changed
+
+- `devil setup` leaves `permissions.ask` to the host when the host's settings set
+  `DEVIL_AUTONOMY=1`, so seeding a host that runs unattended no longer brings the prompts back.
+
 ## [1.1.0] - 2026-09-30
 
 ### Removed
