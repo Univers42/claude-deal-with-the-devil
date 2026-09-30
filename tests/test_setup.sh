@@ -225,13 +225,17 @@ else
   no "restoring a removed block duplicated it or ate the host's prose"
 fi
 # --- 15. the opencode wiring keeps the host's own keys ----------------------
+# The shape asserted here is the per-file link layout, not the V1
+# skills.paths + rules glob: OpenCode 2.x reads `skills` as an array and
+# resolves nothing in `instructions`. tests/test_setup_opencode.sh carries the
+# cases for that merge and for the links; this row only proves the shared
+# fixture's host keys survive it.
 O="$(host opencode)"
 run "$O" --apply
-if jq -e --arg k "$ROOT/skills" '.skills.paths | index($k)' "$O/opencode.json" >/dev/null &&
-  jq -e '.instructions | index("./.claude/rules/devil/*.md")' "$O/opencode.json" >/dev/null; then
-  ok "opencode.json gains skills.paths and the seeded rules glob"
+if jq -e --arg k "$ROOT/skills" '.skills | index($k)' "$O/opencode.json" >/dev/null; then
+  ok "opencode.json gains the kit's skills path in the array V2 reads"
 else
-  no "the opencode stage did not add skills.paths or the rules glob"
+  no "the opencode stage did not add the kit's skills path"
 fi
 if [ "$(jq -r .model "$O/opencode.json")" = host/model ] &&
   jq -e '.instructions | index("./docs/*.md")' "$O/opencode.json" >/dev/null &&
@@ -239,6 +243,12 @@ if [ "$(jq -r .model "$O/opencode.json")" = host/model ] &&
   ok "opencode.json keeps the host's model, its own instruction and its permissions"
 else
   no "the opencode merge lost a key the host already had"
+fi
+if [ -L "$O/.opencode/agents/reviewer.md" ] && [ -L "$O/.opencode/plugins/devil.js" ] &&
+  [ ! -e "$O/AGENTS.md" ]; then
+  ok ".opencode/ holds one link per generated file and no AGENTS.md is written"
+else
+  no "the per-file links under .opencode/ are missing, or an AGENTS.md was created"
 fi
 if grep -q "^DEVIL_ROOT=$ROOT$" "$O/.claude/devil.env" && grep -q "^PATH=$ROOT/bin:" "$O/.claude/devil.env"; then
   ok ".claude/devil.env carries DEVIL_ROOT and the kit's bin on PATH"
