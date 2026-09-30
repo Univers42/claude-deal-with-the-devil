@@ -22,7 +22,7 @@ for a in "$@"; do
   case "$a" in
   --check) CHECK=1 ;;
   -h | --help)
-    echo "usage: export.sh [--check] <harness>   (harnesses: opencode)"
+    echo "usage: export.sh [--check] <harness>   (harnesses: opencode, codex)"
     exit 0
     ;;
   -*)
@@ -51,8 +51,18 @@ opencode)
     xoc_readme
   }
   ;;
+codex)
+  # shellcheck source=lib/export-codex.sh
+  . "$DIR/lib/export-codex.sh"
+  generate() {
+    cx_manifest
+    cx_hooks
+    cx_agents_md
+    cx_readme
+  }
+  ;;
 *)
-  echo "export.sh: unknown harness '$HARNESS' (known: opencode)" >&2
+  echo "export.sh: unknown harness '$HARNESS' (known: opencode, codex)" >&2
   exit 2
   ;;
 esac

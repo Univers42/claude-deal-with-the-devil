@@ -51,6 +51,7 @@ jobs:
         run: |
           for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
                    hooks/hooks.json hooks/config/hooks-config.json \
+                   dist/codex/plugin.json dist/codex/hooks/hooks.json \
                    templates/settings.json templates/mcp.json \
                    settings.local.json.example; do
             python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" \
@@ -83,6 +84,8 @@ jobs:
       # fails when it drifts from the Claude sources.
       - name: tools/export.sh --check opencode
         run: bash tools/export.sh --check opencode
+      - name: tools/export.sh --check codex
+        run: bash tools/export.sh --check codex
 
   # The root must load as a Claude Code plugin. Validating plugin.json also reads
   # hooks/hooks.json; validating the root would pick marketplace.json and skip it.

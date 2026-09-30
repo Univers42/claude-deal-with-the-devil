@@ -166,6 +166,13 @@ check config export \
   "$([ -f "$DIR/export.sh" ] && [ -d "$ROOT/dist/opencode" ] && echo 1 || echo 0)" \
   "$(resolve bash)" g_export
 
+# Same claim about the same one generator, for the Codex dialect. A generated
+# harness copy nobody gates is a hand-kept copy with extra steps.
+g_export_codex() { "$1" "$DIR/export.sh" --check codex >/dev/null 2>&1; }
+check config export_codex \
+  "$([ -f "$DIR/export.sh" ] && [ -d "$ROOT/dist/codex" ] && echo 1 || echo 0)" \
+  "$(resolve bash)" g_export_codex
+
 check format prettier "$WEB" "$(resolve prettier)" g_prettier
 check format gofmt "$GO" "$(resolve gofumpt || resolve gofmt)" g_gofmt
 check format rustfmt "$RUST" "$(resolve cargo)" g_rustfmt

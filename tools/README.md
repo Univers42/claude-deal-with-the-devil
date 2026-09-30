@@ -57,6 +57,8 @@ devil index --write                  # regenerate those tables from the frontmat
 devil index --router                 # the same tables, for /devil:guide
 devil export opencode                # regenerate dist/opencode from the Claude sources
 devil export --check opencode        # exit 1 if dist/opencode drifted (CI runs this)
+devil export codex                   # regenerate dist/codex from the Claude sources
+devil export --check codex           # exit 1 if dist/codex drifted (CI runs this)
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
