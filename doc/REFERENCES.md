@@ -87,6 +87,71 @@ so it needs no login; whether it runs offline was not tested.
 
 ---
 
+## The other harnesses
+
+Read 2026-09-30 for `doc/HARNESSES.md`, the capability matrix that decides what the
+exporter has to generate per harness. Each row is one page and the fact it
+settled; nothing here changed the tree, this slice only recorded facts.
+
+| Page | What it settled |
+|---|---|
+| <https://opencode.ai/v2/docs/skills/> | OpenCode V2 reads `.opencode/skills`, `.claude/skills` and `.agents/skills`; the ID is the path, the frontmatter `name` is a display label; `paths:` is not interpreted |
+| <https://opencode.ai/v2/docs/instructions/> | V2 recognises `AGENTS.md` only, `CLAUDE.md` is not a fallback, and the config `instructions` array is accepted but not loaded |
+| <https://opencode.ai/v2/docs/agents/> | Agents are `.opencode/agents/*.md` with `mode:` and an ordered `permissions:` list; `.claude/agents` is not a source |
+| <https://opencode.ai/v2/docs/commands/> | Commands are `.opencode/commands/*.md`, nested paths become `/a/b`, `$ARGUMENTS` and `$1` work, the shell block is `` !`cmd` `` |
+| <https://opencode.ai/v2/docs/config/> | `opencode.json` precedence and the V2 shape of `permissions`, `skills`, `commands`, `plugins` |
+| <https://opencode.ai/v2/docs/plugins/> | No plugin manifest; `.opencode/plugins/` plus npm packages, `opencode plugin add/update/list`, git specs and `::path:` subdirectories |
+| <https://opencode.ai/v2/docs/build/plugins> | The plugin API: `Plugin.define` with `id` and `setup`, `ctx.tool.hook("execute.before")`, `ctx.permission.hook("evaluate")`, `ctx.session.hook("context")`, and which of them can deny |
+| <https://opencode.ai/v2/docs/mcp-servers/> | MCP lives under `mcp.servers` in V2, a plugin registers one through `ctx.mcp.transform` |
+| <https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-cli-plugins> | Copilot plugins exist and there are two formats: Agent Plugins 1.0 (root `plugin.json`, `skills/`, `mcp.json`) and the legacy one with configurable component paths |
+| <https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-plugin-reference> | The legacy manifest is read from `.plugin/plugin.json`, `plugin.json`, `.github/plugin/plugin.json` **or `.claude-plugin/plugin.json`**; `marketplace.json` likewise; `${PLUGIN_ROOT}` (alias `${CLAUDE_PLUGIN_ROOT}`) is documented for MCP, LSP and agent `mcp-servers` but not for hooks; loading order puts `.claude/skills`, `.claude/agents` and `.claude/commands` ahead of plugins |
+| <https://docs.github.com/en/copilot/concepts/agents/hooks> | Hooks are `.github/hooks/*.json` plus `~/.copilot/hooks/*.json`, shaped `{version, hooks}` |
+| <https://docs.github.com/en/copilot/reference/hooks-reference> | Full event list, the snake_case payload, `permissionDecision: deny` on stdout, exit 2 blocks, a command hook is fail-closed on a crash and fail-open on a timeout, and `preToolUse` inherits Claude matcher semantics when the event is PascalCase |
+| <https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions> | Copilot CLI reads `CLAUDE.md`, `.claude/CLAUDE.md`, `AGENTS.md`, `GEMINI.md` and `.github/copilot-instructions.md`; path scoping is `applyTo:` in `*.instructions.md` |
+| <https://docs.github.com/en/copilot/concepts/agents/about-agent-skills> | Skill directories: `.github/skills`, `.claude/skills`, `.agents/skills`, `~/.copilot/skills`, `~/.agents/skills` |
+| <https://docs.github.com/en/copilot/concepts/agents/copilot-cli/about-custom-agents> | Agent profiles are Markdown with `name`, `description`, optional `tools` and `mcp-servers` |
+| <https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli> | The CLI surface: custom instructions, MCP, agents, hooks, skills, `--allow-tool` / `--deny-tool` |
+| <https://geminicli.com/docs/extensions/> | Gemini extensions package prompts, MCP, commands, themes, hooks, sub-agents and skills, installed from a GitHub URL |
+| <https://geminicli.com/docs/extensions/reference/> | `gemini-extension.json` at the extension root with `name` required; `commands/*.toml`, `hooks/hooks.json`, `skills/`, `agents/`; `${extensionPath}` is the plugin-root variable; `excludeTools` can block a shell command |
+| <https://geminicli.com/docs/hooks/> | Gemini hook events are `BeforeTool` / `AfterTool` / `SessionStart` and friends, matchers are regex, deny is `{"decision":"deny"}` or exit 2, and the environment is sanitised |
+| <https://geminicli.com/docs/cli/custom-commands/> | Commands are TOML with a required `prompt`, `{{args}}` placeholders, `!{...}` shell blocks and `@{...}` file injection; a subdirectory becomes `/a:b` |
+| <https://developers.openai.com/codex/config-file/config-basic> | Codex layers `~/.codex/config.toml` and trusted `.codex/config.toml`, and the `hooks` feature flag |
+| <https://developers.openai.com/codex/hooks> | Codex hook events are Claude's plus `PermissionRequest`, `PostCompact` and `Interrupt`; `PreToolUse` denies with `hookSpecificOutput.permissionDecision` or exit 2; a plugin's default is `hooks/hooks.json`; `PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT` are exported to plugin hooks |
+| <https://developers.openai.com/codex/agent-configuration/rules> | Codex "rules" are `.rules` files in a Starlark dialect controlling commands run outside the sandbox, not markdown |
+| <https://developers.openai.com/codex/build-skills> | Codex reads skills from `.agents/skills` at several levels, `$HOME/.agents/skills` and `/etc/codex/skills`, and only `name` and `description` are required |
+| <https://developers.openai.com/codex/agent-configuration/subagents> | Codex custom agents are standalone TOML files in `.codex/agents/` requiring `name`, `description` and `developer_instructions` |
+| <https://developers.openai.com/plugins/build/plugins> | The portable package is root `plugin.json` plus `skills/` and `mcp.json`, `.codex-plugin/plugin.json` is a compatibility fallback, marketplaces are `.agents/plugins/marketplace.json` and the desktop app also reads `.claude-plugin/marketplace.json` |
+| <https://agentskills.io/specification> | The portable `SKILL.md` contract: `name` and `description` required, optional `license`, `compatibility`, `metadata`, experimental `allowed-tools` |
+| <https://agentskills.io/home> | Which products implement the standard, and that Copilot, Gemini CLI, OpenCode and Codex are all on it |
+
+`opencode.ai/docs/` documents V1 and `opencode.ai/v2/docs/` documents V2. The installed
+binary is 2.0.18, so only the V2 pages were used for it. Gemini CLI and Codex CLI are not
+installed here, so their rows are documentation-only.
+
+### Measured on this machine
+
+`target/probe/` holds the scratch projects; the commands and the output line each one
+settled are listed as `[L1]` to `[L11]` in `doc/HARNESSES.md`.
+
+- `opencode run --standalone --auto -m 'opencode/space-bunny-free#max' --agent build "<ask>"`,
+  in `target/probe/oc`: `.claude/skills` loads, `.claude/agents` does not, `AGENTS.md` loads,
+  and `opencode run "/probecmd"` does not expand a command template or its shell block.
+- `opencode serve --port 7790` plus `curl -u opencode:<password> /api/config`: a project
+  `opencode.json` is read by walking up from the working directory, and its V1 `permission`
+  object is rewritten into the V2 `permissions` array.
+- Two `.opencode/plugins/*.js` probes: a `ctx.tool.hook("execute.before")` that throws, and
+  a `ctx.permission.hook("evaluate")` that sets `effect: "deny"`. Both refused the bash
+  command `echo DEVIL_PROBE_DENY`; the same command ran with no plugin present, which is the
+  negative control.
+- `COPILOT_HOME=target/probe/copilot-home copilot plugin install ./fake-claude-plugin`, where
+  the only manifest was `.claude-plugin/plugin.json`: installed, `Plugin "devil-probe"
+  installed successfully.` A local-path `copilot plugin marketplace add` failed, because
+  1.0.59 parsed `./fake-marketplace` as a GitHub shorthand.
+- Copilot behaviour probes are **SKIP**: `copilot -p` returned `model_not_supported` and every
+  `--model` value was refused, so this machine has no Copilot entitlement. A SKIP is not a pass.
+
+---
+
 ## Supermemory
 
 <https://supermemory.ai/mcp/> — checked 2026-09-20. Declared in `.mcp.json` and
