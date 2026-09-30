@@ -3,7 +3,12 @@
 A rule that can be checked mechanically should be a check. `agents/forger.md` puts it
 plainly: *a rule without a tool is a hope*. Every event bound in `hooks.json` runs
 `scripts/hooks.py`, reached through `${CLAUDE_PLUGIN_ROOT}` so the same binding works
-wherever the plugin is installed. The script does two jobs.
+wherever the plugin is installed. That entry point dispatches to sibling modules
+named for their concern: `scripts/risk.py` (`PreToolUse`), `scripts/gates.py`
+(`PostToolUse`), `scripts/session.py` (`SessionStart`, `PreCompact`),
+`scripts/notify.py` (sounds), over `scripts/kit.py` (roots, config),
+`scripts/respond.py` (the JSON answer) and `scripts/process.py` (bounded
+subprocesses). It does two jobs.
 
 ## 1. Enforcement — the part that matters
 
@@ -17,7 +22,8 @@ wherever the plugin is installed. The script does two jobs.
 `PreToolUse` and `PreCompact` are the **synchronous** hooks: a decision or an injected
 context is only honoured if the harness waits for it. Everything else is `async: true`
 and cannot block you. `timeout` in `hooks.json` is in seconds, and a plugin's timeouts
-never raise the harness budget; `hooks.py` bounds its own subprocesses at 4 s.
+never raise the harness budget; `scripts/process.py` bounds the hook's own
+subprocesses at 4 s.
 
 ### What it is not
 
@@ -79,7 +85,7 @@ which is the correct response to most events.
 1. Add the block to `hooks.json` (copy an existing one; keep `async: true` unless it
    must block; `timeout` is seconds).
 2. Add `disable<Event>Hook` to `config/hooks-config.json`.
-3. For enforcement, add a handler and register it in the `ENFORCERS` map in
-   `scripts/hooks.py`.
+3. For enforcement, add a handler in a sibling module under `scripts/` named for
+   its concern, and register it in the `ENFORCERS` map in `scripts/hooks.py`.
 4. Prove it: the pass path, the fail path, and the malformed-input path. An unproven
    hook is not done (`agents/forger.md`).

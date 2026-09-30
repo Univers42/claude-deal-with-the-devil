@@ -1,0 +1,43 @@
+"""respond.py: the hook's answer to Claude Code.
+
+One JSON object on stdout, then exit 0. `hookSpecificOutput` with a
+`permissionDecision` influences a tool call; `additionalContext` injects text.
+"""
+
+import json
+import sys
+
+
+def emit(payload):
+    """Print a hook response and stop. Anything else on stdout is ignored."""
+    sys.stdout.write(json.dumps(payload))
+    sys.stdout.flush()
+    sys.exit(0)
+
+
+def deny(event, reason):
+    emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": event,
+                "permissionDecision": "deny",
+                "permissionDecisionReason": reason,
+            }
+        }
+    )
+
+
+def ask(event, reason):
+    emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": event,
+                "permissionDecision": "ask",
+                "permissionDecisionReason": reason,
+            }
+        }
+    )
+
+
+def context(event, text):
+    emit({"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}})

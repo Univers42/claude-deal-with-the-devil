@@ -101,6 +101,15 @@ done
 # --- an unknown event is simply ignored -------------------------------------
 expect "unknown event ignored" '{"hook_event_name":"SomeFutureEvent"}' silent
 
+# --- the entry point finds its sibling modules itself -------------------------
+# Python skips putting the script's directory on sys.path under -P or
+# PYTHONSAFEPATH (3.11+), so hooks.py must add it before importing its modules.
+out="$(cd / && printf '%s' "$(bash_call 'rm -rf /')" | PYTHONSAFEPATH=1 python3 "$HOOK" 2>/dev/null)"
+case "$out" in
+*'"permissionDecision": "deny"'*) ok "deny fires from / under PYTHONSAFEPATH=1" ;;
+*) no "PYTHONSAFEPATH=1 from / must still deny, got: ${out:0:120}" ;;
+esac
+
 # --- plugin root vs host root ------------------------------------------------
 # The handler finds its own kit (tools/, hooks/config) from its file location
 # and the host project from CLAUDE_PROJECT_DIR, else the cwd. A fixture plugin
@@ -111,7 +120,7 @@ fixture_plugin() {
   cp "$ROOT"/tools/*.sh "$d/tools/"
   cp "$ROOT/tools/lib/common.sh" "$d/tools/lib/"
   chmod +x "$d"/tools/*.sh
-  cp "$ROOT/hooks/scripts/hooks.py" "$d/hooks/scripts/"
+  cp "$ROOT"/hooks/scripts/*.py "$d/hooks/scripts/"
   cp "$ROOT/hooks/config/hooks-config.json" "$d/hooks/config/"
   printf -- '---\nname: demo-agent\ndescription: a demo\n---\n\nBody\n' >"$d/agents/demo-agent.md"
   # shellcheck disable=SC2016  # the backticks are markdown links in the fixture
@@ -175,6 +184,24 @@ esac
 # shellcheck disable=SC2016  # ditto
 printf 'See `agents/ghost.md`.\n' >"$OUTSIDE/notes.md"
 quiet "a .md outside the plugin root does not trigger selfcheck" "$(md_write "$OUTSIDE/notes.md")"
+
+# A sibling module that fails to import fails open like any other error: exit 0,
+# nothing on stdout or stderr, even for a payload that would be denied.
+BROKEN="$TMP/broken/hooks/scripts"
+mkdir -p "$BROKEN" && cp "$FIX"/hooks/scripts/*.py "$BROKEN/"
+siblings=0
+for f in "$BROKEN"/*.py; do
+  [ "$(basename "$f")" = hooks.py ] && continue
+  echo 'raise RuntimeError("broken sibling")' >"$f"
+  siblings=$((siblings + 1))
+done
+out="$(printf '%s' "$(bash_call 'rm -rf /')" | python3 "$BROKEN/hooks.py" 2>&1)"
+rc=$?
+if [ "$siblings" -gt 0 ] && [ "$rc" -eq 0 ] && [ -z "$out" ]; then
+  ok "a broken sibling module fails open"
+else
+  no "broken sibling modules ($siblings) must exit 0 silently, got rc=$rc: ${out:0:120}"
+fi
 
 # SessionStart briefs the host named by CLAUDE_PROJECT_DIR, not the hook's cwd.
 out="$(cd "$OUTSIDE" && printf '%s' '{"hook_event_name":"SessionStart","source":"startup"}' |
