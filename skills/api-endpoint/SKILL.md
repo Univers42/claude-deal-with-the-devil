@@ -15,27 +15,50 @@ metadata:
 
 DO NOT add a route before reading the nearest existing handler and the `api-convention` skill.
 
+Every step below is keyed on what the host project already has. The conventions in
+`api-convention` are the target, not a description of what is there: a project with
+no version prefix does not get one invented for a single endpoint, and a project
+with no spec file does not get a spec invented either. Say in the report which
+conditionals you found absent.
+
 ## 1. Locate
 
 - Which part of the project owns it; find the closest existing endpoint.
 - Mirror its file, registration, and owner-scoping pattern.
+- Note what the neighbours do, because the new route has to match them: a version
+  prefix or its absence, an auth layer or its absence, a spec file or its absence.
 
 ## 2. Design
 
-- Method, path (`/v1/...`), request/response shape, auth (API-key → identity), per-request owner-scope.
-- Cloud/enterprise behavior is flag-gated OFF (`if envBool("FLAG")`, default false).
+- Method, path, request/response shape, mirroring the existing routes' prefix.
+- If the project authenticates requests (a middleware, a session, a token check):
+  resolve the caller's identity from the credential and scope the handler to that
+  caller. If it does not: do not invent an auth layer for one route, and do not let
+  a path `{id}` stand in for identity. Scope the data to the caller the project
+  already knows, and say plainly in the report that the route inherits whatever the
+  surrounding routes inherit, auth included or absent.
+- If the project flag-gates behavior behind a helper (`envBool`, a feature-flag
+  client, a config map): mount the new behavior behind one, default off. If it does
+  not: no flag, no new mechanism.
 
 ## 3. Implement
 
-- Handler + route registration + the entry in the project's OpenAPI / API spec.
-- Adapter-agnostic: if it touches data, it must hold across every backend the project supports.
+- Handler + route registration.
+- If the project has an OpenAPI / API spec file and existing routes are documented
+  in it: add the entry. If it has no spec, or existing routes are not in one: do
+  not create one for a single route.
+- Adapter-agnostic: if it touches data, it must hold across every backend the project
+  supports.
 
 ## 4. Verify
 
 - Run the relevant check through the project's task runner (detect it with `devil facts`).
-- Regenerate SDKs if the spec changed.
+- If a spec file changed and the project generates SDKs from it, regenerate them. If
+  there is no generator, there is nothing to regenerate.
 - Add a verify gate (a `scripts/verify/` check or CI job) that exercises the route.
 
 ## 5. Report
 
-- Files changed, the new route + its auth/owner-scope, and the gate that proves it.
+- Files changed, the new route, its auth and owner-scope (or the explicit statement
+  that the project has no auth layer and the route inherits that), which conditionals
+  above were found absent, and the gate that proves it.

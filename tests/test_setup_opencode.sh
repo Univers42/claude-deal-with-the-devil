@@ -2,10 +2,10 @@
 # test_setup_opencode.sh — the `opencode` stage must wire an OpenCode 2.x host
 # the way dist/opencode/README.md says, and nothing else.
 #
-# The stage writes into a host the kit does not own, so the load-bearing cases
-# are the refusals: a host file of the same name, a host entry in the config, a
-# config shape it did not seed. Each one is paired with the case that proves the
-# assertion is not vacuous, because a check that cannot fail is not a check.
+# The stage writes into a host the kit does not own, so the load-bearing cases are
+# the refusals: a host file of the same name, a host entry in the config, a config
+# shape it did not seed. Each is paired with the case that proves the assertion is
+# not vacuous, because a check that cannot fail is not a check.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SETUP="$ROOT/tools/setup.sh"
@@ -30,18 +30,30 @@ fi
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
+# The assertion count, asserted at the end of the file rather than only printed.
+WANT=32
 
 # A host with one opencode.json, its own settings file and nothing else of the
 # kit's. The settings file is there so a `diff -r` of a whole fixture measures
-# the opencode stage: the settings stage has its own idempotence cases in
-# tests/test_setup.sh, and on a host with no settings.json it re-sorts its own
-# output on the second apply, which would drown the diff this file is after.
+# the opencode stage and nothing else; the settings stage is idempotent on a
+# host with no settings.json too (tests/test_setup.sh, case 17).
 host() {
   local d="$TMP/$1" cfg="$2"
   mkdir -p "$d/.claude"
   git -C "$d" init -q
   printf '{"outputStyle": "host"}\n' >"$d/.claude/settings.json"
   printf '%s\n' "$cfg" >"$d/opencode.json"
+  echo "$d"
+}
+
+# A host whose .opencode/agents is ONE link to $2, the layout the install
+# README's symlinks leave behind. Case 7b needs that link twice over, once
+# pointing at the kit and once at nothing, and only the target differs.
+dirlink_host() {
+  local d
+  d="$(host "$1" '{"model": "x"}')"
+  mkdir -p "$d/.opencode"
+  ln -s "$2" "$d/.opencode/agents"
   echo "$d"
 }
 
@@ -87,19 +99,11 @@ else
   no "a host without opencode.json must skip (status=$(status opencode), .opencode=$([ -e "$N/.opencode" ] && echo yes || echo no))"
 fi
 run "$N" --check --only opencode
-if [ "$RC" -eq 0 ] && [ "$(status opencode)" = skip ]; then
-  ok "a skipped opencode stage does not fail --check"
-else
-  no "a skipped stage must not fail --check, got rc=$RC ($(status opencode))"
-fi
+if [ "$RC" -eq 0 ] && [ "$(status opencode)" = skip ]; then ok "a skipped opencode stage does not fail --check"; else no "a skipped stage must not fail --check, got rc=$RC ($(status opencode))"; fi
 # The control for the assertion above: the same host, with the config, is wired.
 printf '{"model": "x"}\n' >"$N/opencode.json"
 run "$N" --apply
-if [ "$(status opencode)" = applied ] && [ -d "$N/.opencode/agents" ]; then
-  ok "the same host with an opencode.json IS wired, so case 1 is not vacuous"
-else
-  no "adding opencode.json must wire the host, got $(status opencode)"
-fi
+if [ "$(status opencode)" = applied ] && [ -d "$N/.opencode/agents" ]; then ok "the same host with an opencode.json IS wired, so case 1 is not vacuous"; else no "adding opencode.json must wire the host, got $(status opencode)"; fi
 
 # --- 2. a fresh host: skills is the array V2 reads, the links are per file ---
 F="$(host fresh '{"model": "x"}')"
@@ -188,44 +192,24 @@ S="$(host retired '{"model": "x"}')"
 run "$S" --apply
 ln -s "$ROOT/dist/opencode/commands/gone.md" "$S/.opencode/commands/gone.md"
 run "$S" --check
-if [ "$RC" -eq 1 ] && [ "$(status opencode)" = change ] && [ -L "$S/.opencode/commands/gone.md" ]; then
-  ok "--check fails on a link to a file the kit no longer generates, and removes nothing"
-else
-  no "a retired link must fail --check (rc=$RC, status=$(status opencode))"
-fi
+if [ "$RC" -eq 1 ] && [ "$(status opencode)" = change ] && [ -L "$S/.opencode/commands/gone.md" ]; then ok "--check fails on a link to a file the kit no longer generates, and removes nothing"; else no "a retired link must fail --check (rc=$RC, status=$(status opencode))"; fi
 run "$S" --apply
-if [ ! -e "$S/.opencode/commands/gone.md" ] && [ ! -L "$S/.opencode/commands/gone.md" ]; then
-  ok "--apply removes the retired link"
-else
-  no "--apply left the retired link in place"
-fi
+if [ ! -e "$S/.opencode/commands/gone.md" ] && [ ! -L "$S/.opencode/commands/gone.md" ]; then ok "--apply removes the retired link"; else no "--apply left the retired link in place"; fi
 # The control: a stale link the kit did not write is none of its business.
 ln -s /nonexistent/host-owned.md "$S/.opencode/commands/host-gone.md"
 run "$S" --apply
-if [ -L "$S/.opencode/commands/host-gone.md" ]; then
-  ok "a broken link that does not point into the kit is never removed"
-else
-  no "the stage deleted a link it did not create"
-fi
+if [ -L "$S/.opencode/commands/host-gone.md" ]; then ok "a broken link that does not point into the kit is never removed"; else no "the stage deleted a link it did not create"; fi
 
 # --- 7. a missing link and a link pointing elsewhere are both drift ----------
 M="$(host drift '{"model": "x"}')"
 run "$M" --apply
 rm "$M/.opencode/agents/reviewer.md"
 run "$M" --check
-if [ "$RC" -eq 1 ] && [ "$(status opencode)" = change ]; then
-  ok "--check fails when an expected link is missing"
-else
-  no "a missing link must fail --check (rc=$RC, status=$(status opencode))"
-fi
+if [ "$RC" -eq 1 ] && [ "$(status opencode)" = change ]; then ok "--check fails when an expected link is missing"; else no "a missing link must fail --check (rc=$RC, status=$(status opencode))"; fi
 rm -f "$M/.opencode/commands/quality.md"
 ln -s /etc/hostname "$M/.opencode/commands/quality.md"
 run "$M" --check
-if [ "$RC" -eq 1 ] && grep -q '2 missing or pointing elsewhere' <<<"$RUN_OUT"; then
-  ok "--check names both the missing link and the one pointing elsewhere"
-else
-  no "--check should count 2 wrong links, got: $(grep -E '^\| opencode \|' <<<"$RUN_OUT")"
-fi
+if [ "$RC" -eq 1 ] && grep -q '2 missing or pointing elsewhere' <<<"$RUN_OUT"; then ok "--check names both the missing link and the one pointing elsewhere"; else no "--check should count 2 wrong links, got: $(grep -E '^\| opencode \|' <<<"$RUN_OUT")"; fi
 run "$M" --apply
 if out="$(links_ok "$M")"; then ok "--apply restores both links into dist/opencode"; else no "the links were not restored: $out"; fi
 run "$M" --check
@@ -234,9 +218,7 @@ if [ "$RC" -eq 0 ]; then ok "the restored host passes --check again"; else no "r
 # --- 7b. a whole-directory link is reported, never written into --------------
 # A host wired by the install README's three symlinks has a directory link, and
 # linking a file "inside" one would create it in the kit's own tree.
-W="$(host whole '{"model": "x"}')"
-mkdir -p "$W/.opencode"
-ln -s "$ROOT/dist/opencode/agents" "$W/.opencode/agents"
+W="$(dirlink_host whole "$ROOT/dist/opencode/agents")"
 run "$W" --apply
 if [ -L "$W/.opencode/agents" ] && [ "$(readlink "$W/.opencode/agents")" = "$ROOT/dist/opencode/agents" ]; then
   ok "a whole-directory link is left as it is, never replaced by per-file links"
@@ -263,9 +245,7 @@ fi
 
 # The control for the case above: a directory link whose target is gone IS
 # retired, and the per-file links then appear, because there is no directory.
-D2="$(host dead-dir '{"model": "x"}')"
-mkdir -p "$D2/.opencode"
-ln -s "$ROOT/dist/opencode/agents-gone" "$D2/.opencode/agents"
+D2="$(dirlink_host dead-dir "$ROOT/dist/opencode/agents-gone")"
 run "$D2" --apply
 if [ -L "$D2/.opencode/agents/reviewer.md" ] && [ ! -L "$D2/.opencode/agents" ]; then
   ok "a dead directory link is dropped and the agents are linked one by one instead"
@@ -276,10 +256,8 @@ run "$D2" --check --only opencode
 if [ "$RC" -eq 0 ]; then ok "the repaired host passes --check"; else no "the repaired host must pass --check, got rc=$RC: $(status opencode)"; fi
 
 # --- 8. opencode.jsonc is reported, never silently skipped -------------------
-C="$TMP/jsonc"
-mkdir -p "$C"
-rm -f "$C/opencode.json"
-printf '{"skills": []}\n' >"$C/opencode.jsonc"
+C="$(host jsonc '{"skills": []}')"
+mv "$C/opencode.json" "$C/opencode.jsonc"
 run "$C" --apply
 if [ "$RC" -eq 2 ] && [ "$(status opencode)" = cannot ] && grep -q 'JSONC' <<<"$RUN_OUT"; then
   ok "opencode.jsonc is exit 2 and says why, not a silent skip"
@@ -303,4 +281,11 @@ fi
 
 echo
 echo "$PASS passed, $FAIL failed"
+# A shrinking file is where a case quietly stops running, and a tally that only
+# ever goes down is indistinguishable from a suite that got easier. 32 is what
+# this file ran before it was compacted; a case added here must raise $WANT.
+[ "$((PASS + FAIL))" = "$WANT" ] || {
+  echo "FAIL - expected $WANT assertions to run, counted $((PASS + FAIL))"
+  exit 1
+}
 [ "$FAIL" -eq 0 ] || exit 1
