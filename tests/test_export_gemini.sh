@@ -178,7 +178,8 @@ fi
 # --- 5. the translator, on fixture payloads -----------------------------------
 # hooks.py is the enforcement and this shim is all that is in front of it.
 SHIM="$DIST/hooks/gemini-hook.py"
-shim() { printf '%s' "$1" | python3 "$SHIM" 2>/dev/null; }
+# env -u: a runner with DEVIL_AUTONOMY=1 (tests/test_autonomy.sh) would turn every ask silent.
+shim() { printf '%s' "$1" | env -u DEVIL_AUTONOMY python3 "$SHIM" 2>/dev/null; }
 dec() { shim "$1" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("decision",""))' 2>/dev/null; }
 is "a force-push becomes a Gemini deny" \
   "$(dec '{"hook_event_name":"BeforeTool","tool_name":"run_shell_command","tool_input":{"command":"git push --force origin main"}}')" deny
