@@ -11,6 +11,8 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-30
+
 ### Added
 
 - `DEVIL_AUTONOMY=1`: an opt-in env switch for sessions run unattended. It turns the
