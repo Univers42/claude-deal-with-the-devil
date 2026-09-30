@@ -282,6 +282,37 @@ receives, so they live in `templates/` ([`templates/README.md`](templates/README
 
 ---
 
+## Decisions
+
+A verdict that lives only in the session gets re-argued in six months, so two of
+the three records are files, written from skeletons in
+[`templates/`](templates/README.md):
+
+- **The ADR**: `docs/adr/NNNN-<slug>.md` in the host repo, from
+  [`templates/adr.md`](templates/adr.md). Status, Context (facts with
+  `file:line`), Decision, the alternatives and why each lost, Consequences. Only
+  under the **three-gate rule**: the decision is irreversible, it changes a public
+  surface, or the `devil` returned something other than PROCEED. Below all three a
+  commit message carries it.
+- **The out-of-scope record**: `.out-of-scope/<concept>.md` in the host, from
+  [`templates/out-of-scope.md`](templates/out-of-scope.md), for a concept the
+  verdict rejected. The load-bearing line is the fact that would have to change for
+  the answer to change. This kit keeps its own four in
+  [`.out-of-scope/`](.out-of-scope/openai-sidecars.md).
+- **The agent brief**: [`templates/agent-brief.md`](templates/agent-brief.md),
+  Objective, Contract (inputs → outputs → done-when, plus out of scope),
+  Constraints, Facts as pointers. `/devil:prompt` emits one; every job ends with
+  its return block (`status` / `gates` / `changed` / `deviations` / `next`) so a
+  caller greps it instead of reading a log.
+
+Who writes what: the `devil` writes the ADR and the out-of-scope record with its
+verdict, the `architect` designs three options under different constraints
+(minimal, extensible, performance-first) and names the ADR path, the `builder`
+returns the block, the `reviewer` reports two axes as two tables that are never
+reranked against each other.
+
+---
+
 ## The script library
 
 `tools/scripts.sh` reaches a curated, sha-pinned subset of
@@ -343,11 +374,13 @@ These hold for everything here, even one-off tasks:
 ├── tools/orch/        headless OpenCode jobs and their gate (`devil orch …`)
 ├── hooks/             hooks.json bindings and hooks/scripts/hooks.py, the handler
 ├── templates/         what a host receives: settings.json, mcp.json, wizard.sh,
-│                      plus the skeletons a command fills in (handoff.md)
+│                      plus the skeletons a command fills in (handoff.md, adr.md,
+│                      out-of-scope.md, agent-brief.md)
+├── .out-of-scope/     the concepts this kit refused, and the fact that decides it
 ├── settings.local.json.example  machine-local toggles for a host
 ├── scripts/           REGISTRY.md — the vetted external script library
 ├── tests/             regression tests for the tools, hooks, dispatcher and templates
-└── doc/               MEMORY.md, REFERENCES.md
+└── doc/               MEMORY.md, REFERENCES.md, HARNESSES.md
 ```
 
 ---
@@ -407,6 +440,11 @@ numbers, and skip filler words like "simply" or "just".
   cutovers): the agent never runs one, `bash tests/test_templates.sh --trace <file>` is
   its static proof. `skills/debug/scripts/hitl-loop.sh` is a reproduction a person drives;
   the agent parses its `KEY=VALUE` tail and never wraps it in `tools/watch.sh`.
+- **Decision templates** are the other kind: markdown skeletons a host repo receives and
+  the kit never reads. `templates/adr.md`, `templates/out-of-scope.md` and
+  `templates/agent-brief.md` are the three. Each stays at or under 40 lines and its
+  required headings are asserted by `tests/test_templates.sh`, so dropping a section is a
+  red test. A new heading means adding its pattern in the same change.
 
 ### The frontmatter, in full
 

@@ -88,10 +88,45 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   `tests/scenarios/`; a retired asset names its replacement; a user-only asset is never
   a step in a model-invoked body; descriptions are linted for form and size. A quality
   gate, a CI step, and a PostToolUse check on every kit doc edit.
+- `templates/adr.md`: the Architecture Decision Record a host repo writes at
+  `docs/adr/NNNN-<slug>.md`, with the three-gate rule in its comment: an ADR is
+  written only when the decision is irreversible, changes a public surface, or got
+  a `devil` verdict other than PROCEED. Context carries facts with `file:line`,
+  alternatives carry what each option would have cost.
+- `templates/out-of-scope.md`: the record for a concept the verdict rejected, at
+  `.out-of-scope/<concept>.md`. The load-bearing line is the fact that would have
+  to change for the answer to change, with the prior requests dated.
+- `templates/agent-brief.md`: the brief a subagent receives instead of your memory
+  (Objective, Contract with inputs → outputs → done-when, Constraints, Facts as
+  `file:line` pointers) and the return block every job ends with, so a caller greps
+  it instead of reading a log.
+- The kit's own `.out-of-scope/`: `openai-sidecars.md` (hand-written per-harness
+  sidecars, superseded 2026-09-30 by generated exports, the evidence in
+  `doc/HARNESSES.md`), `changesets.md` (one version source in plugin.json plus the
+  CHANGELOG, a bash-only kit needs no node runtime), `wizard-interactive.md` (the
+  agent never runs a wizard end to end; the static trace is the only honest proof)
+  and `skills-array-as-stable-set.md` (the manifest `skills` array adds to the scan
+  and cannot exclude a beta skill, so the stage is shown, not enforced by omission).
 - This file.
 
 ### Changed
 
+- The `devil` agent writes what its verdict owes: a `docs/adr/NNNN-<slug>.md` from
+  `templates/adr.md` for a three-gate decision on BLOCK or PROCEED-WITH-CONDITIONS,
+  and a `.out-of-scope/<concept>.md` from `templates/out-of-scope.md` for a concept it
+  rejected. PROCEED on a reversible, private, single-module decision writes nothing: a
+  record that fires on every answer trains people to skip it.
+- `/devil:deal` step 6 is a path, not a paragraph: the decision log is
+  `docs/adr/NNNN-<slug>.md`, and the command prints what it wrote.
+- `architect` designs at least three options under different constraints (minimal,
+  extensible, performance-first) and names the ADR path when the three-gate rule
+  applies, or says "no ADR, below the three gates" when it does not.
+- `reviewer` reports Standards and Spec as two tables that are never reranked against
+  each other, and never a combined score: the axes do not share a scale, so a total
+  invites a style nit to cancel a correctness blocker.
+- `builder` ends every job with the return block from `templates/agent-brief.md`,
+  verbatim, and a gate it could not run is a SKIP line rather than an omitted one.
+- `/devil:prompt` closes with the agent brief instead of a spec section list.
 - The 7 path-scoped rules (`refactor-c`, `refactor-go`, `refactor-rust`,
   `refactor-typescript`, `refactor-shell`, `api-convention`, `script-library`) are
   `skills/<name>/SKILL.md` now, tagged `metadata.stage: rule` with `paths:` on the same
@@ -132,7 +167,9 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   presented as measurements.
 - Tests grew with the tree: `tests/test_common.sh` for the frontmatter helpers,
   `tests/test_templates.sh` for the wizard and the hitl harness, plugin-root and
-  relative-link cases in the two existing suites.
+  relative-link cases in the two existing suites, and the three decision templates
+  with their required headings (a copy with one heading deleted has to fail the same
+  assertion, or the assertion is not a gate).
 - CI validates both manifests and `./skills ./agents ./commands` with
   `claude plugin validate --strict`, checks the JSON files parse, and now runs the
   release check.

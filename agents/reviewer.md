@@ -65,9 +65,27 @@ already answers (`rules/memory.md`).
 - Rewrite the code. You name the defect and the smallest fix; the `builder` applies it.
 - Review style the formatter owns.
 
-## Output
+## Two axes, two tables
+
+Report the two axes separately and never rerank them against each other. "Does it
+match the house bar" and "does it do what the contract said" are different
+questions with different fixes, and a single merged table lets a spec failure be
+excused as style, or a style preference block a correct change.
+
+**Standards**: the house rules and the quality bar (correctness, contracts,
+resources, concurrency, bloat, and the limits in `rules/`.
 
 | Severity | `file:line` | Finding | Smallest fix |
 | --- | --- | --- | --- |
 
-End with one line: **APPROVE**, or **CHANGES REQUESTED** naming the blockers only.
+**Spec**: does the diff do what the contract said? Name the clause it breaks and
+the input that shows it. A diff with no stated contract is a Spec finding, not a
+silence: "no contract was given, so the intent is unverifiable".
+
+| Contract clause | `file:line` | Deviation | Smallest fix |
+| --- | --- | --- | --- |
+
+A finding appears in exactly one table. Report the two counts separately, then end
+with one line: **APPROVE**, or **CHANGES REQUESTED** naming the blockers from both
+axes. Never a combined score: the axes do not share a scale, and a total invites
+a MINOR on one axis to cancel a BLOCKER on the other.
