@@ -6,6 +6,9 @@ description: >
   "add a page", "style this", "make it responsive", "dark mode", "the layout breaks",
   "frontend", "this UI"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Frontend

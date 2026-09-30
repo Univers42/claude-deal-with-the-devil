@@ -6,6 +6,9 @@ description: >
   "why is this failing", "debug this", "this test is flaky", "it works locally",
   "fix this bug", "this crashes"
 allowed-tools: Read, Grep, Glob, Bash
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Debug

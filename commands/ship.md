@@ -1,8 +1,12 @@
 ---
 description: >
   Full release pipeline. Usage: /devil:ship <major|minor|patch>
+disable-model-invocation: true
+argument-hint: "<major|minor|patch>"
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Ship
@@ -44,3 +48,17 @@ Bump type: $ARGUMENTS
 - Benchmark comparison
 - Parity comparison
 - **Wait for explicit "ship it" before pushing tag**
+
+## 7. Report
+
+| Field | Value |
+|---|---|
+| Version | |
+| Tests / linters at pre-flight | |
+| Benchmark vs last tag | |
+| Parity vs last release | |
+| Changelog entries | |
+| Commit + tag | |
+
+Plus: anything that aborted the run and why, and an explicit statement of what was
+NOT pushed. This workflow never pushes on its own; the tag is the human's.

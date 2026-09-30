@@ -2,6 +2,8 @@
 description: Run the feature-parity comparison against the reference baseline for the project. Usage: /devil:compat [feature-area]
 metadata:
   kind: command
+  stage: beta
+  since: "1.0.0"
 ---
 
 Feature area: $ARGUMENTS

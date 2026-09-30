@@ -136,6 +136,14 @@ check config selfcheck \
   "$([ -f "$DIR/selfcheck.sh" ] && [ -d "$ROOT/rules" ] && [ -d "$ROOT/agents" ] && echo 1 || echo 0)" \
   "$(resolve bash)" g_selfcheck
 
+# Selfcheck asks whether the config is truthful; skillcheck asks whether it is
+# managed (lifecycle metadata, description form, resolving references). Both are
+# the same claim from two directions, so both are gates.
+g_skillcheck() { "$1" "$DIR/skillcheck.sh" --summary >/dev/null 2>&1; }
+check config skillcheck \
+  "$([ -f "$DIR/skillcheck.sh" ] && [ -d "$ROOT/skills" ] && [ -d "$ROOT/commands" ] && echo 1 || echo 0)" \
+  "$(resolve bash)" g_skillcheck
+
 check format prettier "$WEB" "$(resolve prettier)" g_prettier
 check format gofmt "$GO" "$(resolve gofumpt || resolve gofmt)" g_gofmt
 check format rustfmt "$RUST" "$(resolve cargo)" g_rustfmt

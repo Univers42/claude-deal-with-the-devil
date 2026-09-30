@@ -4,6 +4,9 @@ description: >
   Generate tests for existing code. Auto-triggers on:
   "write tests for", "add test coverage", "this needs tests"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Write Tests
@@ -46,3 +49,17 @@ Present the test plan. Wait for approval.
 - All existing tests still pass
 - No flaky tests (run 3 times)
 - Report coverage delta
+
+## Report
+
+| Metric | Value |
+|---|---|
+| Framework detected | |
+| Tests added (passing) | |
+| Existing tests still green | |
+| Coverage delta | |
+| Behaviors still untested | |
+
+Plus: the test command you ran and its output, any case you deliberately did not
+cover and why, and anything the source does that you could not pin down from the
+outside.

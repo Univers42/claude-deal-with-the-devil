@@ -2,6 +2,8 @@
 description: Run comparative benchmarks (the project vs the reference baseline) and flag regressions. Usage: /devil:bench [load|capacity|footprint|mem|startup]
 metadata:
   kind: command
+  stage: beta
+  since: "1.0.0"
 ---
 
 Scope: $ARGUMENTS

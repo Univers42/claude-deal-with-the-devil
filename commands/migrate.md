@@ -2,13 +2,15 @@
 description: Run or inspect the project's migrations across backends. Usage: /devil:migrate <status|all|backend>
 metadata:
   kind: command
+  stage: beta
+  since: "1.0.0"
 ---
 
 Action: $ARGUMENTS
 
 Drive the migration lifecycle through the project's task runner (detect it with `devil facts`,
 run it under `devil watch`). Do NOT hand-edit migrations here — to
-AUTHOR a new migration use `/devil:migrate-db`.
+AUTHOR a new migration, ask the user to run `/devil:migrate-db`.
 
 ## Workflow
 

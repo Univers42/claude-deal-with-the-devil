@@ -4,6 +4,8 @@ description: >
   then gate it. Usage: /devil:harden <module or path>
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Harden

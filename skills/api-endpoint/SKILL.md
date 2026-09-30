@@ -4,6 +4,9 @@ description: >
   Scaffold a new REST endpoint across the planes. Auto-triggers on:
   "add an endpoint", "new API route", "expose this over HTTP", "wire a handler"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # API Endpoint

@@ -4,6 +4,8 @@ description: >
   The default arc for new work. Usage: /devil:feature <description>
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Feature
@@ -79,5 +81,17 @@ tree left for someone else.**
 
 - Docs that describe what you changed get updated (`documenter`, or the `doc-sync`
   skill). Examples come from the tests that now pass.
-- Report: what shipped · tests added with their pass output · primitives extracted ·
-  duplication before → after · gate status · the commands to reproduce all of it.
+
+## 8. Report
+
+| Field | Value |
+|---|---|
+| What shipped | |
+| Tests added, with pass output | |
+| Primitives extracted into the library | |
+| Duplication before → after | |
+| Gate status (`devil quality --with-tests`) | |
+| Verdict and conditions, if step 3 ran | |
+
+Plus: the reviewer and security findings, what you reverted, and the exact commands
+that reproduce every number above. Green or reverted, never a half-built tree.

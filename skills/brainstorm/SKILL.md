@@ -6,6 +6,9 @@ description: >
   Auto-triggers on: "brainstorm", "what are the options", "how else could we",
   "give me ideas", "explore approaches", "what would you suggest"
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Brainstorm

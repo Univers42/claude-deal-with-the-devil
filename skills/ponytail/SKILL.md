@@ -6,6 +6,9 @@ description: >
   Auto-triggers on: "is this exact", "add a caveat", "what are the limitations",
   "ponytail", "document the limits", "how accurate is this"
 allowed-tools: Read, Edit, Grep, Glob, Bash
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Ponytail

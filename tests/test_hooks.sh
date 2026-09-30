@@ -125,9 +125,10 @@ fixture_plugin() {
   printf -- '---\nname: demo-agent\ndescription: a demo\n---\n\nBody\n' >"$d/agents/demo-agent.md"
   # shellcheck disable=SC2016  # the backticks are markdown links in the fixture
   printf -- '# Demo rule\n\nSee `agents/demo-agent.md`.\n' >"$d/rules/demo.md"
-  printf -- '---\nname: demo\ndescription: a demo skill\n---\n\n# Demo\n' >"$d/skills/demo/SKILL.md"
-  printf -- '---\ndescription: a demo command. Usage: /devil:demo\n---\n\nBody\n' >"$d/commands/demo.md"
-  printf -- '---\ndescription: a demo workflow. Usage: /devil:demo-flow\nmetadata:\n  kind: workflow\n---\n\nBody\n' >"$d/commands/demo-flow.md"
+  printf -- '---\nname: demo\ndescription: A demo skill. Use when testing the hook. Auto-triggers on: "test the hook"\nmetadata:\n  stage: beta\n  since: "1.0.0"\n---\n\n# Demo\n\n## Report\n\nok\n' \
+    >"$d/skills/demo/SKILL.md"
+  printf -- '---\ndescription: a demo command. Usage: /devil:demo\nmetadata:\n  kind: command\n  stage: beta\n  since: "1.0.0"\n---\n\nBody\n' >"$d/commands/demo.md"
+  printf -- '---\ndescription: a demo workflow. Usage: /devil:demo-flow\nmetadata:\n  kind: workflow\n  stage: beta\n  since: "1.0.0"\n---\n\nBody\n\n## Report\n\nok\n' >"$d/commands/demo-flow.md"
   # shellcheck disable=SC2016  # ditto
   printf -- '# Index\n\n`agents/demo-agent.md` `rules/demo.md` `skills/demo/SKILL.md`\n`commands/demo.md` `commands/demo-flow.md`\n' \
     >"$d/README.md"
@@ -151,6 +152,12 @@ if bash "$FIX/tools/selfcheck.sh" --summary >/dev/null 2>&1; then
 else
   no "fixture plugin root must start clean"
   bash "$FIX/tools/selfcheck.sh" --summary 2>&1 | head -8
+fi
+if bash "$FIX/tools/skillcheck.sh" --summary >/dev/null 2>&1; then
+  ok "fixture plugin root starts managed"
+else
+  no "fixture plugin root must start managed"
+  bash "$FIX/tools/skillcheck.sh" --summary 2>&1 | head -8
 fi
 
 # quiet <label> <payload> [env args...]: the fixture handler exits 0 and says nothing
@@ -178,6 +185,17 @@ out="$(printf '%s' "$(md_write "$FIX/doc/notes.md")" | python3 "$FHOOK" 2>/dev/n
 case "$out" in
 *selfcheck.sh*"now fails"*agents/ghost.md*) ok "a dangling reference inside the plugin root reports drift" ;;
 *) no "expected the selfcheck drift message, got: ${out:0:160}" ;;
+esac
+
+# The same edit, breaking a lifecycle contract instead, reports skillcheck. A
+# skill that loses metadata.stage is a command of unproven shape in the / menu.
+# shellcheck disable=SC2016  # ditto
+printf -- '---\nname: demo\ndescription: A demo skill. Use when testing the hook. Auto-triggers on: "test the hook"\nmetadata:\n  since: "1.0.0"\n---\n\n# Demo\n\n## Report\n\nok\n' \
+  >"$FIX/skills/demo/SKILL.md"
+out="$(printf '%s' "$(md_write "$FIX/skills/demo/SKILL.md")" | python3 "$FHOOK" 2>/dev/null)"
+case "$out" in
+*skillcheck.sh*"now fails"*"no metadata.stage"*) ok "an untagged skill inside the plugin root reports skillcheck" ;;
+*) no "expected the skillcheck lifecycle message, got: ${out:0:160}" ;;
 esac
 
 # The same edit outside the plugin root is the host's business, not selfcheck's.

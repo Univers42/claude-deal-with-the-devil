@@ -6,6 +6,9 @@ description: >
   Auto-triggers on: "test in the browser", "does the page work", "check the console",
   "screenshot", "click through", "playwright", "verify the UI", "e2e test"
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Browser testing

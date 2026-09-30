@@ -5,6 +5,9 @@ description: >
   passing tests, never composed. Auto-triggers on: "update the docs", "are the docs
   current", "the README is out of date", "document this change", "sync the documentation"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Doc sync

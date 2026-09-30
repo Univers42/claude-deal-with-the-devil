@@ -4,6 +4,8 @@ description: >
   Usage: /devil:compat-audit
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Behavioral Parity Audit

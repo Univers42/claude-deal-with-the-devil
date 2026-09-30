@@ -368,13 +368,73 @@ numbers, and skip filler words like "simply" or "just".
   its static proof. `skills/debug/scripts/hitl-loop.sh` is a reproduction a person drives;
   the agent parses its `KEY=VALUE` tail and never wraps it in `tools/watch.sh`.
 
-Then run `tools/selfcheck.sh`. It fails on a documented name that doesn't exist, a
-frontmatter field Claude Code doesn't read, a tool without a shebang, and a leftover of
-the old layout (a `workflows/` file, or a tool cited by its old host path instead of
-`devil <name>`).
+### The frontmatter, in full
+
+`tools/skillcheck.sh` fails anything other than these shapes. All `metadata` values are
+strings, so `since` is quoted: YAML reads a bare `1.0.0` as a float.
+
+A skill, model-invocoked:
+
+```yaml
+---
+name: debug
+description: >
+  Find the actual cause of a failure instead of guessing at fixes. Use when a test fails,
+  a build breaks, a crash has no obvious cause, or behaviour differs between machines.
+  Auto-triggers on: "why is this failing", "debug this", "this test is flaky",
+  "it works locally", "fix this bug", "this crashes"
+allowed-tools: Read, Grep, Glob, Bash
+metadata:
+  stage: stable
+  since: "1.0.0"
+---
+```
+
+A command (`kind: command`) or a workflow (`kind: workflow`) adds `argument-hint` and
+`metadata.kind` on top of that. A user-only asset (one a person types, the model never
+reaches) adds `disable-model-invocation: true`, and then no other asset may `/`-reference
+it: a reference the model cannot follow is a dead step.
+
+A retired tombstone keeps the name resolvable and points at what replaced it:
+
+```yaml
+---
+name: old-name
+description: Retired in 1.0.0. It became `replacement`, which is the live skill.
+disable-model-invocation: true
+metadata:
+  stage: retired
+  since: "0.9.0"
+  retired-in: "1.0.0"
+  replaced-by: replacement
+---
+Retired. Nothing here is invocable; the replacement is named above.
+```
+
+The four stages, one line each:
+
+- **stable** — earned, not declared: `tests/scenarios/<name>.md` holds a recorded run
+  (`## Scenario`, `## Baseline`, `## With skill`, `## Verdict`). Promote after the record
+  exists; the gate fails the other order.
+- **beta** — the default, and where all 13 skills start. The description form is a warning
+  here, a failure at stable.
+- **retired** — `replaced-by` naming an asset that exists and is itself not retired, plus
+  `disable-model-invocation: true`.
+- **rule** — a skill, never a command: `paths:` and `user-invocable: false`, so it
+  lazy-loads on its globs instead of costing a chunk of every session.
+
+Then run `tools/selfcheck.sh` and `tools/skillcheck.sh`. Selfcheck fails on a documented
+name that doesn't exist, a frontmatter field Claude Code doesn't read, a tool without a
+shebang, and a leftover of the old layout (a `workflows/` file, or a tool cited by its old
+host path instead of `devil <name>`). Skillcheck fails on an untagged or misspelt stage, an
+unquoted `since`, a description off the A14 form or over 1024 bytes, a body with no report
+heading, a `/devil:<name>` reaching nothing, a stable skill with no recorded run, a
+tombstone pointing nowhere, a rule skill that loads every session, and a model-invocable
+asset pointing at a user-only one.
 
 ```sh
 bash tools/selfcheck.sh
+bash tools/skillcheck.sh
 bash tools/ponytail.sh --strict
 for t in tests/test_*.sh; do bash "$t" || echo "FAILED: $t"; done
 bash tools/quality.sh --no-audit

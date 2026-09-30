@@ -6,6 +6,9 @@ description: >
   it pop". Auto-triggers on: "review this design", "does this look right", "improve the
   UI", "critique this", "the design feels off", "make this look better"
 allowed-tools: Read, Edit, Grep, Glob, Bash
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Design review
