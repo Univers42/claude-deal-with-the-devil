@@ -1,13 +1,14 @@
 ---
 name: debug
 description: >
-  Find the actual cause of a failure instead of guessing at fixes. Reproduce, bisect to
-  the smallest failing case, prove the mechanism, then fix once. Auto-triggers on:
+  Find the actual cause of a failure instead of guessing at fixes. Use when a test
+  fails, a build breaks, a crash has no obvious cause, behaviour differs between
+  machines, or a fix that worked yesterday stopped working. Auto-triggers on:
   "why is this failing", "debug this", "this test is flaky", "it works locally",
   "fix this bug", "this crashes"
 allowed-tools: Read, Grep, Glob, Bash
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 
