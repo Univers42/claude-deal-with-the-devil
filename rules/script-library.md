@@ -19,7 +19,7 @@ whether it already exists. Most "quick scripts" are the fourth copy of something
    command for the thing you are about to script by hand.
 2. **`devil <tool>`** (the kit's `tools/*.sh`). The parsing and gate layer: `digest`, `facts`, `preflight`,
    `codemap`, `untested`, `dupes`, `quality`, `watch`, `selfcheck`, `context`,
-   `ponytail`. Do not reimplement one of these badly.
+   `caveat`. Do not reimplement one of these badly.
 3. **The registry.** `devil scripts list` — a vetted, version-pinned subset
    of an external library (valgrind wrappers, a comment stripper, C-norm helpers,
    header-cycle detection, markdown-to-PDF). `show <name>` gives the real arguments and

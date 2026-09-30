@@ -2,8 +2,9 @@
 # untested.sh — source files with no test naming their stem. Drives TDD:
 # this is the worklist of red bars to write before code. Caches to cache/.
 #
-# Existence-coverage only (ponytail: a test file *names* the stem). For real
-# line coverage, run the suite's coverage target — see facts.sh.
+# Caveat: existence-coverage only — a test file *names* the stem, so a stem named
+# by a test asserting something else, or covered by a test named differently, is
+# reported untested. For real line coverage, run the suite's coverage target.
 #
 # Usage: untested.sh [--summary] [--refresh]
 set -euo pipefail

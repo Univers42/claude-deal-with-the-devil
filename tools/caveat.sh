@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# ponytail.sh — find approximations that don't admit they are approximations.
+# caveat.sh — find approximations that don't admit they are approximations.
 #
-# `rules/ponytail.md`: every heuristic, regex parser, sampler, estimate, cache
+# `rules/caveat.md`: every heuristic, regex parser, sampler, estimate, cache
 # or timeout ships one line saying what it gets wrong and when. The failure mode
 # it prevents is specific — an approximation read as a fact, trusted, and wrong
 # in a way nobody wrote down. This tool finds the code that owes that line.
@@ -9,20 +9,29 @@
 # It looks for two things in every source file:
 #   SIGNAL  a construct or comment that reads as best-effort — a hedge word, a
 #           regex over source, a sample, a bounded read, a timeout, a cache.
-#   MARKER  a `Ponytail:` comment anywhere in the file.
+#   MARKER  a `Caveat:` comment anywhere in the file, or the legacy `Caveat:`
+#           marker kept for host repos that predate the rename.
 # Signal without marker is the finding.
 #
-# Ponytail: this tool is itself a heuristic, and it fails in both directions.
+# Caveat: this tool is itself a heuristic, and it fails in both directions.
 # It over-reports — a hedge word in ordinary prose ("assume the caller holds the
 # lock") reads as a signal. It under-reports worse: an approximation written
 # without any of these tells is invisible to it, and file-scope marker matching
 # means one marker silences an unrelated heuristic further down the same file.
 # It is a prompt to look, never a certificate. Confirm by reading the file.
 #
-# Usage: ponytail.sh [--summary] [--strict] [--refresh] [<path>]
+# Caveat: the marker match is case-SENSITIVE on purpose. A lowercase
+# `ponytail: <ceiling>` from a minimalism skill, and a lowercase `caveat:`
+# from anything else, are different markers and must not silence a finding.
+# Matching them case-insensitively is exactly the bug the rename fixes.
+#
+# Usage: caveat.sh [--summary] [--strict] [--refresh] [<path>]
 #   --strict  exit 1 on findings (use as a gate); default reports and exits 0
 #
-# Exit: 0 unless --strict and something was found. Verify-only — never writes.
+# Exit: 0 unless --strict and something was found. A file marked only with the
+# legacy `Caveat:` marker is reported as INFO and never fails the gate, so
+# host repos (graph_render's hundreds of `Caveat:` lines) keep passing.
+# Verify-only — never writes.
 set -uo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
@@ -37,7 +46,7 @@ for a in "$@"; do
   --strict) STRICT=1 ;;
   --refresh) export REFRESH=1 ;;
   -*)
-    echo "ponytail.sh: unknown arg '$a'" >&2
+    echo "caveat.sh: unknown arg '$a'" >&2
     exit 2
     ;;
   *) TARGET="$a" ;;
@@ -73,9 +82,15 @@ _targets() {
   fi
 }
 
+# The marker, case-sensitively. A name char before it disqualifies the match so a
+# `Caveats:` plural or an identifier ending in the word is not read as a marker.
+MARKER='(^|[^[:alnum:]])(Caveat|Ponytail):'
+
 FOUND=0
 MARKED=0
+LEGACY=0
 ROWS=""
+LEGACY_ROWS=""
 
 while read -r f; do
   [ -n "$f" ] || continue
@@ -89,7 +104,13 @@ while read -r f; do
   # positives, and a gate that cries wolf gets switched off.
   is_test_file "$f" && continue
 
-  if grep -qi 'ponytail:' "$f" 2>/dev/null; then
+  if grep -qE "$MARKER" "$f" 2>/dev/null; then
+    # A file carrying only the legacy marker still counts as marked; it is
+    # reported as INFO so the host-side count is visible, never as a failure.
+    if ! grep -qE '(^|[^[:alnum:]])Caveat:' "$f" 2>/dev/null; then
+      LEGACY=$((LEGACY + 1))
+      LEGACY_ROWS+="$f"$'\n'
+    fi
     MARKED=$((MARKED + 1))
     continue
   fi
@@ -114,7 +135,7 @@ done < <(_targets)
 echo "# Unmarked approximations"
 echo
 if [ "$FOUND" -eq 0 ]; then
-  echo "None. $MARKED file(s) carry a \`Ponytail:\` marker."
+  echo "None. $MARKED file(s) carry a \`Caveat:\` marker."
 else
   echo "| Signals | File | Line | Kind | What tripped it |"
   echo "|---:|---|---:|---|---|"
@@ -125,11 +146,19 @@ else
   done
 fi
 echo
-echo "**$FOUND file(s) with an unmarked signal · $MARKED already marked.**"
+if [ "$LEGACY" -gt 0 ]; then
+  echo "## INFO: $LEGACY file(s) marked with the legacy \`Ponytail:\` marker"
+  echo
+  echo "Still accepted, never a failure. Rename the marker to \`Caveat:\` at your leisure."
+  echo
+  printf '%s' "$LEGACY_ROWS" | head -20 | sed 's/^/- `/; s/$/`/'
+  echo
+fi
+echo "**$FOUND file(s) with an unmarked signal · $MARKED marked ($LEGACY legacy Ponytail:)**"
 echo
 echo "A row is a prompt to look, not a verdict (see this tool's own header). If the code \
 really is approximate, add one line saying what it gets wrong and when \
-(\`rules/ponytail.md\`). If it is exact, leave it — a marker on exact code trains \
+(\`rules/caveat.md\`). If it is exact, leave it — a marker on exact code trains \
 readers to skip markers."
 
 [ "$STRICT" = 1 ] && [ "$FOUND" -gt 0 ] && exit 1

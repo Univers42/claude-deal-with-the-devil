@@ -6,7 +6,7 @@
 #   --summary  counts per language + the heaviest files (the briefing view)
 #   --refresh  ignore the cache and rebuild
 #
-# Ponytail: symbols come from symbols_of() in lib/common.sh, which is a
+# Caveat: symbols come from symbols_of() in lib/common.sh, which is a
 # per-language regex, not a parser. It over-counts (a match inside a string or a
 # block comment) and under-counts worse (a signature wrapped across lines, a
 # macro-generated name, anything indented past column 0). Use it to find the

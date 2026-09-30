@@ -6,7 +6,7 @@
 # Env: OC (opencode binary; default: on PATH, else ~/.opencode/bin/opencode),
 #      OC_MODEL (default opencode/space-bunny-free#max; the variant goes after '#'),
 #      OC_TIMEOUT seconds (default 14400).
-# Ponytail: the hard timeout also kills a slow-but-alive job; resume it with
+# Caveat: the hard timeout also kills a slow-but-alive job; resume it with
 # `opencode run --session <id>` instead of relaunching from scratch.
 set -uo pipefail
 [[ $# -eq 4 ]] || {

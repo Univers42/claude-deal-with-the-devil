@@ -55,7 +55,7 @@ Run against a real tree on 2026-09-20 at the pinned sha:
 | `sysinfo` | Read in full; plain `uptime`/`df`/`free`, no side effects |
 | `valgrind-check` | Arg contract read at source: `$# -ne 2` → usage, exit 1; validates the source dir before compiling |
 
-**Ponytail:** the six entries above are exercised; the remaining six
+**Caveat:** the six entries above are exercised; the remaining six
 (`norm-check`, `leaks-check`, `branch-diff`, `sonar-branch`, `install-hooks`,
 `md-to-pdf`) are registered from reading the source, not from a run — their argument
 and exit columns are read off the code, not observed. Treat those as a pointer to the

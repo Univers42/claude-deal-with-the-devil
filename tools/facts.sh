@@ -4,7 +4,7 @@
 #
 # Usage: facts.sh [--summary] [--refresh]
 #
-# Ponytail: detection is manifest-presence plus target names, so it reports what
+# Caveat: detection is manifest-presence plus target names, so it reports what
 # a project *offers*, not what actually works — a listed make target can still be
 # broken, and a monorepo with several manifests reports all of them without
 # saying which one is yours. It fails silent rather than loud: a project whose

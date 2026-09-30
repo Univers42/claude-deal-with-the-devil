@@ -67,8 +67,8 @@ jobs:
         run: bash tools/selfcheck.sh --strict
       - name: tools/context.sh
         run: bash tools/context.sh --summary
-      - name: tools/ponytail.sh --strict
-        run: bash tools/ponytail.sh --strict
+      - name: tools/caveat.sh --strict
+        run: bash tools/caveat.sh --strict
 
   # The root must load as a Claude Code plugin. Validating plugin.json also reads
   # hooks/hooks.json; validating the root would pick marketplace.json and skip it.

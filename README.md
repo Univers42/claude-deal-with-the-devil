@@ -153,7 +153,7 @@ directory, so `devil digest` describes the project you are in.
 | `watch.sh` | "Run this without letting it hang" — timeouts around any command |
 | `selfcheck.sh` | "Does this config tell the truth about itself?" — the drift gate |
 | `context.sh` | "What does this config cost me every session?" |
-| `ponytail.sh` | "Which approximations here don't admit they're approximations?" |
+| `caveat.sh` | "Which approximations here don't admit they're approximations?" |
 | `scripts.sh` | "Is there already a script for this?" — the pinned external registry |
 
 ```sh
@@ -209,7 +209,7 @@ fires, so a wide roster is cheap — and `/skill-doctor` prunes what goes unused
 | `debug` | Reproduce, bisect, prove the mechanism, then fix once |
 | `write-test` | Generate coverage in the project's own framework |
 | `api-endpoint` | Scaffold a REST endpoint across the planes |
-| `ponytail` | Make every approximation state what it gets wrong |
+| `caveat` | Make every approximation state what it gets wrong |
 | `frontend` | Component and state boundaries, tokens, responsive, theme, a11y |
 | `browser-testing` | Drive a real browser via Playwright and come back with evidence |
 | `brainstorm` | Diverge wide, converge on evidence, leave with a kill criterion |
@@ -231,7 +231,7 @@ evidence out) · **`quality-bar`** (the strictest check, one command) ·
 (detect, don't invent) · **`run-safely`** (preflight, and never hang) ·
 **`minimalism-ladder`** and **`minimalism-markers`** (climb only as high as you must;
 the same for words) · **`refactor-common`** (the shared craft discipline) ·
-**`ponytail`** (name what your heuristic gets wrong) · **`memory`** (remember the
+**`caveat`** (name what your heuristic gets wrong) · **`memory`** (remember the
 expensive facts, nothing else).
 
 Loaded only when you touch matching files, so they cost nothing otherwise:
@@ -301,7 +301,7 @@ These hold for everything here, even one-off tasks:
 8. **A gate is the unit of "done"** — land work behind the project's verification gate,
    green at the strict `quality-bar`.
 9. **Say what you get wrong** — every approximation ships its limitation
-   (`rules/ponytail.md`).
+   (`rules/caveat.md`).
 
 ---
 
@@ -375,7 +375,7 @@ the old layout (a `workflows/` file, or a tool cited by its old host path instea
 
 ```sh
 bash tools/selfcheck.sh
-bash tools/ponytail.sh --strict
+bash tools/caveat.sh --strict
 for t in tests/test_*.sh; do bash "$t" || echo "FAILED: $t"; done
 bash tools/quality.sh --no-audit
 ```

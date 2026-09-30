@@ -47,5 +47,5 @@ it does **not** do; a page with only a happy path is marketing.
 
 ## The one mandatory comment
 
-Any heuristic, sampler, estimate, timeout or cache carries a `Ponytail:` line naming
-what it gets wrong (`rules/ponytail.md`). That one is required rather than earned.
+Any heuristic, sampler, estimate, timeout or cache carries a `Caveat:` line naming
+what it gets wrong (`rules/caveat.md`). That one is required rather than earned.
