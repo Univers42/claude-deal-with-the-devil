@@ -19,11 +19,11 @@ Gemini CLI and Codex CLI are **not installed**, so those two columns are documen
 
 | Kit asset | Claude Code | OpenCode 2.x | Copilot CLI | Gemini CLI | Codex CLI |
 |---|---|---|---|---|---|
-| Skills (`SKILL.md`) | plugin `skills/` [1] | `.opencode/skills`, `.claude/skills`, `.agents/skills` [2] verified [L1] | `.github/skills`, `.claude/skills`, `.agents/skills`, `~/.copilot/skills` [15] | extension `skills/<id>/SKILL.md` [20] | `.agents/skills` only, plus plugin `skills/` [26][28] |
+| Skills (`SKILL.md`) | plugin `skills/` [1] | `.opencode/skills`, `.claude/skills`, `.agents/skills` [2] verified [L1], plus the `skills` config array [L13] | `.github/skills`, `.claude/skills`, `.agents/skills`, `~/.copilot/skills` [15] | extension `skills/<id>/SKILL.md` [20] | `.agents/skills` only, plus plugin `skills/` [26][28] |
 | Skill frontmatter honoured | 20 fields incl. `paths`, `allowed-tools`, `disable-model-invocation` [1] | `name`, `description`, `license`, `compatibility`, `metadata`; ignores `paths:` [2] | standard set; `allowed-tools` is experimental [15][29] | standard set [29] | `name`, `description` required; `paths:` no [26] |
 | Path-scoped rule skills | `paths:` lazy-load [1] | no glob scoping; nearest `AGENTS.md` loads when a file under it is read [3] | `applyTo:` in `*.instructions.md` [14] | no equivalent found; `GEMINI.md` hierarchy only | no equivalent found; `AGENTS.md` plus `.rules` for command policy [24][25] |
 | Always-on rules | `CLAUDE.md`, `rules/*.md` with `paths:` [1] | `AGENTS.md` only; `CLAUDE.md` is **not** a fallback [3] | `CLAUDE.md`, `.claude/CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.github/copilot-instructions.md` [14] | `GEMINI.md`, plus extension `contextFileName` [20] | `AGENTS.md` [25] |
-| Agents | plugin `agents/*.md`, `tools:` list [1] | `.opencode/agents/*.md` with `mode:` + `permissions:` list [4]; `.claude/agents` **not read** [L1] | `.github/agents/*.md`, `.claude/agents/`, plugin `agents/*.agent.md` [11][16] | extension `agents/*.md`, preview feature [20] | `.codex/agents/*.toml`, TOML not Markdown [27] |
+| Agents | plugin `agents/*.md`, `tools:` list [1] | `.opencode/agents/*.md` with `mode: subagent` + `permissions:`; `.claude/agents` **not read**; the frontmatter must be a closed YAML block or `mode` is silently dropped [4][L20] | `.github/agents/*.md`, `.claude/agents/`, plugin `agents/*.agent.md` [11][16] | extension `agents/*.md`, preview feature [20] | `.codex/agents/*.toml`, TOML not Markdown [27] |
 | Commands | plugin `commands/<name>.md`, `/plugin:name` [1] | `.opencode/commands/*.md`, nested path becomes `/a/b` [5] | `.claude/commands/` read; plugin `commands/` or `com.github.copilot/commands/` [11] | `commands/*.toml`, nested becomes `/a:b` [20][22] | UNVERIFIED |
 | Commands: arguments | `$ARGUMENTS`, `$1` [1] | `$ARGUMENTS`, `$1` [5] | UNVERIFIED | `{{args}}` [22] | UNVERIFIED |
 | Commands: shell injection | bare `` !`cmd` `` line [1] | `` !`cmd` `` block [5] | UNVERIFIED | `!{cmd}` block [22] | UNVERIFIED |
@@ -31,13 +31,14 @@ Gemini CLI and Codex CLI are **not installed**, so those two columns are documen
 | Hooks: declaration | `hooks/hooks.json`, settings shape [1] | JS/TS plugin under `.opencode/plugins/` [7][8] | `.github/hooks/*.json`, `hooks.json` in a plugin [12][11] | `hooks/hooks.json`, also `.gemini/settings.json` [21][20] | `hooks/hooks.json` by default in a plugin, `.codex/hooks.json` [24] |
 | Hooks: event names | Claude set (`PreToolUse`, `PostToolUse`, `SessionStart`, ...) [1] | typed hook domains: `tool`, `permission`, `session`, `shell` [8] | Claude set plus `permissionRequest`, `postToolUseFailure`, `preCompact` [13] | PascalCase, different names: `BeforeTool`, `AfterTool`, `SessionStart` [21] | Claude set plus `PermissionRequest`, `PostCompact`, `Interrupt` [24] |
 | Hooks: matcher | Claude semantics (`Bash`, `Edit\|Write`) [1] | none (hook is per domain, not per tool) [8] | regex, or Claude semantics when the event is PascalCase [13] | regex on tool name [21] | regex, `Bash` matches shell [24] |
-| Hooks: deny a tool call | `permissionDecision: "deny"` [1] | throw in `ctx.tool.hook("execute.before")`, or `ctx.permission.hook("evaluate")` sets `effect: "deny"` [8] verified [L4][L5] | `permissionDecision: "deny"` on stdout, or exit 2 [13] | `{"decision":"deny"}` on stdout, or exit 2 [21] | `hookSpecificOutput.permissionDecision: "deny"`, or exit 2 [24] |
-| Hooks: inject context at session start | `SessionStart` `additionalContext` [1] | no session-start hook; `ctx.session.hook("context")` pushes system text per model call [8] | `sessionStart` `additionalContext` [13] | `SessionStart` inject context [21] | `SessionStart` `additionalContext` [24] |
-| Hooks: call an external script | `command` + `args` [1] | JS/TS in-process; spawn via the `$` shell API [8] | `bash`, or `exec` + `args` with no shell [13] | `type: "command"` shell string [21] | `type: "command"` or `type: "mcp_tool"` [24] |
-| `bin/` on the agent PATH | yes: `command -v devil` printed the plugin's `bin/devil` under `--plugin-dir` (slice F3, 2026-09-30) | no; a plugin spawns through `$` [8] | no | no | no |
-| Plugin-root variable | `${CLAUDE_PLUGIN_ROOT}` [1] | `ctx.location.directory` [8] | `${PLUGIN_ROOT}` in MCP, LSP and agent `mcp-servers`; **not documented for hooks** [11] | `${extensionPath}` in manifest and `hooks/hooks.json` [20] | `PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT` in plugin hooks [24][28] |
+| Hooks: deny a tool call | `permissionDecision: "deny"` [1] | `throw` in `ctx.tool.hook("execute.before")`, or `ctx.permission.hook("evaluate")` sets `effect: "deny"`; the permission hook is the one that sees the raw command text, and it is the closer analogue of `PreToolUse` [8] verified [L4][L5][L18] | `permissionDecision: "deny"` on stdout, or exit 2 [13] | `{"decision":"deny"}` on stdout, or exit 2 [21] | `hookSpecificOutput.permissionDecision: "deny"`, or exit 2 [24] |
+| Hooks: inject context at session start | `SessionStart` `additionalContext` [1] | no session-start hook; `ctx.session.hook("context")` pushes system text on every model call, `session.prompt` rewrites the user prompt, both reach the model [8][L16] | `sessionStart` `additionalContext` [13] | `SessionStart` inject context [21] | `SessionStart` `additionalContext` [24] |
+| Hooks: call an external script | `command` + `args` [1] | JS/TS in-process; spawn via `child_process` (the `$` shell API is not in the V2 plugin context) [8][L16] | `bash`, or `exec` + `args` with no shell [13] | `type: "command"` shell string [21] | `type: "command"` or `type: "mcp_tool"` [24] |
+| Adds an agent / a skill from a plugin | n/a | **no / no**: `AgentEditor` has no `add`, and `skill.transform` resolves without applying [8][L12] | UNVERIFIED | UNVERIFIED | UNVERIFIED |
+| `bin/` on the agent PATH | yes: `command -v devil` printed the plugin's `bin/devil` under `--plugin-dir` (slice F3, 2026-09-30) | **yes, via a plugin**: `ctx.shell.hook("create.before")` sets `event.env` [8][L14] | no | no | no |
+| Plugin-root variable | `${CLAUDE_PLUGIN_ROOT}` [1] | `ctx.location.directory` is the **project** dir, not the plugin's; use `import.meta.url` [8][L16] | `${PLUGIN_ROOT}` in MCP, LSP and agent `mcp-servers`; **not documented for hooks** [11] | `${extensionPath}` in manifest and `hooks/hooks.json` [20] | `PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT` in plugin hooks [24][28] |
 | MCP | root `.mcp.json` of a plugin [1] | `mcp.servers` in config, or a plugin `ctx.mcp.transform` [9][8] | `mcp.json` (portable) or `.mcp.json` / `.github/mcp.json` [11] | `mcpServers` in `gemini-extension.json` [20] | `mcp.json` (portable) or `.mcp.json` via manifest [28] |
-| Install | `claude plugin marketplace add owner/repo` then `claude plugin install name@marketplace`; `--plugin-dir` [1] | `opencode plugin add <npm name>[@ver]` or a git spec; a local path goes in the config `plugins` array; `plugin update`, `plugin list` [7] | `copilot plugin install plugin@marketplace \| owner/repo \| owner/repo:path \| URL \| ./path`; `plugin update`, `plugin list` [11] | `gemini extensions install <github url \| path> [--ref] [--auto-update]` [20] | `codex plugin marketplace add owner/repo \| URL \| ./path`, then install from the Plugins Directory [28] |
+| Install | `claude plugin marketplace add owner/repo` then `claude plugin install name@marketplace`; `--plugin-dir` [1] | `opencode plugin add <npm name>[@ver]` or a git spec; a **local path in the `plugins` array does not load in 2.0.18** — symlink into `.opencode/plugins/` instead [7][L15] | `copilot plugin install plugin@marketplace \| owner/repo \| owner/repo:path \| URL \| ./path`; `plugin update`, `plugin list` [11] | `gemini extensions install <github url \| path> [--ref] [--auto-update]` [20] | `codex plugin marketplace add owner/repo \| URL \| ./path`, then install from the Plugins Directory [28] |
 | Manifest | `.claude-plugin/plugin.json`, `name` required [1] | none; config file plus npm `package.json` for a plugin [7][8] | `plugin.json` at root, or `.plugin/`, `.github/plugin/`, **`.claude-plugin/plugin.json`** [11] verified [L7] | `gemini-extension.json` at root, `name` required [20] | root `plugin.json` (portable) or `.codex-plugin/plugin.json` [28] |
 | Versioning | `version` in `plugin.json`, marketplace entry may not repeat it [1] | npm or git version; git SHA stays pinned [7] | `version` in manifest or marketplace entry; `plugin update`, auto-update for first-party marketplaces [11] | `version` in `gemini-extension.json`, `extensions update` [20] | `version` in manifest; marketplace entry, no CLI update command documented [28] |
 | Reads Claude Code formats natively | is the source | `.claude/skills` yes [L1]; `.claude/agents` no [L1]; `.claude/commands` UNVERIFIED | `.claude-plugin/plugin.json` and `marketplace.json`, `.claude/skills`, `.claude/agents`, `.claude/commands`, `.claude/settings.json` hooks [11][13][14][15] verified [L7] | nothing except `GEMINI.md` as a custom-instructions filename for other tools | `plugin.json` may be legacy or Claude-compatible; `.claude-plugin/marketplace.json` is read by the desktop app [28] |
@@ -252,6 +253,180 @@ plugin concept at all, so it stays out of the plan until X2 and X4 confirm it.
 
 ---
 
+## OpenCode, measured for X1
+
+Everything below was run on this machine against OpenCode **2.0.18** on 2026-09-30,
+after [L1]-[L5] left four questions open. Scratch hosts lived under `target/probe/x1/`
+(inside the kit, so the project root was the kit) and `/tmp/opencode/x1proof` (outside
+it, so the kit's own `opencode.json` was not in the config chain). The difference
+between those two hosts turned out to matter and is recorded as **[L13]**.
+
+Unless stated otherwise each run was
+`opencode run --standalone --auto -m 'opencode/space-bunny-free#max' --agent build "<prompt>"`.
+
+**How a plugin must be written.** Three facts, all measured, that no documentation page
+states and that together make a correct plugin a no-op:
+
+- **`setup` must be synchronous.** An `async setup` that awaits its registrations leaves
+  every hook registered but never fired [L12]. A `setup` that lets a transform throw
+  behaves the same way: the registrations made before the throw do not take effect.
+- **A registration that resolves is not a registration that applied.**
+  `ctx.skill.transform` resolves cleanly and `editor.add` never reaches the registry [L12].
+- **There is no API that adds an agent.** `AgentEditor` exposes `list`, `get`, `default`,
+  `update`, `remove` and no `add`, so agents must be files. Commands, by contrast, are
+  added by a plugin: `ctx.command.transform(editor => editor.add({...}))` puts the command
+  in `ctx.command.list()` immediately [L12].
+
+**Q1a: can a plugin register agents, commands, skill directories or instruction text?**
+Partly, and the parts differ per domain.
+
+| Domain | Programmatic registration | Measured |
+|---|---|---|
+| Agents | **no.** `ctx.agent.transform` has no `add` | [L12] |
+| Commands | **yes.** `ctx.command.transform` + `editor.add` | [L12] |
+| Skills | **no.** `ctx.skill.transform` resolves, the skill never appears | [L12] |
+| Instruction text | **yes**, two channels, both proven to reach the model | [L12] |
+
+- **L12** — probe plugin under `.opencode/plugins/probe6.js`, sync `setup`, three
+  registrations and nothing else. Log line per event. Then a bare `.opencode/agents/zztable.md`
+  with a markdown table in the body, and `.opencode/agents/zzlong.md` with a 24-line body and
+  no `---` line: both launched and ran, so neither a table nor a long body is the problem.
+  `context keys=sessionID,model,system,messages,options,agent,tools systemLen=6`.
+
+**Q1b: can a plugin put a directory on the agent's PATH? Yes.** `ctx.shell.hook("create.before")`
+receives `event.env` and mutating it changes the environment of the command about to run.
+
+- **L14** — the bridge's `shell.create.before` prepends `<kit>/bin`. Asked the agent to run
+  `command -v devil`; output line: `/home/dlesieur/Documents/cdwd-wt/X1/bin/devil`.
+  `FIRED shell cwd=/tmp/opencode/x1proof`. A markdown table, a 24-line body, an em-dash, a
+  folded description, a `#` comment on line 2 and a five-rule `permissions` block were each
+  isolated in a file and each launched fine.
+
+**Q1c: how does a host load agents and commands from outside `.opencode/`?**
+
+- **Agents and commands: only from `.opencode/<kind>/`**, i.e. a symlink into the host works
+  and a copy works; nothing else does. A `agents` or `commands` key in `opencode.json` did
+  not register either, in a host at its own project root with no parent config [L13].
+- **Skills: the `skills` config array works**, with an absolute path to a directory of
+  `<name>/SKILL.md`. `.claude/skills` and `.agents/skills` are the other routes [2].
+  Measured output line: `script-library, api-convention, refactor-c, refactor-go,
+  refactor-rust, refactor-shell, refactor-typescript, caveat`.
+- **`plugins` with a local path does not work in 2.0.18.** Four ways tried [L15]: a bare
+  directory of `.js` files, and a directory carrying a `package.json` with `main` and
+  `exports`; absolute and relative; with and without `--standalone`. `setup` never ran in any
+  of the four, while the same file under `.opencode/plugins/` always ran. The symlink is
+  the route that works.
+
+**Q1d: what replaces always-on instructions in V2?** Not a config key: a plugin.
+
+- The `instructions` array is accepted by the schema and resolves no file, glob or URL [3].
+  This is the one cell [X0] got right from the documentation and it was re-confirmed.
+- Two plugin channels reach the model, both measured with a unique marker [L16]:
+  `ctx.session.hook("context", e => e.system.push({type:"text", text}))`, which runs on every
+  model call of the agent loop, and `ctx.session.hook("prompt", e => e.prompt.text = ...)`,
+  which runs once per user prompt. The answer to "is ZZMARKER_CTX present" was `yes` and
+  to "is ZZMARKER_PROMPT present" was `yes`.
+- `event.system` arrives with 4 entries and is a plain array; after the bridge's push it is
+  6, the extra two being the 26,470 bytes of `rules/*.md` and the session briefing [L16].
+  The model then quoted the heading of the injected rule document verbatim:
+  `# Caveat — name what your heuristic gets wrong` [L17]. That is the proof the rules are
+  really in the prompt and not merely pushed into an array nobody reads.
+
+**The deny path, end to end.** `ctx.permission.hook("evaluate")` fires for every action,
+including one the config already allowed, with `event.action = "shell"` and
+`event.resources = ["<the raw command text>"]`. Setting `event.effect = "deny"` and
+`event.message` blocks the call and the message reaches the model verbatim [L18]:
+
+```text
+Error: Refused: force-push to a protected branch. rules/risk.md treats this as a
+one-way door with no bounded blast radius. If it is genuinely intended, run it
+yourself — an agent should not be the one to do it.
+```
+
+That is `hooks/scripts/risk.py`'s own wording, unchanged, reached through the bridge.
+Setting `effect = "ask"` prompts in a session; under `--auto` it is auto-approved, which is
+what `--auto` means and is not a defect in the hook.
+
+**The permission hook is offered one segment of a compound command.** This is the
+sharpest edge found here and it is silent. [L21]
+
+```text
+enforce action=shell mapped=Bash resource="command -v devil"
+```
+
+That is the whole of what the permission hook saw for the call
+`command -v devil; echo "exit=$?"; echo git push --force origin main`. The rest of the
+string was never offered, the command ran, and nothing anywhere reported a gap. A
+single-segment call is offered in full (`enforce action=shell mapped=Bash
+resource="echo git push --force origin main"`, refused), so the split is invisible unless
+you look for it. The bridge therefore checks a segmented command a second time in
+`tool.execute.before`, which receives the whole string, and leaves single-segment commands
+alone so ordinary work does not pay for a second `python3`.
+
+- **L21** — the two runs above, same host, same prompt, one call each. Before the tool-hook
+  backstop the segmented call printed all three statements; after it, the output line is
+  `guardSegmented whole="command -v devil; echo \"exit=$?\"; echo git push --force origin
+  main"` and the call is refused with `hooks.py`'s own wording. `tests/opencode-plugin-probe.mjs`
+  pins the separator test and both halves of the behaviour.
+
+**Tool names and input shapes**, from `tool.execute.before` [L19]: the tool is `shell`, not
+`bash`; a write is `write` with input `{path, content}`; a read is `read` with `{path}`.
+`execute.after` carries `status: "completed"` and the keys
+`tool, sessionID, agent, messageID, id, input, status, result`. There is no field on it that
+injects context, so a post-edit gate verdict is queued and delivered on the next
+`session.context` call.
+
+- **L13** — the same wiring, two hosts. `target/probe/x1/live` (project root = the kit repo)
+  and `/tmp/opencode/x1proof` (project root = the host). A host inherits every
+  `opencode.json` from its cwd up to the project root, so a host nested inside another
+  repository inherits that repository's permissions: in `live`, a `git push` was refused by
+  the *host's* `*git* push*: deny` rule with the bare message `Permission denied: shell`, and
+  the bridge never got a vote, because an explicitly configured deny is final and does not
+  invoke the hook [8]. Proof of a bridge denial has to run in a host whose config chain does
+  not already answer `deny`.
+- **L15** — the four `plugins` shapes above, plus `.opencode/plugins/probe6.js` in the same
+  run to prove the file itself was sound. Output line: `registered tool.hook` never appeared
+  for the config-path copies and did appear for the `.opencode/plugins/` copy.
+- **L20** — the unterminated-frontmatter trap, which cost more experiments than anything
+  else here. A generated agent whose `permissions:` block was not followed by a closing
+  `---` produced this error and nothing else: `Error: Agent reviewer cannot run as a
+  subagent`. The agent existed, its `description` was right, and `mode: subagent` had been
+  dropped because the block never closed. Proof it is the fence and nothing else: deleting
+  the closing `---` from one working agent reproduces it, and a YAML parse of the same file
+  reports the frontmatter as unterminated. `tests/test_export.sh` now parses every generated
+  frontmatter with PyYAML and fails on exactly this.
+
+### What this changed in the matrix above
+
+- **Hooks: deny a tool call** — `ctx.permission.hook("evaluate")` with `effect: "deny"` is the
+  right mechanism for a hook that has to answer `PreToolUse`, because it is the only one that
+  sees the raw command text. [L18]
+- **`bin/` on the agent PATH** — **not no.** `ctx.shell.hook("create.before")` sets
+  `event.env`, so a plugin can prepend its own `bin/` [L14]. The cell becomes `yes, via a
+  plugin shell hook`.
+- **Install** — `opencode plugin add` installs an npm or git package. A local checkout is
+  **not** reachable through the `plugins` config array in 2.0.18 [L15]; the working install
+  is a symlink into `.opencode/plugins/` plus a symlink per asset directory, which is what
+  `dist/opencode/README.md` now specifies.
+- **Plugin-root variable** — `ctx.location.directory` is the **project** directory for a
+  plugin under `.opencode/plugins/`, not the plugin's own directory, so it cannot locate the
+  kit. `import.meta.url` can, and that is what the bridge uses. `ctx.location.project.directory`
+  is the git toplevel and is the right value for `CLAUDE_PROJECT_DIR`; `.canonical` resolves
+  to the **main** checkout and is wrong in a worktree, so the bridge does not use it [L16].
+- **Agents** — confirmed, with the unterminated-frontmatter trap attached [L20].
+- **Path-scoped rule skills** — unchanged: no glob field in V2 skill frontmatter.
+- **Hooks: inject context at session start** — `session.context` and `session.prompt` both
+  work [L16]; there is no session-start event, so "once per session" is implemented by the
+  bridge remembering the session id.
+
+### Still unknown after X1
+
+- OpenCode: whether a slash command typed in the TUI expands a `!` shell block [L2]; whether
+  `.claude/commands/` is read; and whether `ctx.agent.transform` can add an agent in a later
+  release. None of the three blocks the OpenCode export.
+
+---
+
 ## Still unknown
 
 - Copilot CLI: `${CLAUDE_PLUGIN_ROOT}` inside a plugin hook command, `.claude/agents/*.md`
@@ -262,6 +437,7 @@ plugin concept at all, so it stays out of the plan until X2 and X4 confirm it.
 - Codex CLI: custom slash commands at all, argument placeholders, shell injection.
 - Gemini CLI: whether `.agents/skills` or `.claude/skills` is read outside an extension, and
   the subagent file format.
-- Only Claude Code puts a plugin's `bin/` on the agent's `PATH` (verified in slice F3). Every
+- Only Claude Code and OpenCode put a kit's `bin/` on the agent's `PATH` (Claude Code in
+  slice F3, OpenCode via a plugin shell hook in [L14]). Every
   other harness reached here expects an absolute or `${...ROOT}` path, so `bin/devil` needs a
   per-harness accessor there.
