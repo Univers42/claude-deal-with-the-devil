@@ -88,6 +88,8 @@ jobs:
         run: bash tools/export.sh --check codex
       - name: tools/export.sh --check gemini
         run: bash tools/export.sh --check gemini
+      - name: tools/export.sh --check copilot
+        run: bash tools/export.sh --check copilot
 
   # The root must load as a Claude Code plugin. Validating plugin.json also reads
   # hooks/hooks.json; validating the root would pick marketplace.json and skip it.

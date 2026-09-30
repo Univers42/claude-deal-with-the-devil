@@ -178,6 +178,10 @@ g_export_gemini() { "$1" "$DIR/export.sh" --check gemini >/dev/null 2>&1; }
 check config export_gemini \
   "$([ -f "$DIR/export.sh" ] && [ -d "$ROOT/dist/gemini" ] && echo 1 || echo 0)" \
   "$(resolve bash)" g_export_gemini
+g_export_copilot() { "$1" "$DIR/export.sh" --check copilot >/dev/null 2>&1; }
+check config export_copilot \
+  "$([ -f "$DIR/export.sh" ] && [ -d "$ROOT/dist/copilot" ] && echo 1 || echo 0)" \
+  "$(resolve bash)" g_export_copilot
 
 check format prettier "$WEB" "$(resolve prettier)" g_prettier
 check format gofmt "$GO" "$(resolve gofumpt || resolve gofmt)" g_gofmt

@@ -62,6 +62,8 @@ devil export codex                   # regenerate dist/codex from the Claude sou
 devil export --check codex           # exit 1 if dist/codex drifted (CI runs this)
 devil export gemini                  # regenerate dist/gemini: a Gemini CLI extension
 devil export --check gemini          # exit 1 if dist/gemini drifted (CI runs this)
+devil export copilot                 # regenerate dist/copilot from the Claude sources
+devil export --check copilot         # exit 1 if dist/copilot drifted (CI runs this)
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
@@ -108,3 +110,18 @@ target also needs its own row in `README.md` under "Other harnesses" and its own
 section in `doc/HARNESSES.md`; a claim nobody measured is UNVERIFIED, never a row in "what
 works". `opencode` and `gemini` are the worked examples, and their install contracts and
 measured limits are in `dist/<harness>/README.md`.
+Add a harness? Put its emitters in `lib/export-<harness>.sh` and one `case` arm in
+`export.sh`. The Claude-format files stay canonical: the generator is the only place that
+knows another dialect, and `--check` is what keeps the two from drifting. `opencode` is the
+worked example; its install contract and its measured limits are in
+`dist/opencode/README.md`.
+
+Then add a `check config export_<harness>` row in `quality.sh` and a
+`tools/export.sh --check <harness>` step in CI. A target that is generated but not gated
+drifts silently, which is the whole failure mode the generator exists to prevent.
+
+`copilot` is the second target, and it is the counter-example worth reading: it needed
+four small files out of twenty-two, because it already reads `skills/` and `agents/` as
+they are. **Measure before you generate.** Each of its four files exists because a
+measurement found a defect, and the file it was checked against is
+`dist/copilot/README.md`.

@@ -124,7 +124,10 @@ fi
 # on it because the generated retired table is where a renamed asset stays
 # visible: the row naming the tombstone and its replacement is the whole reason
 # the table exists, and hiding the name would leave a dangling reference instead.
-extra='skills/caveat/SKILL.md|CHANGELOG.md|README.md'
+# dist/copilot/copilot-instructions.md is on it because it is a generated copy of
+# rules/caveat.md: a generated file that strips the word would be a second version
+# of the rule, and a second version of a rule is what this kit exists to prevent.
+extra='skills/caveat/SKILL.md|CHANGELOG.md|README.md|dist/copilot/copilot-instructions.md'
 allow="tools/caveat.sh|tests/test_caveat.sh|rules/caveat.md|skills/ponytail/SKILL.md"
 # dist/ is skipped on purpose: a generated harness copy inherits the word from
 # the source it was generated from, that source is checked here, and
