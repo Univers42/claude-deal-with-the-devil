@@ -47,11 +47,6 @@ DESC_HARD_MAX=1024
 DESC_SOFT_MAX=400
 SCENARIO_HEADINGS=('## Scenario' '## Baseline' '## With skill' '## Verdict')
 
-# A name a doc may cite before the slice that writes it lands (`/devil:guide` is
-# cited by templates/claude-md-block.md; slice M2 writes the command). Caveat: a
-# promise the gate cannot check, so delete the entry the day the file exists.
-PENDING="guide"
-
 _has() { [[ " $1 " == *" $2 "* ]]; }
 
 # Only a skill or a command owns lifecycle metadata; the rest are listed for A15.
@@ -153,7 +148,6 @@ check_slash_refs() {
   while read -r doc; do
     while read -r name; do
       [ -n "$name" ] || continue
-      _has "$PENDING" "$name" && continue
       { [ -f "commands/$name.md" ] || [ -f "skills/$name/SKILL.md" ]; } && continue
       row FAIL slash "${doc#./}" "/devil:$name has no commands/$name.md or skills/$name/SKILL.md"
     done < <(grep -ohE '/devil:[A-Za-z0-9_-]+' "$doc" 2>/dev/null | sed 's|^/devil:||' | sort -u)
