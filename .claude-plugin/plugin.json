@@ -1,0 +1,9 @@
+{
+  "name": "devil",
+  "displayName": "Deal with the Devil",
+  "version": "1.0.0",
+  "description": "Quality kit for Claude Code: spec, risk verdict, test-first build, strict gate.",
+  "author": { "name": "Univers42" },
+  "repository": "https://github.com/Univers42/claude-deal-with-the-devil",
+  "keywords": ["quality", "tdd", "review", "risk", "skills"]
+}

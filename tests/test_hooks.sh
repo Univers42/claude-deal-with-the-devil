@@ -101,6 +101,89 @@ done
 # --- an unknown event is simply ignored -------------------------------------
 expect "unknown event ignored" '{"hook_event_name":"SomeFutureEvent"}' silent
 
+# --- plugin root vs host root ------------------------------------------------
+# The handler finds its own kit (tools/, hooks/config) from its file location
+# and the host project from CLAUDE_PROJECT_DIR, else the cwd. A fixture plugin
+# root copied from the real tools proves each half separately.
+fixture_plugin() {
+  local d="$1"
+  mkdir -p "$d"/{agents,rules,commands,workflows,skills/demo,tools/lib,hooks/scripts,hooks/config,doc}
+  cp "$ROOT"/tools/*.sh "$d/tools/"
+  cp "$ROOT/tools/lib/common.sh" "$d/tools/lib/"
+  chmod +x "$d"/tools/*.sh
+  cp "$ROOT/hooks/scripts/hooks.py" "$d/hooks/scripts/"
+  cp "$ROOT/hooks/config/hooks-config.json" "$d/hooks/config/"
+  printf -- '---\nname: demo-agent\ndescription: a demo\n---\n\nBody\n' >"$d/agents/demo-agent.md"
+  # shellcheck disable=SC2016  # the backticks are markdown links in the fixture
+  printf -- '# Demo rule\n\nSee `agents/demo-agent.md`.\n' >"$d/rules/demo.md"
+  printf -- '---\nname: demo\ndescription: a demo skill\n---\n\n# Demo\n' >"$d/skills/demo/SKILL.md"
+  printf -- '---\ndescription: a demo command. Usage: /demo\n---\n\nBody\n' >"$d/commands/demo.md"
+  printf -- '---\ndescription: a demo workflow. Usage: /workflow:demo\n---\n\nBody\n' >"$d/workflows/demo.md"
+  # shellcheck disable=SC2016  # ditto
+  printf -- '# Index\n\n`agents/demo-agent.md` `rules/demo.md` `skills/demo/SKILL.md`\n`commands/demo.md` `workflows/demo.md`\n' \
+    >"$d/README.md"
+}
+
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+FIX="$TMP/plugin"
+HOST="$TMP/host"
+OUTSIDE="$TMP/outside"
+fixture_plugin "$FIX"
+FHOOK="$FIX/hooks/scripts/hooks.py"
+mkdir -p "$HOST" "$OUTSIDE"
+git -C "$HOST" init -q && : >"$HOST/main.go" && git -C "$HOST" add . &&
+  git -C "$HOST" -c user.name=t -c user.email=t@t.invalid commit -qm init
+HOST_P="$(cd "$HOST" && pwd -P)"
+
+# A drift row below must come from the edit, not from the fixture itself.
+if bash "$FIX/tools/selfcheck.sh" --summary >/dev/null 2>&1; then
+  ok "fixture plugin root starts clean"
+else
+  no "fixture plugin root must start clean"
+  bash "$FIX/tools/selfcheck.sh" --summary 2>&1 | head -8
+fi
+
+# quiet <label> <payload> [env args...]: the fixture handler exits 0 and says nothing
+quiet() {
+  local label="$1" payload="$2" out
+  shift 2
+  if out="$(printf '%s' "$payload" | env "$@" python3 "$FHOOK" 2>/dev/null)" && [ -z "$out" ]; then
+    ok "$label"
+  else
+    no "$label: expected exit 0 and silence, got: ${out:0:120}"
+  fi
+}
+
+benign='{"hook_event_name":"PreToolUse","tool_name":"Read","tool_input":{"file_path":"/x/a.go"}}'
+quiet "exit 0 with CLAUDE_PLUGIN_ROOT set" "$benign" CLAUDE_PLUGIN_ROOT="$FIX"
+quiet "exit 0 with CLAUDE_PLUGIN_ROOT unset (fail open)" "$benign" -u CLAUDE_PLUGIN_ROOT
+
+# A doc inside the plugin root that names a missing file re-runs selfcheck.
+md_write() {
+  printf '{"hook_event_name":"PostToolUse","tool_name":"Write","tool_input":{"file_path":"%s"}}' "$1"
+}
+# shellcheck disable=SC2016  # a markdown link, not a command substitution
+printf 'See `agents/ghost.md`.\n' >"$FIX/doc/notes.md"
+out="$(printf '%s' "$(md_write "$FIX/doc/notes.md")" | python3 "$FHOOK" 2>/dev/null)"
+case "$out" in
+*selfcheck.sh*"now fails"*agents/ghost.md*) ok "a dangling reference inside the plugin root reports drift" ;;
+*) no "expected the selfcheck drift message, got: ${out:0:160}" ;;
+esac
+
+# The same edit outside the plugin root is the host's business, not selfcheck's.
+# shellcheck disable=SC2016  # ditto
+printf 'See `agents/ghost.md`.\n' >"$OUTSIDE/notes.md"
+quiet "a .md outside the plugin root does not trigger selfcheck" "$(md_write "$OUTSIDE/notes.md")"
+
+# SessionStart briefs the host named by CLAUDE_PROJECT_DIR, not the hook's cwd.
+out="$(cd "$OUTSIDE" && printf '%s' '{"hook_event_name":"SessionStart","source":"startup"}' |
+  CLAUDE_PROJECT_DIR="$HOST" python3 "$FHOOK" 2>/dev/null)"
+case "$out" in
+*"Build briefing"*"$HOST_P"*) ok "SessionStart digests CLAUDE_PROJECT_DIR" ;;
+*) no "SessionStart should brief $HOST_P, got: ${out:0:160}" ;;
+esac
+
 echo
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1

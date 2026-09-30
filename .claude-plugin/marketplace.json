@@ -1,0 +1,13 @@
+{
+  "name": "univers42",
+  "owner": { "name": "Univers42" },
+  "description": "Plugins by Univers42",
+  "plugins": [
+    {
+      "name": "devil",
+      "source": "./",
+      "description": "Quality kit: spec, risk verdict, test-first build, strict gate",
+      "category": "engineering"
+    }
+  ]
+}

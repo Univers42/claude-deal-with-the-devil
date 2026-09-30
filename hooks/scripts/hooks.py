@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""hooks.py — the enforcement and notification handler for this .claude config.
+"""hooks.py: the enforcement and notification handler for the devil kit.
 
 Why this exists: every rule in rules/ was a reminder, and reminders drift. A rule
 that can be checked mechanically should be a check (agents/forger.md: "a rule
@@ -40,10 +40,19 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Two roots, never confused. The kit's own files (tools/, hooks/config) live
+# under the plugin root: this script's grandparent, wherever the plugin was
+# installed or copied. The project being worked on is the host root, which
+# Claude Code passes as CLAUDE_PROJECT_DIR; the cwd is the fallback for a hook
+# run by hand.
 HOOK_DIR = Path(__file__).resolve().parent.parent
-CLAUDE_DIR = HOOK_DIR.parent
+PLUGIN_ROOT = HOOK_DIR.parent
 CONFIG_DIR = HOOK_DIR / "config"
-TIMEOUT = 4  # seconds; settings.json allows 5000ms
+TIMEOUT = 4  # seconds; hooks/hooks.json gives the harness 5
+
+
+def host_root():
+    return os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
 
 
 # --------------------------------------------------------------------------- config
@@ -198,7 +207,7 @@ def post_tool_use(data):
     for gate in FILE_GATES.get(ext, []):
         if not which(gate[0]):
             continue
-        rc, out = run(gate + [path])
+        rc, out = run(gate + [path], cwd=host_root())
         if rc == 0 or not out:
             break
         context("PostToolUse",
@@ -208,11 +217,12 @@ def post_tool_use(data):
                 f"budget. Fix it now — it is cheaper here than at the gate.")
         break
 
-    # This config edits itself; keep it honest as it goes.
+    # A doc edited inside the kit may name a file that is not there; keep the
+    # kit honest as it goes. The host's own docs are not selfcheck's business.
     try:
-        if Path(path).resolve().is_relative_to(CLAUDE_DIR) and ext == ".md":
-            rc, out = run(["bash", str(CLAUDE_DIR / "tools" / "selfcheck.sh"),
-                           "--summary"], cwd=str(CLAUDE_DIR))
+        if ext == ".md" and Path(path).resolve().is_relative_to(PLUGIN_ROOT):
+            rc, out = run(["bash", str(PLUGIN_ROOT / "tools" / "selfcheck.sh"),
+                           "--summary"], cwd=str(PLUGIN_ROOT))
             if rc == 1:
                 context("PostToolUse",
                         f"`selfcheck.sh` now fails — this edit named something that is "
@@ -231,16 +241,16 @@ def session_start(data):
     go stale over a memory that can).
     """
     parts = []
-    digest = CLAUDE_DIR / "tools" / "digest.sh"
+    digest = PLUGIN_ROOT / "tools" / "digest.sh"
     if digest.is_file():
-        rc, out = run(["bash", str(digest)], cwd=os.getcwd())
+        # The digest describes the host project, so it runs there.
+        rc, out = run(["bash", str(digest)], cwd=host_root())
         if rc == 0 and out:
             parts.append(out[:4000])
     if parts:
         context("SessionStart",
-                "Project briefing from `.claude/tools/digest.sh` (cached, "
-                "fingerprinted to git state — no need to re-derive it):\n\n"
-                + "\n\n".join(parts))
+                f"Project briefing from `{digest}` (cached, fingerprinted to "
+                "git state; no need to re-derive it):\n\n" + "\n\n".join(parts))
     sys.exit(0)
 
 
@@ -251,7 +261,7 @@ def pre_compact(data):
             "Before compacting, preserve: measured numbers and the command that "
             "produced them, any `devil` verdict and its conditions, the current "
             "done-when, and anything still UNKNOWN. Per rules/memory.md, do NOT "
-            "preserve what `.claude/tools/digest.sh` re-derives — re-run it after "
+            "preserve what the kit's `tools/digest.sh` re-derives; re-run it after "
             "compaction instead of carrying a copy that will be stale.")
 
 

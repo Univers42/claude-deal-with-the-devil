@@ -65,6 +65,28 @@ the docs disagree, the docs are right and `tools/selfcheck.sh` needs updating.
 
 ---
 
+## Claude Code plugin docs
+
+Read on 2026-09-30, for turning this tree into the `devil` plugin. Each row is one page
+and the fact it settled; the last column says what changed here because of it.
+
+| Page | What it settled | What it fixed |
+|---|---|---|
+| <https://code.claude.com/docs/en/plugins/manifest-reference.md> | `plugin.json` documents `name` (required), `displayName`, `version`, `description`, `author.name`, `repository` (not validated), `license`, `keywords`. `hooks/hooks.json` is the default hook location. A root `settings.json` is read as plugin settings and only `agent` and `subagentStatusLine` survive; a root `.mcp.json` loads as plugin MCP servers; a root `CLAUDE.md` is not loaded and warns | `.claude-plugin/plugin.json`; `settings.json` and `.mcp.json` moved to `templates/` |
+| <https://code.claude.com/docs/en/plugins/components.md> | Plugin hooks live in `hooks/hooks.json` under a top-level `hooks` key, same shape as the settings object. Every hook process gets `CLAUDE_PLUGIN_ROOT` in its environment. With `args`, each element is one argument and needs no quoting; without `args`, the path must be double-quoted | Exec form (`command` + `args`) in `hooks/hooks.json` |
+| <https://code.claude.com/docs/en/plugins/marketplace-reference.md> | `name`, `owner.name` and `plugins` are required; a missing `description` is a warning. An entry takes `name`, `source` (a relative path starting `./`, or `.`), `description`, `category`. An entry `version` warns when `plugin.json` also sets one | `.claude-plugin/marketplace.json`, no `version` on the entry |
+| <https://code.claude.com/docs/en/plugins/cli-reference.md> | `claude plugin validate <path> --strict` exits 0, 1 (error, or warning under `--strict`) or 2 (validator failed). On a directory it picks `marketplace.json` first and then does not open the plugins' hook files. `claude plugin marketplace add owner/repo`; `claude plugin install name@marketplace`; `claude --plugin-dir <path>` loads a session-only plugin; `/plugin install` and `/plugin marketplace add` are the in-session forms | The `plugin` CI job validates `plugin.json` by path; README quick start |
+| <https://code.claude.com/docs/en/hooks.md> | A plugin `hooks/hooks.json` takes an optional top-level `description`. `timeout` is in seconds: the old `settings.json` wrote `5000`. `once` is honoured only in skill frontmatter. `${CLAUDE_PLUGIN_ROOT}` is substituted in `command` and in each `args` element. A plugin's timeouts never raise the harness budget | `hooks/hooks.json`: timeouts 5, 10 and 30 s; `once` dropped |
+| <https://code.claude.com/docs/en/setup.md> | `npm install -g @anthropic-ai/claude-code` is the documented npm install | The `plugin` CI job |
+
+Observed with `claude` 2.1.285, not stated on those pages: `claude plugin validate
+.claude-plugin/plugin.json` also reads `hooks/hooks.json` and rejects unparsable JSON and
+a bare events map (no `hooks` wrapper); an unknown handler field passes, so field choices
+rest on the hooks reference, not on the validator. `validate` runs with an empty `HOME`,
+so it needs no login; whether it runs offline was not tested.
+
+---
+
 ## Supermemory
 
 <https://supermemory.ai/mcp/> — checked 2026-09-20. Declared in `.mcp.json` and

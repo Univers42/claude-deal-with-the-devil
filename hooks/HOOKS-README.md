@@ -1,8 +1,9 @@
 # `hooks/` — where the rules stop being reminders
 
 A rule that can be checked mechanically should be a check. `agents/forger.md` puts it
-plainly: *a rule without a tool is a hope*. Every event in `settings.json` runs
-`scripts/hooks.py`, which does two jobs.
+plainly: *a rule without a tool is a hope*. Every event bound in `hooks.json` runs
+`scripts/hooks.py`, reached through `${CLAUDE_PLUGIN_ROOT}` so the same binding works
+wherever the plugin is installed. The script does two jobs.
 
 ## 1. Enforcement — the part that matters
 
@@ -13,8 +14,10 @@ plainly: *a rule without a tool is a hope*. Every event in `settings.json` runs
 | `SessionStart` | Injects `tools/digest.sh` so the agent starts briefed instead of re-deriving the tree. Cached and fingerprinted to git state. | `rules/prompt-contract.md` — facts first |
 | `PreCompact` | Names what must survive compaction (measured numbers, verdicts, the done-when, open UNKNOWNs) and what must not (anything `digest.sh` re-derives). | `rules/memory.md` |
 
-`PreToolUse` is the only **synchronous** hook — a decision is only honoured if the
-harness waits for it. Everything else is `async: true` and cannot block you.
+`PreToolUse` and `PreCompact` are the **synchronous** hooks: a decision or an injected
+context is only honoured if the harness waits for it. Everything else is `async: true`
+and cannot block you. `timeout` in `hooks.json` is in seconds, and a plugin's timeouts
+never raise the harness budget; `hooks.py` bounds its own subprocesses at 4 s.
 
 ### What it is not
 
@@ -50,7 +53,9 @@ Three levels of off, narrowest first:
 1. `disable<Event>Hook: true` — silence one event.
 2. `disableEnforcement: true` — keep sounds, drop the checks. Every rule is a reminder
    again.
-3. `disableAllHooks: true`, here or in `settings.local.json` — everything off.
+3. Everything off: `disableAllHooks: true` here; or `claude plugin disable devil`, which
+   removes the bindings with the plugin; or `"disableAllHooks": true` in the host's
+   `settings.json` / `settings.local.json`, which silences every hook from every source.
 
 ## Fail open, always
 
@@ -71,8 +76,8 @@ which is the correct response to most events.
 
 ## Adding an event
 
-1. Add the block to `settings.json` (copy an existing one; keep `async: true` unless it
-   must block).
+1. Add the block to `hooks.json` (copy an existing one; keep `async: true` unless it
+   must block; `timeout` is seconds).
 2. Add `disable<Event>Hook` to `config/hooks-config.json`.
 3. For enforcement, add a handler and register it in the `ENFORCERS` map in
    `scripts/hooks.py`.
