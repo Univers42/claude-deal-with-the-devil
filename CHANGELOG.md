@@ -13,6 +13,17 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Added
 
+- `commands/wayfinder.md` (`/devil:wayfinder`): multi-session planning on the host's
+  ticket tracker. The map ticket is the index (one line per ticket with its state
+  and blockers, one line per unknown with the question that would clear it, one log
+  line per session) and its tickets are decisions, not slices of a build, so
+  `/devil:to-tickets` cuts the build from the spec once the map is clear. A session
+  takes one ready ticket or one fog patch, reduces it to a fact, a decision or a
+  closed ticket, updates the map and stops; it never clears two fog patches in one
+  session. `templates/wayfinder-map.md` owns the map's four sections, and both
+  tracker adapters gained the five wayfinding verbs (`create-map`, `read-map`,
+  `list-tickets`, `claim-ticket`, `close-ticket`) with the local one keeping the
+  map at `.scratch/wayfinder/map.md`.
 - `tools/index.sh`: the generator behind the README asset tables and the router.
   `--check` (the default) regenerates every block between
   `<!-- devil:index:<kind>:start -->` and `<!-- devil:index:<kind>:end -->` and
