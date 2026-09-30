@@ -262,6 +262,35 @@ printf '# retired\n' >"$X/.claude/rules/devil/retired-rule.md"
 run "$X" --check
 if [ "$RC" -eq 1 ] && [ "$(status rules)" = change ]; then ok "a file the kit never seeded changes the rules fingerprint, so --check fails"; else no "an extra file under .claude/rules/devil should fail --check, got rc=$RC"; fi
 if [ -f "$X/.claude/rules/devil/retired-rule.md" ]; then ok "setup never deletes a host file it did not write"; else no "setup deleted a file from the host: a seeding tool must not"; fi
+# --- 17. a host with NO settings.json: two applies are a no-op ---------------
+# The merge sorts the permission lists, so a first write that copied the template
+# verbatim came out in the template's order and the second apply re-sorted the
+# file it had just written. A diff -r of a whole tree is the only assertion that
+# sees it: the file is valid JSON and the right content either way.
+NB="$TMP/nosettings"
+mkdir -p "$NB"
+git -C "$NB" init -q
+run "$NB" --apply
+cp -a "$NB" "$TMP/nosettings-1"
+run "$NB" --apply
+if [ "$RC" -eq 0 ] && diff -r "$NB" "$TMP/nosettings-1" >/dev/null 2>&1; then
+  ok "a host with no settings.json: two --apply runs are a no-op (diff -r)"
+else
+  no "two applies must not differ on a settings-less host: $(diff -r "$NB" "$TMP/nosettings-1" 2>&1 | head -5)"
+fi
+# The negative control, and it has to be a control rather than a second copy of
+# the case above: put back the first write the old code made, a plain copy of
+# the template, and the next apply MUST change it. If that stopped being true the
+# case above would pass for the wrong reason, namely that settings.json is a
+# fixed point no matter what is put in it.
+jq --indent 2 . "$ROOT/templates/settings.json" >"$NB/.claude/settings.json"
+cp "$NB/.claude/settings.json" "$TMP/nosettings-unsorted"
+run "$NB" --apply
+if ! cmp -s "$NB/.claude/settings.json" "$TMP/nosettings-unsorted"; then
+  ok "the control reproduces: an unsorted settings.json is NOT a fixed point"
+else
+  no "the control did not reproduce: an unsorted settings.json was already stable"
+fi
 
 echo
 echo "$PASS passed, $FAIL failed"

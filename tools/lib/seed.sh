@@ -126,6 +126,11 @@ stage_rules() {
 # to read top-down gets it back alphabetised (order means nothing to Claude Code).
 # Every other key is merged with jq's `*`, a deep merge: where both sides set the
 # same nested key the host wins and the template's siblings stay.
+# A host with no settings.json is merged against an empty object rather than
+# copied, because `unique` sorts: a plain copy would keep the template's own
+# order, so the next apply re-sorted the file it had just written and two applies
+# were not a no-op. Same merge, one code path, nothing host-specific to get
+# wrong.
 MERGE_PERMS='
 def u($a; $b): [(($a // [])[]), (($b // [])[])] | unique;
 .[0] as $t | .[1] as $h | $t * $h
@@ -141,10 +146,13 @@ stage_settings() {
     note cannot "jq is not installed" "printed templates/settings.json; nothing was written"
     return 0
   fi
+  # The same merge either way. With no host file, `{}` is the host side: an empty
+  # object is the identity of `*` and of the union, so the template comes out
+  # already sorted and the second apply finds nothing to change.
   if [ -f "$file" ]; then
     merged="$(jq -s "$MERGE_PERMS" "$KIT/templates/settings.json" "$file" 2>/dev/null)" || merged=""
   else
-    merged="$(jq --indent 2 . "$KIT/templates/settings.json" 2>/dev/null)" || merged=""
+    merged="$(jq -s "$MERGE_PERMS" "$KIT/templates/settings.json" - 2>/dev/null <<<'{}')" || merged=""
   fi
   [ -n "$merged" ] || {
     note cannot "jq could not merge templates/settings.json" "malformed host file?"

@@ -16,9 +16,19 @@ metadata:
 ## 0. Detect the framework
 
 - Run `devil facts` — it reports the detected test framework. Write in
-  THAT framework, in its idiom (see `rules/test-frameworks.md`). Don't introduce a
-  second framework; don't hand-roll asserts/mocks it already ships.
-- None configured? Pick the canonical default for the stack and say why in one line.
+  THAT framework, in its idiom (see `rules/test-frameworks.md`, which a host that
+  installed the kit as a plugin has only after `devil setup`; the detection below
+  is the fact the step needs and does not depend on it).
+- `rules/test-frameworks.md` names the idioms per stack. To detect, read the
+  project's own manifest (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`,
+  `build.gradle`, `pom.xml`) for a test dependency, then read the tests already in
+  the tree for the framework they import. The manifest alone is not proof: a
+  dependency can sit installed and unused, and the existing tests are what a new
+  one has to sit next to. Both agreeing, or one of them, is the answer.
+- Write in THAT framework. Don't introduce a second framework; don't hand-roll
+  asserts/mocks it already ships.
+- Nothing in the manifest and no tests in the tree? Pick the canonical default for
+  the stack and say why in one line.
 
 ## 1. Read the source
 
