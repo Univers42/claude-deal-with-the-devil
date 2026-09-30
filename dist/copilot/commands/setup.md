@@ -29,7 +29,10 @@ Print the stage table verbatim, one line per stage, and say plainly:
 
 Never paraphrase a status word. `cannot` is exit 2 and the run is incomplete:
 the settings and opencode stages need `jq`, and without it the settings stage
-prints the block it would have merged for the person to paste.
+prints the block it would have merged for the person to paste. The opencode
+stage says `cannot` for a host whose config is `opencode.jsonc` (jq reads JSON,
+not JSONC) and for a malformed `opencode.json`; in both cases nothing was
+written and the host's own file is intact.
 
 ## 3. After an apply, say what to re-check
 

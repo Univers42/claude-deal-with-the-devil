@@ -454,6 +454,10 @@ Route the plan through `devil` (or the `/devil:deal` workflow) before acting whe
 Trivial, reversible, local work skips the gate — the devil is a tribunal, not a tollbooth. When
 unsure whether a change qualifies: it qualifies.
 
+The human go-ahead can be given once for a whole session rather than once per command:
+`DEVIL_AUTONOMY=1` turns the hook's ask into no decision, so the session's permission mode
+decides (`hooks/HOOKS-README.md`). The refuse-the-catastrophic half is not part of that deal.
+
 ## How risk is scored
 
 The devil scores four axes 1–5 and names the worst (see `agents/devil.md`): blast radius ·
