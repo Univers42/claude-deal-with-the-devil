@@ -4,14 +4,9 @@
 
 ## create-ticket
 
-Write `.scratch/tickets/NNN-slug.md`, NNN the next free number:
-
-```md
-# NNN <slug>
-Objective: <one slice, end to end>
-Done when: <a command a test can run>
-Blocks: NNN, NNN
-```
+Write `.scratch/tickets/NNN-slug.md`, NNN the next free number, filled in from
+`templates/ticket.md`. That template owns the body shape; this adapter only
+decides where the file lands.
 
 ## list-ready
 
@@ -19,7 +14,7 @@ Blocks: NNN, NNN
 ls .scratch/tickets/
 ```
 
-A ticket is ready when its `Blocks:` list is empty, or names only closed tickets.
+A ticket is ready when its `Blocks:` section names no open ticket.
 
 ## close-ticket
 

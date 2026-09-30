@@ -180,6 +180,44 @@ grep -q '^SKIPPED: set secret DASHBOARD_TOKEN' "$TMP/dry.out" && ok "gh absent p
 [ ! -e "$TMP/dry/.env" ] && ok "dry-run writes nothing to .env" || no "dry-run wrote a .env"
 grep -q 's3cr3t-value-XYZ' "$TMP/dry.out" && no "the secret value was printed" || ok "the secret value never appears in the output"
 
+# --- h. ticket.md carries the headings a ticket needs -------------------------
+# The shape a ticket body has is a list of five sections. A body that loses one
+# reads as finished: `Blocks` gone means the dependency edge is nowhere, and the
+# ticket looks ready when it is blocked. So each heading is checked by name, and
+# a copy with one removed has to fail, or the check is not a gate.
+TICKET_HEADINGS=('## Objective' '## Done when' '## Blocks' '## Seams' '## Notes')
+
+# ticket_headings_ok <file>: 0 when every heading is there exactly once.
+# Caveat: a string test on the raw lines, so a heading inside a fenced code block
+# or in bold counts, and a section renamed to something else reads as absent. That
+# is the drift worth failing on; it is not a parser.
+ticket_headings_ok() {
+  local h
+  for h in "${TICKET_HEADINGS[@]}"; do
+    grep -qxF -- "$h" "$1" || return 1
+  done
+  return 0
+}
+
+if ticket_headings_ok "$ROOT/templates/ticket.md"; then
+  ok "templates/ticket.md carries its five headings"
+else
+  no "templates/ticket.md is missing one of: ${TICKET_HEADINGS[*]}"
+fi
+# negative control: one heading removed must FAIL
+grep -v '^## Blocks$' "$ROOT/templates/ticket.md" >"$TMP/ticket-noblocks.md"
+ticket_headings_ok "$TMP/ticket-noblocks.md" && no "a ticket body without '## Blocks' must fail the check" ||
+  ok "a ticket body with '## Blocks' removed fails the check"
+grep -v '^## Seams$' "$ROOT/templates/ticket.md" >"$TMP/ticket-noseams.md"
+ticket_headings_ok "$TMP/ticket-noseams.md" && no "a ticket body without '## Seams' must fail the check" ||
+  ok "a ticket body with '## Seams' removed fails the check"
+# both tracker adapters point at the one body shape
+for t in github local; do
+  grep -q 'templates/ticket.md' "$ROOT/templates/tracker/$t.md" &&
+    ok "templates/tracker/$t.md references templates/ticket.md" ||
+    no "templates/tracker/$t.md must reference templates/ticket.md"
+done
+
 echo
 echo "$PASS passed, $FAIL failed, $SKIP skipped"
 [ "$FAIL" -eq 0 ] || exit 1

@@ -62,7 +62,9 @@ code from "it works" to "it holds": `/devil:harden <module>`. The rest:
 onto the project's backend, with a go/no-go gate after recon), `/devil:ship` (the release pipeline), `/devil:migrate-db` (author a
 migration, paired with `/devil:migrate`), `/devil:compat-audit` (endpoint-by-endpoint parity),
 `/devil:handoff` (the portable document a fresh session, or another harness, continues from),
-`/devil:retro` (a session or a PR turned into checks to build and rules to propose).
+`/devil:retro` (a session or a PR turned into checks to build and rules to propose),
+`/devil:to-tickets` (a spec cut into vertical-slice tickets with blocking edges, published
+to the host's tracker once you approve the list).
 
 ---
 

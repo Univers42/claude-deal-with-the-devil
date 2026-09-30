@@ -12,7 +12,11 @@ Files a host project receives, not files the plugin loads.
   source of truth: what it points at is `/devil:guide` and the seeded rule directory.
 - `tracker/github.md` and `tracker/local.md`: the same three verbs (`create-ticket`,
   `list-ready`, `close-ticket`) as the commands they become, for a host on GitHub
-  issues or on files under `.scratch/tickets/`.
+  issues or on files under `.scratch/tickets/`. They translate the verbs only; the
+  body shape a ticket carries is `ticket.md`.
+- `ticket.md`: the body a published ticket is filled in from, the five sections
+  `tests/test_templates.sh` checks by name. It is the one place a ticket's shape is
+  written down.
 - `wizard.sh`: the copy-and-fill library for a procedure only a person runs.
 
 Nothing here is read from the plugin root, on purpose: a root `settings.json` is taken
