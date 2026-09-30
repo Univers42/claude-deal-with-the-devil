@@ -21,8 +21,9 @@ done-when a test can check. If $ARGUMENTS is empty, ask for the request and stop
 
 - List the ambiguities that change the implementation: scope, inputs/outputs, edge
   cases, the success signal.
-- Ask ONLY the questions whose answers change the code. Assume sensible defaults for
-  the rest and state them. Don't interrogate.
+- Ask only what changes the code. If, after stating defaults, the done-when is
+  still not stateable, or a `rules/risk.md` trigger fires, run the `grill` skill;
+  otherwise do not interrogate.
 
 ### Phase 3 — Forge
 
@@ -31,6 +32,11 @@ Emit the refined prompt, ready to hand to `agents/builder.md`:
 - **Objective** — one sentence, the goal in the user's terms.
 - **Context** — grounding facts from digest: languages, build/test commands, files in
   scope, primitives that already exist.
+- **Seams**: the boundaries this work must respect, named by contract and never by
+  path: the inputs it takes, the outputs it returns, and the invariants it holds.
+  A seam named by file path (`app/api/handler.go`) is a location, and a location
+  stops being true the moment the code moves; `POST /orders returns an OrderId and
+  never touches the database` is a contract and survives the move.
 - **Constraints** — the binding rules that apply (`library-first`, `quality-bar`,
   `dsa-and-memory`, `test-frameworks`, the per-tech `refactor-<tech>`).
 - **Done-when** — the verifiable gate: the test that must pass, `devil quality` green.
