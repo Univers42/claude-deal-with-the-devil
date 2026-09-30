@@ -211,6 +211,50 @@ case "$out" in
 *) no "SessionStart should brief $HOST_P, got: ${out:0:160}" ;;
 esac
 
+# --- the seeded rules drift from the plugin --------------------------------
+# A plugin cannot ship .claude/rules/*.md, so setup.sh copies them into the host
+# and stamps the version. When the plugin moves on, the host's copy is stale and
+# the agent would enforce the old rules without knowing: the hook has to say so.
+# The plugin version comes from the fixture's own manifest, so copy one in.
+mkdir -p "$FIX/.claude-plugin"
+cp "$ROOT/.claude-plugin/plugin.json" "$FIX/.claude-plugin/plugin.json"
+PLUGIN_V="$(sed -nE 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p' "$FIX/.claude-plugin/plugin.json" | head -1)"
+STAMP="$HOST/.claude/rules/devil/.version"
+startup() { printf '%s' '{"hook_event_name":"SessionStart","source":"startup"}' | CLAUDE_PROJECT_DIR="$HOST" python3 "$FHOOK" 2>/dev/null; }
+
+mkdir -p "$(dirname "$STAMP")"
+printf 'version=0.0.1\nsha256=abc\nrules=12\n' >"$STAMP"
+out="$(startup)"
+case "$out" in
+*"seeded devil rules are from 0.0.1, plugin is $PLUGIN_V: run /devil:setup --apply"*)
+  ok "SessionStart reports seeded rules older than the plugin"
+  ;;
+*) no "expected the rules-drift line, got: ${out:0:200}" ;;
+esac
+
+# The negative control for the case above: a stamp matching the plugin must say
+# nothing, or the warning is noise and gets ignored.
+printf 'version=%s\nsha256=abc\nrules=12\n' "$PLUGIN_V" >"$STAMP"
+out="$(startup)"
+case "$out" in
+*"seeded devil rules"*) no "a matching stamp must not report drift" ;;
+*) ok "a stamp matching the plugin reports no drift" ;;
+esac
+
+# No stamp at all is not drift: a host nobody seeded is not a broken host.
+rm -f "$STAMP"
+out="$(startup)"
+case "$out" in
+*"seeded devil rules"*) no "an unseeded host must not report drift" ;;
+*"Build briefing"*) ok "an unseeded host gets the briefing and no drift line" ;;
+*) no "removing the stamp broke the briefing: ${out:0:160}" ;;
+esac
+
+# A stamp that is not a version line at all reads as absent, not as a crash.
+printf 'garbage\n' >"$STAMP"
+if startup >/dev/null; then ok "a malformed .version fails open"; else no "a malformed .version must exit 0"; fi
+rm -f "$STAMP"
+
 echo
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1
