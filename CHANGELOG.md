@@ -13,6 +13,22 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Added
 
+- `tools/index.sh`: the generator behind the README asset tables and the router.
+  `--check` (the default) regenerates every block between
+  `<!-- devil:index:<kind>:start -->` and `<!-- devil:index:<kind>:end -->` and
+  exits 1 with a diff when one has drifted from the frontmatter; `--write`
+  rewrites only those blocks, byte-identical everywhere else; `--router` prints
+  the same five tables (skills, rule skills, commands, workflows, retired) to
+  stdout. The "Use when" column is the text between `Use when` and
+  `Auto-triggers on`, so a description off the A14 form says so in its own row.
+- `commands/guide.md` (`/devil:guide`): the live index, user-only, with the tables
+  injected by `devil index --router` at the moment the command runs. A generated
+  router cannot quote a roster that no longer exists; the hand-kept one could, and
+  did.
+- The README skills, commands, workflows, retired and rule-skill tables are now
+  generated (`bash tools/index.sh --write`) instead of hand-maintained, and
+  `index.sh --check` runs in `quality.sh` and in CI next to `selfcheck.sh` and
+  `skillcheck.sh`.
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: the repo root
   now loads as a plugin, `devil`, served by the self-marketplace `univers42`. Every
   asset is namespaced, so `/devil:debug` and the agent `devil:reviewer` can no longer

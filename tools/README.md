@@ -28,6 +28,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `setup.sh` | "What is this host still missing from the kit?" — seeds rules, permissions, CLAUDE.md, OpenCode wiring, tracker, gitignore | the host's `.claude/`, `opencode.json`, `.gitignore` |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
 | `skillcheck.sh` | "Is this config MANAGED?" (lifecycle, description form, resolving references) | `skills/`, `commands/`, agents, rules, every doc |
+| `index.sh` | "Do the README tables and the router still match the frontmatter?" (the generated index) | the marked blocks of `README.md`, every skill and command |
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` (the `paths:` skills count as lazy) |
 | `caveat.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
@@ -50,6 +51,9 @@ devil setup --apply                  # seed it: rules, permissions, CLAUDE.md, O
 devil release --check                # one version source: plugin.json == changelog heading
 devil release bump patch             # cut a release: edit, commit, tag, never push
 devil skillcheck                     # skill and command management (exit 1 = a finding)
+devil index --check                  # the README tables match the frontmatter (exit 1 = drift)
+devil index --write                  # regenerate those tables from the frontmatter
+devil index --router                 # the same tables, for /devil:guide
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
