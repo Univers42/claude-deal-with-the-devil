@@ -286,9 +286,10 @@ These hold for everything here, even one-off tasks:
 ├── skills/<n>/SKILL.md  capabilities that trigger on intent (debug, frontend, …)
 ├── workflows/*.md     multi-phase playbooks (/workflow:feature, harden, deal, …)
 ├── tools/*.sh         the scripts (digest, quality, selfcheck, …) + lib/common.sh
+├── templates/         copy-and-fill procedures a person performs (wizard.sh)
 ├── hooks/             the enforcement + notification handler
 ├── scripts/           REGISTRY.md — the vetted external script library
-├── tests/             regression tests for the tools and hooks
+├── tests/             regression tests for the tools, hooks and templates
 ├── doc/               MEMORY.md, REFERENCES.md
 └── cache/             tool output, gitignored, fingerprinted to git state
 ```
@@ -319,6 +320,12 @@ numbers, and skip filler words like "simply" or "just".
   exit non-zero on failure. The `forger` builds these.
 - **Agents** — frontmatter with `name` (matching the filename), a `description:` with
   triggers, `tools:`, and optionally `model:` and `memory:`.
+- **Templates** are copy-and-fill scripts for the steps only a person can do. Edit only
+  below the `# STAGES` marker; the library above it stays byte-identical in every copy.
+  `templates/wizard.sh` is a provisioning procedure (dashboards, credentials, CI secrets,
+  cutovers): the agent never runs one, `bash tests/test_templates.sh --trace <file>` is
+  its static proof. `skills/debug/scripts/hitl-loop.sh` is a reproduction a person drives;
+  the agent parses its `KEY=VALUE` tail and never wraps it in `tools/watch.sh`.
 
 Then run `tools/selfcheck.sh`. It fails on a documented name that doesn't exist, a
 frontmatter field Claude Code doesn't read, and a tool without a shebang — the three

@@ -49,6 +49,9 @@ early when the cache is cold." Then instrument to confirm or kill it.
   `strace`/`dtruss`, `-fsanitize=address,undefined`, `valgrind`,
   `go test -race`, `RUST_BACKTRACE=1`, the browser console via the `browser-testing`
   skill for anything rendered.
+- A person must drive it (sign in, click, observe)? Copy
+  `skills/debug/scripts/hitl-loop.sh`, fill in its stages, and parse the `KEY=VALUE` tail
+  it prints. Never wrap it in `.claude/tools/watch.sh`: the idle timeout kills it mid-step.
 - **A hypothesis you did not confirm is not the cause.** UNKNOWN = FAIL
   (`rules/prompt-contract.md`). If the evidence kills your hypothesis, say so and form
   the next one — do not fix the thing you happened to be looking at.
