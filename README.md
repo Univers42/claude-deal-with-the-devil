@@ -245,17 +245,17 @@ only on a matching file.
 | Skill | Stage | Use when |
 | --- | --- | --- |
 | `api-endpoint` | stable | a route is missing, a handler needs wiring, a resource has to be reachable over HTTP, or a client calls the API by hand |
-| `brainstorm` | beta | Generate options properly — diverge wide before judging, then converge on evidence and cost (no Use when yet) |
+| `brainstorm` | stable | a decision has several viable answers and the risk is settling on the first plausible one, or handing back an unranked menu |
 | `browser-testing` | stable | a page is claimed to work but only a unit test says so, or when a flow must be clicked through |
-| `caveat` | beta | a change adds a heuristic, a sample, a bounded read, a timeout, a cache or a derived number, or when you need to know what a piece of code is bad at |
+| `caveat` | stable | a change adds an approximation, a bounded read, an estimate or a retry bound, or you need to know what a code is bad at |
 | `commit-craft` | stable | changes are uncommitted, one commit mixes several concerns, a message does not say what changed, or a branch needs tidying before review |
-| `context-budget` | beta | Measure and cut what this config costs in context every session — always-on rules, skill descriptions, unused skills (no Use when yet) |
+| `context-budget` | beta | the window fills before any work starts, a session compacts mid-task, or it is unclear what loads every session |
 | `debug` | stable | a test fails, a build breaks, a crash has no obvious cause, behaviour differs between machines, or a fix that worked yesterday stopped working |
 | `design-review` | stable | a design is described as feeling off, crowded or unfinished and the cause has not been named yet |
-| `doc-sync` | beta | Find the documentation a change just made false, and fix it — examples copied from passing tests, never composed (no Use when yet) |
+| `doc-sync` | stable | a flag was renamed, a path moved, a default changed, a command was removed, or a README example no longer matches what the code prints |
 | `frontend` | stable | a page or a component is being added or restyled, when a layout breaks on a narrow screen or in dark mode, or when a view has no empty, loading or error state |
 | `grill` | beta | a request is underspecified, the done-when is not stateable, or a rules/risk.md trigger is unresolved before code starts |
-| `originality` | beta | Prior-art pass before writing something new — find what already does this, in the repo and outside it, then say plainly whether to reuse, wrap, or build and why (no Use when yet) |
+| `originality` | stable | something new is about to be written and nobody has checked whether the stdlib, a dependency or the platform already covers it |
 | `perf-budget` | stable | something is slow and the work should stay bounded, or when an optimisation is proposed with no number attached to it |
 | `prototype` | beta | an approach's cost, performance or feasibility is unproven, or when a spike, benchmark or quick prototype is asked for |
 | `write-test` | beta | a module has no tests, coverage is thin, a fix needs a regression test, or a change should land with proof it still works |
