@@ -53,10 +53,14 @@ row() {
   return 0
 }
 
-# Every markdown file in the config, excluding vendored/reference trees.
+# Every markdown file in the config, excluding vendored/reference trees and
+# generated output. cache_dir() puts the cache under the host's .claude/, which
+# in a standalone checkout of this kit is ./.claude/cache: its codemap named
+# `scripts/hooks.py` and read as a dangling reference.
 _docs() {
   find . -name '*.md' \
     -not -path './cache/*' \
+    -not -path './.claude/*' \
     -not -path './claude-code-best-practice/*' \
     -not -path './.git/*' | sort
 }
