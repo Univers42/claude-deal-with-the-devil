@@ -26,7 +26,7 @@ line per job, and never merge on an agent's say-so.
 Every body (or `$OC_COMMON_PROMPT`) must require the agent to end with a block that
 `oc-job.sh` can grep:
 
-```
+```text
 status: done | partial | blocked
 gates: fmt=<rc> lint=<rc> test=<rc>
 changed: <files>
