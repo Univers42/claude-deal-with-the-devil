@@ -44,7 +44,7 @@ A hardening pass without tests is a refactor with no seatbelt.
 
 - Run `security` on the module. Every input from outside is hostile: injection,
   authz-by-construction, secrets, crypto, resource exhaustion
-  (`rules/api-convention.md` for anything on an HTTP surface).
+  (the `api-convention` skill for anything on an HTTP surface).
 - Every CRITICAL/HIGH is a `rules/risk.md` trigger — it goes to the `devil` before the
   fix ships, and a human approves any cutover.
 - Turn each confirmed finding into a failing test first, then fix. A security fix with

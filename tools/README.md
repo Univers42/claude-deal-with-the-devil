@@ -26,7 +26,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `watch.sh` | "Run this without ever hanging" — hard + idle timeouts around any command | wraps a command |
 | `selfcheck.sh` | "Does this config tell the truth about itself?" (the drift gate) | every doc + every frontmatter block |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
-| `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` |
+| `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` (the `paths:` skills count as lazy) |
 | `caveat.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
 | `orch/` | "Delegate bulk work to headless OpenCode builders and check it" — launch, watch (`devil orch oc-status`), gate before merge | job journals under `<worktree>/target/wf/` — see `orch/README.md` |

@@ -1,4 +1,9 @@
 ---
+name: api-convention
+description: >
+  REST API conventions: resource-oriented and versioned routes, auth and access control
+  on every surface, and one error shape. Use when editing routes, handlers, controllers
+  or router files.
 paths:
   - "**/routes/**"
   - "**/handlers/**"
@@ -6,6 +11,10 @@ paths:
   - "**/api/**"
   - "**/*router*"
   - "**/*controller*"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # API Conventions

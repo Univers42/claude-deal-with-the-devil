@@ -68,7 +68,9 @@ Every subagent obeys these, even for a one-off slice:
   run as `/devil:<name>`. Not hard-coded here.
 - Auto-firing capabilities → a `skills/<name>/SKILL.md`. One-shot actions → a `commands/<name>.md`
   with `kind: command`, also `/devil:<name>`.
-- Durable constraints → a `rules/*.md`. Orientation + conventions → [`README.md`](README.md).
+- Durable constraints → a `rules/*.md`; a constraint scoped to file types → a `paths:` skill
+  tagged `metadata.stage: rule`, because a plugin ships skills but not `rules/`. Orientation
+  + conventions → [`README.md`](README.md).
 - Recurring parse or enforceable check → a `tools/<name>.sh` (index in [`tools/README.md`](tools/README.md)),
   run as `devil <name>` through `bin/devil`; the `forger` builds and maintains these.
 - A constraint that must be impossible to ignore → a hook in `hooks/`
@@ -76,7 +78,7 @@ Every subagent obeys these, even for a one-off slice:
   catastrophic and asks on the irreversible, so a subagent cannot route around §5 by
   accident — but it is a seatbelt, not a boundary, and does not replace the judgement.
 - An existing external script → check `devil scripts list` before writing one
-  (`rules/script-library.md`).
+  (the `script-library` skill).
 - This repo keeps **one source of truth per concept** — reference it, don't re-document it.
 
 ## 7. The agent roster

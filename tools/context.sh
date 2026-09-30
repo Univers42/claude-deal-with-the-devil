@@ -12,7 +12,8 @@
 #   ALWAYS  rules/*.md with no `paths:`         — full text, every session
 #   ALWAYS  the description: of every skill     — the listing Claude matches
 #           and command                           intent against
-#   LAZY    rules/*.md with `paths:`            — only when a matching file is touched
+#   LAZY    a rules/*.md or skill carrying    — only when a matching file is touched
+#           `paths:`
 #   LAZY    a skill/command body                — only when invoked
 #   LAZY    an agent definition                 — only in that agent's own context
 #   NEVER   a description under `disable-model-invocation: true`: it sits in
@@ -21,6 +22,10 @@
 # So the lever is: keep always-on text short, put everything else behind
 # `paths:` or an invocation. Pair with the bundled /skill-doctor, which reports
 # which loaded skills actually went unused.
+#
+# A plugin cannot ship rules/*.md at all, so the path-scoped constraints ship as
+# `paths:` skills (metadata.stage: rule). They cost the same as they did as
+# rules: description always, body only on a matching file.
 #
 # Usage: context.sh [--summary] [--refresh]
 # Exit: always 0 — this is a report, not a gate.
@@ -86,7 +91,13 @@ for f in skills/*/SKILL.md commands/*.md; do
   d=$(_desc_bytes "$f")
   DESC=$((DESC + d))
   LAZY=$((LAZY + b - d))
-  ROWS_LAZY+="${kind%s}	$f	$b	$d B of description always in context"$'\n'
+  if [ "$kind" = skills ] && fm_has_paths "$f"; then
+    # A path-scoped constraint: the description still sits in context so the
+    # listing can match it, but the body only arrives with a matching file.
+    ROWS_LAZY+="skill	$f	$b	$(fm_block "$f" | grep -c '^  - ' || true) path globs"$'\n'
+  else
+    ROWS_LAZY+="${kind%s}	$f	$b	$d B of description always in context"$'\n'
+  fi
 done
 
 AGENTS_B=0
@@ -112,7 +123,7 @@ echo
 echo "Without \`paths:\` every lazy rule would be always-on instead. Measured saving: \
 **$(
   s=0
-  for f in rules/*.md; do fm_has_paths "$f" && s=$((s + $(_bytes "$f"))); done
+  for f in rules/*.md skills/*/SKILL.md; do fm_has_paths "$f" && s=$((s + $(_bytes "$f"))); done
   echo "$s"
 ) bytes** per session."
 

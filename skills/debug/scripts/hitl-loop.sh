@@ -6,7 +6,7 @@
 # The marker rule: everything above `# STAGES` is the library and is never
 # edited; everything below it is the reproduction and is replaced per bug.
 # Bash on purpose, like the kit's own tools: `printf -v` and arrays are the
-# point, so rules/refactor-shell.md (POSIX) does not apply here.
+# point, so the `refactor-shell` skill (POSIX) does not apply here.
 #
 # Usage: hitl-loop.sh [--help]
 #   Prompts read the terminal when stdin is one, else stdin itself, so a

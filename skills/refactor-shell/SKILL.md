@@ -1,7 +1,16 @@
 ---
+name: refactor-shell
+description: >
+  Shell norms: pick the dialect by where the script runs (strict POSIX for portable ones,
+  bash for a gate), quote every expansion, and keep the error path explicit. Use when
+  editing shell scripts.
 paths:
   - "**/*.sh"
   - "**/*.bash"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # Shell Refactoring

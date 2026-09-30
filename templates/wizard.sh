@@ -9,7 +9,7 @@
 # `bash tests/test_templates.sh --trace <file>` traces a wizard you authored
 # (every helper it calls exists, every secret and variable it sets is named).
 # Bash on purpose, like the kit's own tools: arrays and `printf -v` are the
-# point, so rules/refactor-shell.md (POSIX) does not apply here.
+# point, so the `refactor-shell` skill (POSIX) does not apply here.
 #
 # Usage: wizard.sh [--dry-run] [--help]
 #   --dry-run  print each write (.env, gh secret, gh variable) instead of doing it

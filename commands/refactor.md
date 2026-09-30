@@ -8,10 +8,11 @@ Technology: $ARGUMENTS
 
 Read and apply ALL of the following before touching any code:
 
-1. .claude/rules/refactor-common.md (always)
-2. .claude/rules/refactor-<technology>.md (for the specified tech)
+1. The `refactor-common` rule, always (its full text is in the config).
+2. The `refactor-<technology>` skill, e.g. `refactor-c`, `refactor-go`, `refactor-rust`,
+   `refactor-typescript`, `refactor-shell`. Load that skill and apply it in full.
 
-If the technology file doesn't exist, stop and say so.
+If there is no `refactor-<technology>` skill for the requested technology, stop and say so.
 
 ## Workflow
 

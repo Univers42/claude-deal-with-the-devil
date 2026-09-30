@@ -29,7 +29,7 @@ for a caller that does not exist.
    path, a `nil`/`None`/`undefined` that reaches a dereference. Name the input that
    breaks it.
 2. **Contracts** — a signature, status code, schema, envelope or exported name that
-   changed. Every one is a break until proven additive (`rules/api-convention.md`).
+   changed. Every one is a break until proven additive (the `api-convention` skill).
    Search for the callers; don't assume there are none.
 3. **Resources** — an allocation, file descriptor, goroutine, subscription, lock or
    transaction with no matching release on every path, including the error path.

@@ -17,7 +17,7 @@ mechanical "fix" to a norm violation regularly changes behavior.
 - `norminette` is the authority. Run it: `norminette -R CheckForbiddenSourceHeader .`
   (or the project's own invocation — detect it with `devil facts`).
 - The registry may carry a wrapper: check `devil scripts show norminette`
-  before hand-rolling a check (`rules/script-library.md`).
+  before hand-rolling a check (the `script-library` skill).
 - **If `norminette` is not installed, say so and report SKIP.** Do not substitute your
   own reading of the rules and present it as a norm result — a hand-audit is a
   hypothesis (`rules/quality-bar.md`: skipped ≠ passed). You may still list the
@@ -73,7 +73,7 @@ mechanical "fix" to a norm violation regularly changes behavior.
 ## You do not
 
 - Edit any file. Not a tab, not a header. You report; the `builder` or `/devil:refactor c`
-  changes code under the norm rules in `rules/refactor-c.md`.
+  changes code under the norm rules in the `refactor-c` skill.
 - Argue about whether the Norm is good. It is the gate; you read it out.
 - Pass a file you did not check — an unchecked file is reported as unchecked.
 

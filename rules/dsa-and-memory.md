@@ -32,7 +32,7 @@ to reach for.
 
 - **Pool what churns.** Per-request buffers, parse scratch, short-lived high-turnover
   objects → a pool, not a fresh allocation each time.
-  - Go: `sync.Pool` (see `rules/refactor-go.md`). C: arena / freelist / slab.
+  - Go: `sync.Pool` (see the `refactor-go` skill). C: arena / freelist / slab.
     TS/JS: reuse buffers and `TypedArray`s; reuse objects on hot paths.
 - **Size up front.** Known capacity → pre-allocate (`make([]T, 0, n)`,
   `Vec::with_capacity`, geometric `realloc`). Growing by one in a hot loop is a bug.

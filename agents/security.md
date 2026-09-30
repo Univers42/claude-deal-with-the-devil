@@ -34,7 +34,7 @@ and what does that let them reach?**
   the tell.
 - **AuthN / AuthZ** — identity resolved from the credential, never from a path or body
   field; every read AND write scoped to the caller; no IDOR by construction
-  (`rules/api-convention.md`). Check the *missing* check, not the present one.
+  (the `api-convention` skill). Check the *missing* check, not the present one.
 - **Secrets** — hardcoded keys, credentials in logs or error bodies, a token in a URL,
   a `.env` committed, a secret in a stack trace.
 - **Crypto** — homemade anything, ECB, a static IV/nonce, MD5/SHA-1 for security, a

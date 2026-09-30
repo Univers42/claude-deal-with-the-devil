@@ -65,7 +65,7 @@ Types: `feat` · `fix` · `refactor` · `perf` · `test` · `docs` · `build` ·
   pre-size the buffer — p95 18ms → 4ms on the 10k fixture` is a message that pays for
   itself.
 - `BREAKING CHANGE:` in the footer whenever a shipped contract changes
-  (`rules/api-convention.md`).
+  (the `api-convention` skill).
 - Imperative mood: "add", not "added" or "adds".
 
 ## 4. Never co-author

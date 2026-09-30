@@ -1,7 +1,15 @@
 ---
+name: refactor-typescript
+description: >
+  TypeScript norms: no `any`, no cast to silence the checker, strict flags on, and domain
+  types that make an illegal state unrepresentable. Use when editing TypeScript files.
 paths:
   - "**/*.ts"
   - "**/*.tsx"
+user-invocable: false
+metadata:
+  stage: rule
+  since: "1.0.0"
 ---
 
 # TypeScript Refactoring
