@@ -126,7 +126,7 @@ is "asset_names commands is unchanged by the tag" "harden quality toplevel " "$(
 
 # --- the real payload -------------------------------------------------------
 bad=""
-for f in "$ROOT"/commands/*.md "$ROOT"/workflows/*.md "$ROOT"/skills/*/SKILL.md; do
+for f in "$ROOT"/commands/*.md "$ROOT"/skills/*/SKILL.md; do
   [ "$(fm_desc "$f" | wc -l | tr -d ' ')" = 1 ] || bad+=" ${f#"$ROOT"/}"
 done
 is "every invocable in this repo has a one-line readable description" "" "$bad"

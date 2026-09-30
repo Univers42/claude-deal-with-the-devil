@@ -1,5 +1,7 @@
 ---
-description: Deep refactor at the strictest standard for the technology. Usage: /refactor <technology> [file or module path]
+description: Deep refactor at the strictest standard for the technology. Usage: /devil:refactor <technology> [file or module path]
+metadata:
+  kind: command
 ---
 
 Technology: $ARGUMENTS

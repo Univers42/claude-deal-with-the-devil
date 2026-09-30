@@ -27,7 +27,7 @@ DO NOT add a route before reading the nearest existing handler and `.claude/rule
 
 ## 4. Verify
 
-- Run the relevant check through the project's task runner (detect it with `.claude/tools/facts.sh`).
+- Run the relevant check through the project's task runner (detect it with `devil facts`).
 - Regenerate SDKs if the spec changed.
 - Add a verify gate (a `scripts/verify/` check or CI job) that exercises the route.
 

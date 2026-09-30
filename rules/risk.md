@@ -9,7 +9,7 @@ on it. Code-correctness gates (`quality-bar`, TDD) come *after* — they can't s
 
 ## When the verdict is MANDATORY
 
-Route the plan through `devil` (or the `/deal` workflow) before acting when it is:
+Route the plan through `devil` (or the `/devil:deal` workflow) before acting when it is:
 
 - **Irreversible** — a deploy, delete, data migration, publish, force-push, key/secret rotation.
 - **Security-sensitive** — auth, access control, crypto, secrets, anything touching untrusted input.

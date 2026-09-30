@@ -54,7 +54,7 @@ Order a document by what the reader needs, not by how the code is organized:
 
 ## Before you claim it works
 
-Run the commands you wrote, in a clean checkout, under `.claude/tools/watch.sh`. A
+Run the commands you wrote, in a clean checkout, under `devil watch`. A
 `README` quick-start that has not been executed is a guess. Report which steps you ran
 and which you could not.
 

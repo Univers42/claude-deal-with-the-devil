@@ -21,7 +21,7 @@ throw the scaffolding away. Do **not** build half a kernel.
 - **A schema, when you'll act on the result.** Force structured output so you consume data, not prose.
 - **Read-by-query discipline.** Subagents `tail`/`rg`/`jq`/`awk` and return the *conclusion*, never the
   dump. The cheapest read returns only what you need. Logs are JSONL — filter, don't slurp. The `tools/`
-  layer is this made executable: run `.claude/tools/digest.sh` before hand-reading a tree.
+  layer is this made executable: run `devil digest` before hand-reading a tree.
 
 ## 3. Verify before you trust — and before you act
 
@@ -32,12 +32,12 @@ throw the scaffolding away. Do **not** build half a kernel.
   delete the wrong thing. Confirm the target *now*, not from a scan you ran five steps ago.
 - **Adversarial pass for high-stakes findings:** spawn skeptics prompted to *refute*; default to refuted
   when uncertain. Diverse lenses (correctness / security / does-it-reproduce) beat N identical voices. For an
-  irreversible or high-blast plan, get the `devil`'s verdict (`rules/risk.md`, `/deal`) before acting.
+  irreversible or high-blast plan, get the `devil`'s verdict (`rules/risk.md`, `/devil:deal`) before acting.
 
 ## 4. Converge on a gate
 
 - Funnel parallel work into **one** quality gate — a tester + a reviewer, or the project's verification gate
-  (a `scripts/verify/` check or CI job), and `.claude/tools/quality.sh`. A gate that passes vacuously is not a gate.
+  (a `scripts/verify/` check or CI job), and `devil quality`. A gate that passes vacuously is not a gate.
 - **Measured, not claimed.** Every perf/capacity statement cites an artifact + the command that reproduces
   it. No invented numbers.
 - Land behind a gate; sync the docs you touched; then stop.
@@ -46,9 +46,10 @@ throw the scaffolding away. Do **not** build half a kernel.
 
 Every subagent obeys these, even for a one-off slice:
 
-- **Never co-author** a commit/PR (no `Co-Authored-By` / "Generated with"). `settings.json`
-  enforces this by setting `attribution` to empty strings — don't add one by hand.
-- **Use the project's toolchain** — detect it with `.claude/tools/facts.sh`; run commands under `.claude/tools/watch.sh`.
+- **Never co-author** a commit/PR (no `Co-Authored-By` / "Generated with"). The host's
+  `.claude/settings.json`, seeded from `templates/settings.json`, enforces this by setting
+  `attribution` to empty strings. Don't add one by hand.
+- **Use the project's toolchain** — detect it with `devil facts`; run commands under `devil watch`.
 - **Backward-compatible by default** — new behavior is additive/opt-in until proven; don't break existing callers.
 - **Backend-agnostic** — a fix for one adapter/platform that breaks another is not done.
 - **Confirm the irreversible** — pushes, deploys, deletions, publishes, data migrations, security cutovers → explicit human trigger.
@@ -59,20 +60,22 @@ Every subagent obeys these, even for a one-off slice:
   (`rules/ponytail.md`). A subagent returning a best-effort answer says so, or the caller
   will act on it as a fact.
 - **Remember the expensive facts only** — a measured number or a verdict, never what
-  `.claude/tools/digest.sh` re-derives (`rules/memory.md`).
+  `devil digest` re-derives (`rules/memory.md`).
 
 ## 6. Where things live
 
-- Reusable procedures → a `workflows/<name>.md` playbook (human-readable) — not hard-coded here.
-- Auto-firing capabilities → a `skills/<name>/SKILL.md`. One-shot actions → a `commands/<name>.md`.
+- Reusable procedures → a playbook `commands/<name>.md` whose `metadata:` holds `kind: workflow`,
+  run as `/devil:<name>`. Not hard-coded here.
+- Auto-firing capabilities → a `skills/<name>/SKILL.md`. One-shot actions → a `commands/<name>.md`
+  with `kind: command`, also `/devil:<name>`.
 - Durable constraints → a `rules/*.md`. Orientation + conventions → [`README.md`](README.md).
-- Recurring parse or enforceable check → a `tools/<name>.sh` (index in [`tools/README.md`](tools/README.md));
-  the `forger` builds and maintains these.
+- Recurring parse or enforceable check → a `tools/<name>.sh` (index in [`tools/README.md`](tools/README.md)),
+  run as `devil <name>` through `bin/devil`; the `forger` builds and maintains these.
 - A constraint that must be impossible to ignore → a hook in `hooks/`
   ([`hooks/HOOKS-README.md`](hooks/HOOKS-README.md)). `PreToolUse` already denies the
   catastrophic and asks on the irreversible, so a subagent cannot route around §5 by
   accident — but it is a seatbelt, not a boundary, and does not replace the judgement.
-- An existing external script → check `.claude/tools/scripts.sh list` before writing one
+- An existing external script → check `devil scripts list` before writing one
   (`rules/script-library.md`).
 - This repo keeps **one source of truth per concept** — reference it, don't re-document it.
 

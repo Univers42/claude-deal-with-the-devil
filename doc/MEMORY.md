@@ -14,13 +14,13 @@ interchangeable.
 
 The cheapest memory is the one that cannot go stale.
 
-`.claude/tools/` caches to `.claude/cache/`, fingerprinted to `git HEAD` plus the dirty
-tree. Change anything and the cache rebuilds itself; change nothing and `digest.sh`
-answers in milliseconds instead of a tree-wide re-read.
+The kit's tools (`devil <tool>`) cache to the host's `.claude/cache/`, fingerprinted to
+`git HEAD` plus the dirty tree. Change anything and the cache rebuilds itself; change
+nothing and `digest.sh` answers in milliseconds instead of a tree-wide re-read.
 
 ```sh
-.claude/tools/digest.sh          # toolchain, codemap, untested list, duplication
-.claude/tools/context.sh         # what this config itself costs per session
+devil digest   # toolchain, codemap, untested list, duplication
+devil context  # what this config itself costs per session
 ```
 
 **Never persist in memory what a tool re-derives.** The language mix, the build command,
@@ -61,11 +61,11 @@ machine.
 It persists across sessions **and across projects and tools**, which native agent memory
 does not. That is the reason to want it.
 
-It is declared in `.mcp.json` and **disabled by default** in
-`settings.local.json`:
+It is declared in `templates/mcp.json`, which a host copies to its own `.mcp.json`, and
+**disabled by default** in the host's `settings.local.json`:
 
 ```jsonc
-// .mcp.json — declared, so it is one toggle away
+// the host's .mcp.json (from templates/mcp.json): declared, so it is one toggle away
 "supermemory": {
   "command": "npx",
   "args": ["-y", "mcp-remote@latest", "https://mcp.supermemory.ai/mcp"]
@@ -97,7 +97,7 @@ footnote:
 This repo's binding rules require confirming the irreversible and never hardcoding
 secrets. Shipping your working context to an outside service is exactly the kind of
 decision `rules/risk.md` says to make deliberately — which is why it ships off, and why
-turning it on is a `/deal`-worthy decision rather than a default.
+turning it on is a `/devil:deal`-worthy decision rather than a default.
 
 **Never store a secret in any memory layer.** Not a token, not a password, not a
 connection string — local or remote.

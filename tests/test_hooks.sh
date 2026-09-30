@@ -107,7 +107,7 @@ expect "unknown event ignored" '{"hook_event_name":"SomeFutureEvent"}' silent
 # root copied from the real tools proves each half separately.
 fixture_plugin() {
   local d="$1"
-  mkdir -p "$d"/{agents,rules,commands,workflows,skills/demo,tools/lib,hooks/scripts,hooks/config,doc}
+  mkdir -p "$d"/{agents,rules,commands,skills/demo,tools/lib,hooks/scripts,hooks/config,doc}
   cp "$ROOT"/tools/*.sh "$d/tools/"
   cp "$ROOT/tools/lib/common.sh" "$d/tools/lib/"
   chmod +x "$d"/tools/*.sh
@@ -117,10 +117,10 @@ fixture_plugin() {
   # shellcheck disable=SC2016  # the backticks are markdown links in the fixture
   printf -- '# Demo rule\n\nSee `agents/demo-agent.md`.\n' >"$d/rules/demo.md"
   printf -- '---\nname: demo\ndescription: a demo skill\n---\n\n# Demo\n' >"$d/skills/demo/SKILL.md"
-  printf -- '---\ndescription: a demo command. Usage: /demo\n---\n\nBody\n' >"$d/commands/demo.md"
-  printf -- '---\ndescription: a demo workflow. Usage: /workflow:demo\n---\n\nBody\n' >"$d/workflows/demo.md"
+  printf -- '---\ndescription: a demo command. Usage: /devil:demo\n---\n\nBody\n' >"$d/commands/demo.md"
+  printf -- '---\ndescription: a demo workflow. Usage: /devil:demo-flow\nmetadata:\n  kind: workflow\n---\n\nBody\n' >"$d/commands/demo-flow.md"
   # shellcheck disable=SC2016  # ditto
-  printf -- '# Index\n\n`agents/demo-agent.md` `rules/demo.md` `skills/demo/SKILL.md`\n`commands/demo.md` `workflows/demo.md`\n' \
+  printf -- '# Index\n\n`agents/demo-agent.md` `rules/demo.md` `skills/demo/SKILL.md`\n`commands/demo.md` `commands/demo-flow.md`\n' \
     >"$d/README.md"
 }
 

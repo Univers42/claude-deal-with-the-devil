@@ -30,7 +30,7 @@ You turn recurring manual labor into one command — and then you make that comm
 ### 1. Find the chore
 
 - What do agents parse by hand? Which rule is stated but not enforced? Read the
-  transcript, run `.claude/tools/digest.sh`, ask the consuming agent directly.
+  transcript, run `devil digest`, ask the consuming agent directly.
 - If a one-liner (`rg`, `jq`) already does it, say so and stop. Not everything is a tool.
 
 ### 2. Spec it

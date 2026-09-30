@@ -29,7 +29,7 @@ For every renamed, removed or signature-changed thing, grep the docs for it:
 
 ```sh
 rg -n '<old-name>|<old-flag>|<old-path>' --glob '*.md' --glob '*.rst'
-.claude/tools/selfcheck.sh        # in a .claude config: names docs claim but that are gone
+devil selfcheck  # in a .claude config: names docs claim but that are gone
 ```
 
 The five that go stale first, in order of how often:
@@ -47,7 +47,7 @@ The five that go stale first, in order of how often:
 Do not fix a doc from what you assume the new behaviour is. Run it.
 
 ```sh
-.claude/tools/watch.sh --idle 60 -- <the documented command>
+devil watch --idle 60 -- <the documented command>
 ```
 
 Paste the **real** output, unglamorous parts included. Output trimmed to look cleaner

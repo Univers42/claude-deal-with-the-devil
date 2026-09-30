@@ -36,8 +36,8 @@ For a UI, the ones users feel: **LCP** < 2.5s · **INP** < 200ms · **CLS** < 0.
 ## 2. Measure the baseline — before any change
 
 ```sh
-.claude/tools/facts.sh                              # the project's bench command
-.claude/tools/watch.sh --idle 120 -- <bench cmd>    # never hang on it
+devil facts                            # the project's bench command
+devil watch --idle 120 -- <bench cmd>  # never hang on it
 ```
 
 - Same hardware, same data, same conditions as the "after" run will use. A comparison
@@ -78,7 +78,7 @@ Never optimise from intuition. Intuition is wrong about which line is hot, relia
 A budget nobody re-checks decays quietly within two releases.
 
 - Add the benchmark to CI, comparing against the recorded baseline. Fail over 5%
-  regression (`/workflow:ship` already gates on this).
+  regression (`/devil:ship` already gates on this).
 - Commit the baseline artifact so the comparison is reproducible.
 - Record the budget and its reason where the next person will find it — and in
   `benchmarker`'s project memory (`rules/memory.md`), so it is not re-derived.

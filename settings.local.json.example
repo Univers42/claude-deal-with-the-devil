@@ -1,10 +1,10 @@
 {
-  "_comment": "Copy to settings.local.json (gitignored) for machine-local toggles. Nothing here is shared.",
+  "_comment": "Copy to the host's .claude/settings.local.json (gitignored) for machine-local toggles. Nothing here is shared.",
 
-  "_supermemory": "supermemory is declared in .mcp.json and OFF until you remove it from this list. It persists memory across sessions AND projects — and sends your context to a third-party cloud. Read doc/MEMORY.md before enabling it.",
+  "_supermemory": "supermemory is declared in the host's .mcp.json (copied from the kit's templates/mcp.json) and OFF until you remove it from this list, which is the setting for project .mcp.json servers. It persists memory across sessions AND projects — and sends your context to a third-party cloud. Read doc/MEMORY.md before enabling it.",
   "disabledMcpjsonServers": ["supermemory"],
 
-  "_hooks": "Uncomment to silence every hook, including the risk enforcement in hooks/scripts/hooks.py. Prefer the narrower switches in hooks/config/hooks-config.local.json.",
+  "_hooks": "Uncomment to silence every hook, including the risk enforcement in the kit's hooks/scripts/hooks.py. Prefer the narrower switches in the kit's hooks/config/hooks-config.local.json.",
   "__disableAllHooks": false,
 
   "_model": "Per-machine overrides that should not be forced on the team.",

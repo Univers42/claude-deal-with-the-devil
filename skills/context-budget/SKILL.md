@@ -21,8 +21,8 @@ REST rules on a Python project. Nothing reported it, because nothing measured it
 ## 1. Measure
 
 ```sh
-.claude/tools/context.sh            # always-on vs lazy, per file
-/skill-doctor                       # which loaded skills never actually fire
+devil context  # always-on vs lazy, per file
+/skill-doctor  # which loaded skills never actually fire
 ```
 
 The number that matters is **always-on total**: always-on rules plus every invocable's
@@ -53,7 +53,7 @@ paths:
 ```
 
 A universal rule keeps **no** frontmatter — that is the signal for always-load, and it
-is deliberate. Verify with `.claude/tools/selfcheck.sh`, which fails on `globs:` and
+is deliberate. Verify with `devil selfcheck`, which fails on `globs:` and
 `alwaysApply:`.
 
 **2. Split a long skill.** `SKILL.md` holds the procedure; detail moves to a sibling
@@ -74,7 +74,7 @@ never enters the main window.
 
 Config is the fixed cost; these are the variable one, and usually larger:
 
-- **Tools over re-reading.** `.claude/tools/digest.sh` returns the conclusion from a
+- **Tools over re-reading.** `devil digest` returns the conclusion from a
   cache fingerprinted to git state. Hand-reading a tree to answer what a tool digested
   is the most expensive habit there is.
 - **Read by query.** `rg`, `jq`, `Read` with offset/limit. Never slurp a file to find
@@ -88,7 +88,7 @@ Config is the fixed cost; these are the variable one, and usually larger:
 
 ## 5. Re-measure and record
 
-Run `.claude/tools/context.sh` again and state the before and after. A cut you did not
+Run `devil context` again and state the before and after. A cut you did not
 measure is a claim (`rules/prompt-contract.md`).
 
 ## Report

@@ -21,7 +21,7 @@ inline. Whatever comes out goes to the `devil` before it becomes code
 ## 1. Ground it — 5 minutes, not skippable
 
 ```sh
-.claude/tools/digest.sh
+devil digest
 ```
 
 Dreaming in a vacuum produces ideas that cannot be built here. Before generating
@@ -80,8 +80,8 @@ Say plainly which options are long shots. Ranking everything 4/5 is not a rankin
   behind a flag. Never a big bet up front.
 - **The kill criterion**, named *now* while walking away is still cheap: the result
   that means drop it. An idea with no kill criterion is a commitment in disguise.
-- **Hand it on.** Risky or irreversible → `/workflow:deal` for a verdict. Crosses a
-  boundary → `architect`. Otherwise → `/workflow:feature`.
+- **Hand it on.** Risky or irreversible → `/devil:deal` for a verdict. Crosses a
+  boundary → `architect`. Otherwise → `/devil:feature`.
 
 ## Report
 

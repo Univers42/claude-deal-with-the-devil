@@ -17,7 +17,7 @@ remove the bug; it moves it. You are done when you can **explain the mechanism**
 ## 1. Reproduce — a bug you cannot trigger, you cannot fix
 
 - Get the exact command, input, and environment. Run it yourself under
-  `.claude/tools/watch.sh` so a hang is killed with a reason (exit 124), not waited on.
+  `devil watch` so a hang is killed with a reason (exit 124), not waited on.
 - Record the real, complete error: the message, the stack, the exit code. Not a summary.
 - **Cannot reproduce?** That is the finding. Say so and collect what is missing —
   version, platform, data, timing, concurrency. Do not "fix" an unreproduced bug.
@@ -51,7 +51,7 @@ early when the cache is cold." Then instrument to confirm or kill it.
   skill for anything rendered.
 - A person must drive it (sign in, click, observe)? Copy
   `skills/debug/scripts/hitl-loop.sh`, fill in its stages, and parse the `KEY=VALUE` tail
-  it prints. Never wrap it in `.claude/tools/watch.sh`: the idle timeout kills it mid-step.
+  it prints. Never wrap it in `devil watch`: the idle timeout kills it mid-step.
 - **A hypothesis you did not confirm is not the cause.** UNKNOWN = FAIL
   (`rules/prompt-contract.md`). If the evidence kills your hypothesis, say so and form
   the next one — do not fix the thing you happened to be looking at.
@@ -66,7 +66,7 @@ a shared fixture mutated by another test · a resource never released.
 ## 4. Write the failing test first
 
 Before the fix, turn the smallest failing case from step 2 into a test in the project's
-framework (`.claude/tools/facts.sh` detects it; `rules/test-frameworks.md`). Run it and
+framework (`devil facts` detects it; `rules/test-frameworks.md`). Run it and
 **watch it fail for the right reason** — a test that passes before the fix is testing
 something else.
 
@@ -81,7 +81,7 @@ This is the RED step of `agents/builder.md`; the fix is GREEN.
   refactor in the same commit.
 - Touches anything irreversible, security-sensitive, schema-level or concurrent? Route
   the fix through the `devil` first (`rules/risk.md`).
-- Then re-run the whole suite plus `.claude/tools/quality.sh` — a fix that breaks
+- Then re-run the whole suite plus `devil quality` — a fix that breaks
   something else is not a fix.
 
 ## 6. Report

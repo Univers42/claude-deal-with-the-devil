@@ -71,12 +71,12 @@ Types: `feat` · `fix` · `refactor` · `perf` · `test` · `docs` · `build` ·
 ## 4. Never co-author
 
 **No `Co-Authored-By` and no "Generated with" trailer.** Binding rule #1 of this config,
-and `settings.json` enforces it by setting `attribution` to empty strings. Do not add
-one by hand.
+and the host's `.claude/settings.json`, seeded from `templates/settings.json`, enforces it
+by setting `attribution` to empty strings. Do not add one by hand.
 
 ## 5. Before it leaves your machine
 
-- `.claude/tools/quality.sh --with-tests` green.
+- `devil quality --with-tests` green.
 - No secret, no large binary, nothing that should be gitignored.
 - Rebase on the target branch; resolve conflicts here, not in a merge commit nobody
   reviews.

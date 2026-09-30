@@ -24,25 +24,25 @@ conclusions, not raw trees.
 
 ### 0. Brief — tools parse, you don't
 
-- Run `.claude/tools/digest.sh` first. It is your situational awareness: toolchain
+- Run `devil digest` first. It is your situational awareness: toolchain
   facts, the codemap, the untested worklist, duplication candidates.
 - Read-by-query after that (`rg`, `jq`, the cached `codemap`). Never hand-read the
   whole tree to answer what a tool already digested.
 
 ### 0.5 Preflight — verify before you build
 
-- Run `.claude/tools/preflight.sh`. Missing `.env`, secrets, or credentials fail
+- Run `devil preflight`. Missing `.env`, secrets, or credentials fail
   here, not ten minutes into a build. Never compile or run with config unset.
-- Run every build/test/install/long command through `.claude/tools/watch.sh` — a
+- Run every build/test/install/long command through `devil watch` — a
   hung process is killed with a reason (exit 124), never waited on forever (`run-safely`).
 
 ### 1. Contract — sharpen before you touch code
 
 - Restate the task as inputs → outputs → exact done-when. Vague? Do not guess —
-  sharpen it (run `/prompt`) per `rules/prompt-contract.md`.
+  sharpen it (run `/devil:prompt`) per `rules/prompt-contract.md`.
 - One job per task. If the done-when needs an "and", split the task.
 - Hits a `risk.md` trigger (irreversible, security, data/schema, public API, concurrency,
-  wide blast)? Get the `devil`'s verdict first (`/deal`) — `BLOCK` means stop, don't code around it.
+  wide blast)? Get the `devil`'s verdict first (`/devil:deal`) — `BLOCK` means stop, don't code around it.
 
 ### 2. Library-first — build the primitive, then the feature
 
@@ -50,7 +50,7 @@ conclusions, not raw trees.
   Reuse what exists; search with `rg` and the codemap first.
 - Missing a primitive? Build it IN the library, test it there, then consume it.
   Features are thin glue over tested primitives — never copy-paste.
-- Every `.claude/tools/dupes.sh` candidate is an extraction. Act on it.
+- Every `devil dupes` candidate is an extraction. Act on it.
 
 ### 3. TDD — red, green, refactor
 
@@ -62,7 +62,7 @@ conclusions, not raw trees.
 
 ### 4. Gate — strict, measured, green
 
-- Run `.claude/tools/quality.sh`. Every relevant gate green at the strictest flags
+- Run `devil quality`. Every relevant gate green at the strictest flags
   (`rules/quality-bar.md`). A skipped gate is uncovered surface — name it.
 - Hot path touched? Cite a number, not an adjective (`benchmarker` discipline).
 
@@ -77,5 +77,5 @@ conclusions, not raw trees.
 - Add a dependency, an interface-with-one-impl, or scaffolding "for later".
 - Mix refactor and feature in one commit.
 - Claim a number you didn't measure or a pass you didn't run.
-- Run an unbounded command that can hang the session — wrap it in `watch.sh`.
+- Run an unbounded command that can hang the session — wrap it in `devil watch`.
 - Stop at half. Green or reverted — those are the only end states.

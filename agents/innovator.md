@@ -15,7 +15,7 @@ the same way a number does: grounded in facts, tested cheaply, killed fast if wr
 
 ## How you think
 
-- **Vision, grounded.** Run `.claude/tools/digest.sh` and read the real constraints
+- **Vision, grounded.** Run `devil digest` and read the real constraints
   first. Dream at the edge of what's actually there — not in a vacuum.
 - **10x, not 10%.** Ask what would change the project's category, not just polish it.
   What adjacent capability falls out almost for free from what already exists?

@@ -8,8 +8,9 @@
 #
 # Three classes of drift, each one a real bug that shipped here:
 #   1. DANGLING   a doc names agents/x.md, rules/x.md, tools/x.sh ... that is absent.
-#      This is the one that bit us: /refactor <tech> reads rules/refactor-<tech>.md
-#      by exact filename, so a documented-but-missing rule fails at use time.
+#      This is the one that bit us: /devil:refactor <tech> reads
+#      rules/refactor-<tech>.md by exact filename, so a documented-but-missing
+#      rule fails at use time.
 #   2. FRONTMATTER  a field Claude Code does not read. Skills took `tools:`
 #      (the field is `allowed-tools:`); rules took Cursor's `globs:`/`alwaysApply:`
 #      (the field is `paths:`, and its absence means "load every session").
@@ -67,16 +68,18 @@ _docs() {
 
 # --- 1. dangling references -------------------------------------------------
 # Pull every self-referential path out of the prose and prove it resolves.
-# Matches `agents/devil.md`, `.claude/tools/quality.sh`, `skills/debug/SKILL.md`
-# inside backticks or plain. Ponytail: backtick-scoped and prefix-anchored, so a
-# path split across a line break is missed — it finds the real class of drift,
-# it is not a link checker.
+# Matches `agents/devil.md`, `skills/debug/SKILL.md` inside backticks or
+# plain. A path char before the prefix means someone else's path
+# (`.github/workflows/ci.yml`, `hooks/scripts/hooks.py` read from `scripts/`),
+# so it is not read as ours. Ponytail: prefix-anchored, so a path split across
+# a line break is missed. It finds the real class of drift; it is not a link
+# checker.
 check_dangling() {
   local doc ref target seen=""
   while read -r doc; do
     [ -n "$doc" ] || continue
-    grep -oE '(\.claude/)?(agents|rules|commands|workflows|skills|tools|doc|scripts)/[A-Za-z0-9_./-]+' "$doc" 2>/dev/null |
-      sed 's|^\.claude/||' | sort -u | while read -r ref; do
+    grep -oE '(^|[^A-Za-z0-9_./-])(\.claude/)?(agents|rules|commands|workflows|skills|tools|doc|scripts)/[A-Za-z0-9_./-]+' "$doc" 2>/dev/null |
+      sed -E 's|^[^A-Za-z0-9_.]||; s|^\.claude/||' | sort -u | while read -r ref; do
       case "$ref" in
       */) continue ;;
       *.md | *.sh | *.py | *.json) target="$ref" ;;
@@ -147,12 +150,11 @@ check_rules() {
 
 check_invocables() {
   local f kind
-  for kind in commands workflows; do
-    for f in "$kind"/*.md; do
-      [ -e "$f" ] || continue
-      fm_block "$f" | grep -q '^description:' ||
-        row FAIL "${kind%s}" "$f" "no description: — it will not appear in the / menu"
-    done
+  for f in commands/*.md; do
+    [ -e "$f" ] || continue
+    kind="$(fm_meta "$f" kind)"
+    fm_block "$f" | grep -q '^description:' ||
+      row FAIL "${kind:-command}" "$f" "no description: — it will not appear in the / menu"
   done
 }
 
@@ -168,26 +170,35 @@ check_tools() {
 # --- 3. orphans -------------------------------------------------------------
 # An asset no document names is one nobody will find. Docs here cite an asset in
 # whichever form a reader would type it, not by path: an agent or rule as
-# `reviewer`, a command as /quality, a workflow as /workflow:harden. Matching
-# only "<kind>/<name>" reported 21 false orphans on a tree where every one of
-# them was in fact documented — so accept every citation form.
+# `reviewer`, a command or workflow as /devil:harden. Matching only
+# "<kind>/<name>" reported 21 false orphans on a tree where every one of them
+# was in fact documented — so accept every citation form.
+# A workflow is a command file tagged kind: workflow; asset_names lists it
+# under both kinds, so the commands pass drops it and each file counts once.
+_commands_only() { comm -23 <(asset_names commands) <(asset_names workflows); }
+
+_names_of() {
+  if [ "$1" = commands ]; then _commands_only; else asset_names "$1"; fi
+}
+
 check_orphans() {
-  local kind name pat hits sev
+  local kind name pat dir hits sev
   sev=WARN
   [ "$STRICT" = 1 ] && sev=FAIL
   for kind in agents rules skills workflows commands; do
     while read -r name; do
       [ -n "$name" ] || continue
+      dir="$kind"
+      [ "$kind" = workflows ] && [ -f "commands/$name.md" ] && dir=commands
       case "$kind" in
-      commands) pat="$kind/$name|/$name\b|\`$name\`" ;;
-      workflows) pat="$kind/$name|/workflow:$name\b|\`$name\`" ;;
+      commands | workflows) pat="$dir/$name|/devil:$name\b|\`$name\`" ;;
       skills) pat="skills/$name/|\`$name\`" ;;
       *) pat="$kind/$name|\`$name\`" ;;
       esac
       hits="$(grep -rlE "$pat" --include='*.md' . 2>/dev/null |
-        grep -v "^\./$kind/$name" | grep -v claude-code-best-practice | head -1)"
-      [ -n "$hits" ] || row "$sev" orphan "$kind/$name" "no other doc references it"
-    done < <(asset_names "$kind")
+        grep -v "^\./$dir/$name" | grep -v claude-code-best-practice | head -1)"
+      [ -n "$hits" ] || row "$sev" orphan "$dir/$name" "no other doc references it"
+    done < <(_names_of "$kind")
   done
 }
 
@@ -220,7 +231,7 @@ fi
 echo
 echo "**$FAILED failed, $WARNED warned.**  \
 agents $(asset_names agents | grep -c .) · rules $(asset_names rules | grep -c .) · \
-skills $(asset_names skills | grep -c .) · commands $(asset_names commands | grep -c .) · \
+skills $(asset_names skills | grep -c .) · commands $(_commands_only | grep -c .) · \
 workflows $(asset_names workflows | grep -c .) · tools $(asset_names tools | grep -c .)"
 
 [ "$FAILED" -eq 0 ] || exit 1

@@ -4,28 +4,43 @@ paths:
   - "**/*.bash"
 ---
 
-# POSIX Shell Refactoring
+# Shell Refactoring
 
-## Strict POSIX compliance
+## Pick the dialect by where the script runs
+
+- **Portable scripts** (an installer, anything run by `/bin/sh` on a host you do not
+  control): strict POSIX, the section below.
+- **Gates and tools** (this kit's `tools/`, `bin/`, `tests/`, a project's CI helpers):
+  bash is allowed. Shebang `#!/usr/bin/env bash`, then `set -uo pipefail`. Leave `-e`
+  off where a failing command is data (a gate that found a problem must still report
+  it); a script that should stop at the first error adds it. Arrays, `[[ ]]` and
+  `local` are fine. A sourced library sets no options at all (`tools/README.md`).
+
+## Strict POSIX compliance (portable scripts)
 
 - No bashisms — no [[]], no arrays, no (( )), no ${var/pat/rep}
-- Shebang: #!/bin/sh — never #!/bin/bash unless explicitly bash-only
-- Quote every variable expansion: "$var" not $var
+- Shebang: #!/bin/sh
 - No unset variable access — set -u compatible
+- Test with dash, not just bash
+
+## Both dialects
+
+- Quote every variable expansion: "$var" not $var
 - Use command -v over which
 - printf over echo for anything non-trivial
 
 ## Structure
 
 - Max 25 lines per function — keep them short
-- Functions at top, execution at bottom after a main() call
+- Functions at top, execution at bottom
 - Local variables via local keyword or subshell isolation
 - Cleanup via trap — every temp file cleaned on EXIT
 
 ## After refactoring
 
-- `shellcheck -s sh` — zero warnings
-- Test with dash, not just bash
+- `shellcheck`: zero warnings; it reads the dialect from the shebang
+  (`shellcheck -s sh` to force POSIX on a script without one)
+- `shfmt -d -i 2`: no diff
 - Runs correctly under every shell you target, not just your default
 
 ## Shell-specific ladder extensions

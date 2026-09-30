@@ -21,13 +21,16 @@ no() {
   FAIL=$((FAIL + 1))
 }
 
-# A minimal but VALID payload, so each test changes exactly one thing.
+# A minimal but VALID payload, so each test changes exactly one thing. The
+# workflow is a command tagged kind: workflow and is cited only as /devil:<n>.
 fixture() {
   local d="$1"
-  mkdir -p "$d"/{agents,rules,commands,workflows,skills/demo,tools/lib}
+  mkdir -p "$d"/{agents,rules,commands,skills/demo,tools/lib,tools/orch,bin}
   cp "$ROOT/tools/selfcheck.sh" "$d/tools/"
   cp "$ROOT/tools/lib/common.sh" "$d/tools/lib/"
-  chmod +x "$d/tools/selfcheck.sh"
+  printf '#!/usr/bin/env bash\n' >"$d/tools/orch/timed"
+  printf '#!/usr/bin/env bash\n' >"$d/bin/devil"
+  chmod +x "$d/tools/selfcheck.sh" "$d/tools/orch/timed" "$d/bin/devil"
   # shellcheck disable=SC2016  # the backticks are markdown links in the fixture
   printf -- '---\nname: demo-agent\ndescription: a demo\n---\n\nBody `rules/demo.md`\n' \
     >"$d/agents/demo-agent.md"
@@ -36,15 +39,20 @@ fixture() {
     >"$d/rules/demo.md"
   printf -- '---\nname: demo\ndescription: a demo skill\n---\n\n# Demo\n' \
     >"$d/skills/demo/SKILL.md"
-  printf -- '---\ndescription: a demo command. Usage: /demo\n---\n\nBody\n' \
+  printf -- '---\ndescription: a demo command. Usage: /devil:demo\nmetadata:\n  kind: command\n---\n\nBody\n' \
     >"$d/commands/demo.md"
-  printf -- '---\ndescription: a demo workflow. Usage: /workflow:demo\n---\n\nBody\n' \
-    >"$d/workflows/demo.md"
-  printf -- '# Index\n\n`agents/demo-agent.md` `rules/demo.md` `skills/demo/SKILL.md`\n`commands/demo.md` `workflows/demo.md`\n' \
+  printf -- '---\ndescription: a demo workflow. Usage: /devil:demo-flow\nmetadata:\n  kind: workflow\n---\n\nBody\n' \
+    >"$d/commands/demo-flow.md"
+  printf -- '# Index\n\n`agents/demo-agent.md` `rules/demo.md` `skills/demo/SKILL.md`\n`commands/demo.md` /devil:demo-flow `bin/devil`\nRun `devil selfcheck --strict`, `devil orch timed`, `devil <tool>`; `#!/usr/bin/env bash`.\n' \
     >"$d/README.md"
 }
 
-run() { bash "$1/tools/selfcheck.sh" --summary >/dev/null 2>&1; }
+# run <dir> [selfcheck args] -> exit code of selfcheck --summary on the fixture
+run() {
+  local d="$1"
+  shift
+  bash "$d/tools/selfcheck.sh" --summary "$@" >/dev/null 2>&1
+}
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
@@ -114,13 +122,33 @@ if run "$TMP/cached"; then ok "a cached codemap under .claude/ is not scanned"; 
   no "generated output under .claude/cache was scanned as a doc"
 fi
 
-# --- 9. the real payload is clean -------------------------------------------
-if bash "$ROOT/tools/selfcheck.sh" --summary >/dev/null 2>&1; then
-  ok "this repo's own payload is clean"
+# --- 9. a workflow is one asset: counted as a workflow, never an orphan command
+out="$(bash "$TMP/clean/tools/selfcheck.sh" --strict 2>&1)"
+rc=$?
+if [ "$rc" -eq 0 ] && grep -q 'commands 1 · workflows 1 ·' <<<"$out"; then
+  ok "a kind: workflow command counts once, as a workflow (strict clean)"
+else no "workflow counting: rc=$rc, $(tail -1 <<<"$out")"; fi
+fixture "$TMP/orphanflow"
+sed -i 's| /devil:demo-flow||' "$TMP/orphanflow/README.md"
+out="$(bash "$TMP/orphanflow/tools/selfcheck.sh" --strict --summary 2>&1)"
+rows="$(grep -c 'orphan.*demo-flow' <<<"$out")"
+if [ "$rows" = 1 ] && grep -q '`commands/demo-flow`' <<<"$out"; then
+  ok "an uncited workflow is one orphan row, named by its commands/ path"
+else no "uncited workflow gave $rows orphan rows: $(grep orphan <<<"$out")"; fi
+
+# --- 10. the real payload is clean -------------------------------------------
+if bash "$ROOT/tools/selfcheck.sh" --strict --summary >/dev/null 2>&1; then
+  ok "this repo's own payload is clean (--strict)"
 else
   no "this repo's own payload has drift"
-  bash "$ROOT/tools/selfcheck.sh" --summary 2>&1 | head -15
+  bash "$ROOT/tools/selfcheck.sh" --strict --summary 2>&1 | head -15
 fi
+
+# --- 11. the two layout greps of the plan's section D are empty --------------
+hits="$(cd "$ROOT" && grep -rn '\.claude/tools/' --include='*.md' --exclude-dir=.git . | grep -v CHANGELOG.md)"
+if [ -z "$hits" ]; then ok "no doc cites .claude/tools/"; else no "docs cite .claude/tools/: $hits"; fi
+hits="$(cd "$ROOT" && grep -rn '/workflow:' --include='*.md' --exclude-dir=.git .)"
+if [ -z "$hits" ]; then ok "no doc cites /workflow:"; else no "docs cite /workflow:: $hits"; fi
 
 echo
 echo "$PASS passed, $FAIL failed"

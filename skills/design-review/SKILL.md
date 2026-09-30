@@ -68,7 +68,7 @@ A disabled button with no explanation is a dead end; say why it is disabled.
 - Same concept, same appearance, everywhere. Two card styles means a decision was never
   made.
 - Is this a new component, or a variant of an existing one? Almost always the latter
-  (`rules/library-first.md`, `.claude/tools/dupes.sh`).
+  (`rules/library-first.md`, `devil dupes`).
 - Tokens, not literals. A hardcoded colour is a redesign that will cost a month
   (`skills/frontend/reference.md`).
 - Voice: sentence case or title case, "Delete" or "Remove" — pick one and hold it.

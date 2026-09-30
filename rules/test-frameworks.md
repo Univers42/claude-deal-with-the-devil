@@ -9,7 +9,7 @@ the framework — "passing" means its runner reports pass.
 
 ## Discipline
 
-- **Detect first.** Run `.claude/tools/facts.sh` (it reports the detected framework)
+- **Detect first.** Run `devil facts` (it reports the detected framework)
   or read the manifest. Match the framework AND the existing test style.
 - **One framework per language per repo.** If one is configured, use it. A second one
   fragments the suite — don't add it.
@@ -17,7 +17,7 @@ the framework — "passing" means its runner reports pass.
   Use its fixtures, matchers, and parameterization.
 - **None yet?** Pick the canonical default for the stack (first column below) — the
   lowest-friction standard one — and say why in one line.
-- **It must run in CI** via the project's test command (`facts.sh`), not only locally.
+- **It must run in CI** via the project's test command (`devil facts`), not only locally.
 
 ## Reference (canonical default first)
 

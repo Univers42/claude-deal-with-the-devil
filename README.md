@@ -37,30 +37,30 @@ evidence before action. In practice it fixes five habits:
 ## How a task flows
 
 ```text
-/prompt          →   /deal           →   builder              →   /quality
-write a spec         the devil          test-first, reuse        run the strict gate
-                     decides go/stop    red → green → refactor
+/devil:prompt   →   /devil:deal       →   builder                  →   /devil:quality
+write a spec        the devil             test-first, reuse            run the strict gate
+                    decides go/stop       red → green → refactor
 ```
 
-1. **`/prompt`** turns a vague request into a clear spec, with a "done when" that a test
+1. **`/devil:prompt`** turns a vague request into a clear spec, with a "done when" that a test
    can actually verify.
-2. **`/deal`** sends risky plans to the `devil`, which weighs how much could break, how
+2. **`/devil:deal`** sends risky plans to the `devil`, which weighs how much could break, how
    easily it's undone, and how confident the plan really is — then says BLOCK or
    PROCEED. Small, reversible work skips this.
 3. **`builder`** does the work: build the reusable piece first, write the failing test,
    write the minimum code to pass, then clean up. Every step gets run and checked.
-4. **`/quality`** runs the full gate (config integrity, formatting, lint, types,
+4. **`/devil:quality`** runs the full gate (config integrity, formatting, lint, types,
    security scan, dependency audit, accessibility). Green, with tests passing, is what
    "done" means.
 
 Two habits run through all of it: back claims with a command and its output (or a
 `file:line`), and never leave a half-finished tree behind — it's green or it's reverted.
 
-For the whole arc in one command: `/workflow:feature <description>`. To take existing
-code from "it works" to "it holds": `/workflow:harden <module>`. The rest:
-`/workflow:deal` (a verdict on a risky plan), `/workflow:onboard-app` (get oriented in a
-new codebase), `/workflow:ship` (the release pipeline), `/workflow:migrate-db` (author a
-migration, paired with `/migrate`), `/workflow:compat-audit` (endpoint-by-endpoint parity).
+For the whole arc in one command: `/devil:feature <description>`. To take existing
+code from "it works" to "it holds": `/devil:harden <module>`. The rest:
+`/devil:deal` (a verdict on a risky plan), `/devil:onboard-app` (move an external app
+onto the project's backend, with a go/no-go gate after recon), `/devil:ship` (the release pipeline), `/devil:migrate-db` (author a
+migration, paired with `/devil:migrate`), `/devil:compat-audit` (endpoint-by-endpoint parity).
 
 ---
 
@@ -110,10 +110,10 @@ Reach for the smallest one that fits.
 | Layer | Where | What it is | How it runs |
 | --- | --- | --- | --- |
 | **Rules** | `rules/*.md` | Standing constraints, the craft discipline | automatic, by scope |
-| **Commands** | `commands/*.md` | One focused action | you type `/<name> <args>` |
+| **Commands** | `commands/*.md` | One focused action | you type `/devil:<name> <args>` |
 | **Skills** | `skills/<name>/SKILL.md` | A capability that triggers on intent | a trigger phrase, or by name |
-| **Workflows** | `workflows/*.md` | Multi-step playbooks | `/workflow:<name> <args>` |
-| **Tools** | `tools/*.sh` | Scripts: digesters, the quality gate, etc. | Claude runs `.claude/tools/<name>.sh` |
+| **Workflows** | `commands/*.md` tagged `metadata.kind: workflow` | Multi-step playbooks | `/devil:<name> <args>` |
+| **Tools** | `tools/*.sh`, dispatched by `bin/devil` | Scripts: digesters, the quality gate, etc. | Claude runs `devil <name>` |
 | **Agents** | `agents/*.md` | Specialist personas you delegate to | by name, trigger, or from a workflow |
 | **Hooks** | `hooks/` | The part that *enforces* rather than reminds | the harness fires them |
 
@@ -129,9 +129,17 @@ details live in [`AGENTS.md`](AGENTS.md).
 
 Small bash scripts that read the repo for you, so Claude runs one command and gets
 structured facts instead of re-reading everything each session. Output is cached in
-`cache/` and tied to git state, so a stale cache rebuilds itself. Plain bash and
-coreutils, with `rg`/`jq` used when they're around. Full list:
+the host's `.claude/cache/` and tied to git state, so a stale cache rebuilds itself.
+Plain bash and coreutils, with `rg`/`jq` used when they're around. Full list:
 [`tools/README.md`](tools/README.md).
+
+Every tool is reached by name through `bin/devil`: `devil digest` runs
+`tools/digest.sh`, `devil orch oc-status` runs `tools/orch/oc-status.sh`, and a bare
+`devil` lists them all. An enabled plugin puts its `bin/` on the Bash tool's `PATH`
+(checked with `claude --plugin-dir`, where `command -v devil` printed the checkout's
+`bin/devil`). Your own terminal does not get that entry: run the checkout's
+`bin/devil` by path, or add its directory to `PATH`. The tool runs in your current
+directory, so `devil digest` describes the project you are in.
 
 | Tool | Answers |
 | --- | --- |
@@ -149,10 +157,10 @@ coreutils, with `rg`/`jq` used when they're around. Full list:
 | `scripts.sh` | "Is there already a script for this?" — the pinned external registry |
 
 ```sh
-.claude/tools/digest.sh                          # brief yourself first (cached)
-.claude/tools/quality.sh --with-tests            # the strict gate; exit 1 means a real failure
-.claude/tools/watch.sh --idle 60 -- make build   # never wait forever on a stuck process
-.claude/tools/scripts.sh list                    # the vetted external script library
+devil digest                         # brief yourself first (cached)
+devil quality --with-tests           # the strict gate; exit 1 means a real failure
+devil watch --idle 60 -- make build  # never wait forever on a stuck process
+devil scripts list                   # the vetted external script library
 ```
 
 ---
@@ -229,23 +237,29 @@ expensive facts, nothing else).
 Loaded only when you touch matching files, so they cost nothing otherwise:
 `refactor-c` · `refactor-go` · `refactor-rust` · `refactor-typescript` ·
 `refactor-shell` · `api-convention` · `script-library`.
-`/refactor <tech>` reads `rules/refactor-<tech>.md` by exact filename.
+`/devil:refactor <tech>` reads `rules/refactor-<tech>.md` by exact filename.
 
 ---
 
 ## Settings, hooks and MCP
 
-- **`settings.json`** — committed and shared: permissions (read-only tooling allowed,
-  destructive Bash asks), `env`, status line, and `attribution` set to empty strings so
-  binding rule #1 is enforced rather than merely stated.
-- **`settings.local.json`** — machine-local, gitignored. Start from
+The plugin loads `hooks/hooks.json` itself. Settings and MCP servers are files a host
+receives, so they live in `templates/` ([`templates/README.md`](templates/README.md)):
+
+- **`templates/settings.json`**: copied to the host's `.claude/settings.json`. It
+  holds permissions (read-only tooling allowed, destructive Bash asks), `env`, status line,
+  and `attribution` set to empty strings so binding rule #1 is enforced rather than
+  merely stated.
+- **`settings.local.json`**: the host's machine-local file, gitignored. Start from
   `settings.local.json.example`.
-- **`hooks/`** — where rules stop being reminders. `PreToolUse` denies the catastrophic
-  and asks on the irreversible; `PostToolUse` gates the file you just edited;
-  `SessionStart` hands over the briefing; `PreCompact` protects the facts worth keeping.
-  Details and limits in [`hooks/HOOKS-README.md`](hooks/HOOKS-README.md).
-- **`.mcp.json`** — `playwright`, `context7`, `deepwiki`, and `supermemory`
-  (**off by default** — see [`doc/MEMORY.md`](doc/MEMORY.md) for what it costs you).
+- **`hooks/`**: where rules stop being reminders. `hooks/hooks.json` binds the events
+  to `hooks/scripts/hooks.py`: `PreToolUse` denies the catastrophic and asks on the
+  irreversible; `PostToolUse` gates the file you just edited; `SessionStart` hands over
+  the briefing; `PreCompact` protects the facts worth keeping. Details and limits in
+  [`hooks/HOOKS-README.md`](hooks/HOOKS-README.md).
+- **`templates/mcp.json`**: copied to the host's `.mcp.json`. It declares
+  `playwright`, `context7`, `deepwiki`, and `supermemory` (**off by default**, see
+  [`doc/MEMORY.md`](doc/MEMORY.md) for what it costs you).
 
 ---
 
@@ -256,9 +270,9 @@ Loaded only when you touch matching files, so they cost nothing otherwise:
 comment stripper, C-norm helpers, header-cycle detection, markdown-to-PDF.
 
 ```sh
-.claude/tools/scripts.sh list
-.claude/tools/scripts.sh show valgrind-check
-.claude/tools/scripts.sh run strip-comments -- src/ --stats
+devil scripts list
+devil scripts show valgrind-check
+devil scripts run strip-comments -- src/ --stats
 ```
 
 Only names in [`scripts/REGISTRY.md`](scripts/REGISTRY.md) run, and each is invoked with
@@ -294,23 +308,25 @@ These hold for everything here, even one-off tasks:
 ## Repository layout
 
 ```text
-.claude/
+./                     the plugin root (installed as `devil`, or loaded with --plugin-dir)
 ├── README.md          this file
 ├── AGENTS.md          multi-agent discipline
-├── settings.json      committed config (permissions / env / hooks)
-├── .mcp.json          MCP servers
+├── .claude-plugin/    plugin.json and marketplace.json
 ├── agents/*.md        specialist personas (builder, forger, devil, reviewer, …)
 ├── rules/*.md         always-on and path-scoped constraints
-├── commands/*.md      single-shot actions (/prompt, /quality, /refactor, …)
+├── commands/*.md      actions and multi-phase workflows, all /devil:<name>
+│                      (kind: command → /devil:prompt, /devil:quality, …;
+│                       kind: workflow → /devil:feature, /devil:harden, /devil:deal, …)
 ├── skills/<n>/SKILL.md  capabilities that trigger on intent (debug, frontend, …)
-├── workflows/*.md     multi-phase playbooks (/workflow:feature, harden, deal, …)
+├── bin/devil          the dispatcher: `devil <tool>`, `devil orch <sub>`
 ├── tools/*.sh         the scripts (digest, quality, selfcheck, …) + lib/common.sh
-├── templates/         copy-and-fill procedures a person performs (wizard.sh)
-├── hooks/             the enforcement + notification handler
+├── tools/orch/        headless OpenCode jobs and their gate (`devil orch …`)
+├── hooks/             hooks.json bindings and hooks/scripts/hooks.py, the handler
+├── templates/         what a host receives: settings.json, mcp.json, wizard.sh
+├── settings.local.json.example  machine-local toggles for a host
 ├── scripts/           REGISTRY.md — the vetted external script library
-├── tests/             regression tests for the tools, hooks and templates
-├── doc/               MEMORY.md, REFERENCES.md
-└── cache/             tool output, gitignored, fingerprinted to git state
+├── tests/             regression tests for the tools, hooks, dispatcher and templates
+└── doc/               MEMORY.md, REFERENCES.md
 ```
 
 ---
@@ -319,24 +335,30 @@ These hold for everything here, even one-off tasks:
 
 When you add something, match the existing examples: `agents/devil.md`,
 `rules/refactor-common.md`, `commands/refactor.md`, `skills/debug/SKILL.md`,
-`workflows/harden.md`, `tools/quality.sh`. Keep the voice short and direct, use real
+`commands/harden.md`, `tools/quality.sh`. Keep the voice short and direct, use real
 numbers, and skip filler words like "simply" or "just".
 
 - **Rules** — a universal rule has **no frontmatter** (that is the signal for
   always-load). A path-scoped rule has `paths:` and nothing else. `globs:` and
   `alwaysApply:` are Cursor fields — Claude Code ignores them, and the rule then loads
   every session anyway.
-- **Commands** — frontmatter with one `description:` ending in `Usage: /<name> <args>`;
-  the body opens with `<Label>: $ARGUMENTS` and uses phased `## Workflow` sections.
+- **Commands** — frontmatter with one `description:` ending in `Usage: /devil:<name> <args>`
+  and a block map `metadata:` holding `kind: command` (written as two lines; the
+  selfcheck reader skips a flow map). The body opens with `<Label>: $ARGUMENTS` and uses
+  phased `## Workflow` sections.
 - **Skills** — a directory `skills/<name>/` whose `SKILL.md` frontmatter `name` matches
   the directory. `description:` ends in `Auto-triggers on: "phrase", "phrase"`. Tool
   restriction is `allowed-tools:` — **not** `tools:`, which is an agent field. Keep the
   body short and put depth in a sibling `reference.md`.
-- **Workflows** — `description:` ending in `Usage: /workflow:<name> <args>`; numbered
-  phases; one clear human gate before any behavior change; a final `## Report`.
+- **Workflows** — a command file `commands/<name>.md` whose `metadata:` holds
+  `kind: workflow`, with `description:` ending in `Usage: /devil:<name> <args>`;
+  numbered phases; one clear human gate before any behavior change; a final `## Report`.
+  There is no `workflows/` directory: selfcheck fails on one.
 - **Tools** — executable bash, shebang on line 1, thin glue over `lib/common.sh`, one
-  concern each. Support `--summary` and `--refresh`, emit markdown, cache to `cache/`,
-  exit non-zero on failure. The `forger` builds these.
+  concern each. Support `--summary` and `--refresh`, emit markdown, cache via
+  `emit_cached`, exit non-zero on failure. A new `tools/<name>.sh` is `devil <name>` with
+  no registration; docs cite it that way and selfcheck fails on a `devil <name>` that
+  has no file. The `forger` builds these.
 - **Agents** — frontmatter with `name` (matching the filename), a `description:` with
   triggers, `tools:`, and optionally `model:` and `memory:`.
 - **Templates** are copy-and-fill scripts for the steps only a person can do. Edit only
@@ -347,8 +369,9 @@ numbers, and skip filler words like "simply" or "just".
   the agent parses its `KEY=VALUE` tail and never wraps it in `tools/watch.sh`.
 
 Then run `tools/selfcheck.sh`. It fails on a documented name that doesn't exist, a
-frontmatter field Claude Code doesn't read, and a tool without a shebang — the three
-ways this config has drifted before.
+frontmatter field Claude Code doesn't read, a tool without a shebang, and a leftover of
+the old layout (a `workflows/` file, or a tool cited by its old host path instead of
+`devil <name>`).
 
 ```sh
 bash tools/selfcheck.sh

@@ -25,8 +25,8 @@ glue over it.
 
 ## Find the redundancy with tools, not eyes
 
-- `.claude/tools/dupes.sh` lists repeated blocks — each is an extraction candidate.
-- `.claude/tools/codemap.sh` shows where a symbol already lives before you add another.
+- `devil dupes` lists repeated blocks — each is an extraction candidate.
+- `devil codemap` shows where a symbol already lives before you add another.
 - Run them; act on them. A duplication candidate left in place is a decision to
   maintain two copies forever.
 

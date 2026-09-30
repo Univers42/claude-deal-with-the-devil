@@ -1,7 +1,9 @@
 ---
 description: >
   Deal with the devil — submit a risky plan to the risk magistrate before it becomes code.
-  The decision-quality gate. Usage: /workflow:deal <the plan or decision>
+  The decision-quality gate. Usage: /devil:deal <the plan or decision>
+metadata:
+  kind: workflow
 ---
 
 # Deal with the devil
@@ -20,7 +22,7 @@ summon the tribunal for a one-line fix.
 
 ## 2. Gather the evidence
 
-- Run `.claude/tools/digest.sh` (and `quality.sh` / `dupes.sh` if relevant). Facts, not vibes.
+- Run `devil digest` (and `devil quality` / `devil dupes` if relevant). Facts, not vibes.
 - Note which `risk.md` triggers this decision hits.
 
 ## 3. Submit to the devil
