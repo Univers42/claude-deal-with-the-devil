@@ -66,20 +66,39 @@ migration, paired with `/migrate`), `/workflow:compat-audit` (endpoint-by-endpoi
 
 ## Quick start
 
-1. Copy these files into your project's `.claude/` directory — this repo *is* that
-   directory's contents.
-2. Run `.claude/tools/digest.sh` for the stack, toolchain, test framework, untested
-   files and duplication at a glance.
-3. Describe a feature and let Claude run the arc: `/prompt` → `/deal` (if risky) →
-   `builder` → `/quality`.
-4. Optional: `cp settings.local.json.example settings.local.json` for machine-local
-   toggles. `settings.json` is committed and shared.
-
-Check it landed correctly:
+This repo is a Claude Code plugin named `devil`, served by the `univers42` marketplace
+that lives in the same tree (`.claude-plugin/`).
 
 ```sh
-.claude/tools/selfcheck.sh     # every documented name resolves; frontmatter is valid
-.claude/tools/context.sh       # what this config costs you per session
+claude plugin marketplace add Univers42/claude-deal-with-the-devil
+claude plugin install devil@univers42        # add --scope project to share it with a repo
+```
+
+Inside a session the same two steps are `/plugin marketplace add
+Univers42/claude-deal-with-the-devil` and `/plugin install devil@univers42`. Every
+asset is namespaced by the plugin: `/devil:prompt`, `/devil:quality`, the agents
+`devil:builder`, `devil:reviewer`, and so on. The bindings in `hooks/hooks.json` start
+enforcing as soon as the plugin is enabled.
+
+To work on the kit itself, load the checkout for one session without installing it:
+
+```sh
+claude --plugin-dir .
+```
+
+A plugin cannot carry `rules/` (there is no rules component), the permissions and other
+keys of `settings.json`, or a `CLAUDE.md` fragment. It can carry MCP servers, but this
+kit keeps its four in `templates/` as well: a server the plugin ships is on for every
+host, and the `supermemory` opt-out lives in the host's settings. `/devil:setup`
+(coming) seeds `rules/` and `templates/` into a host's `.claude/`; until then copy them
+by hand (`templates/README.md`).
+
+Check the plugin is well-formed:
+
+```sh
+claude plugin validate .claude-plugin/plugin.json --strict   # manifest and hooks/hooks.json
+bash tools/selfcheck.sh        # every documented name resolves; frontmatter is valid
+bash tools/context.sh          # what this config costs you per session
 ```
 
 ---

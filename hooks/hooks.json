@@ -1,114 +1,16 @@
 {
-  "permissions": {
-    "allow": [
-      "Read(*)",
-      "Glob(*)",
-      "Grep(*)",
-      "Bash(.claude/tools/*.sh:*)",
-      "Bash(./tools/*.sh:*)",
-      "Bash(git status:*)",
-      "Bash(git diff:*)",
-      "Bash(git log:*)",
-      "Bash(git show:*)",
-      "Bash(git branch:*)",
-      "Bash(git ls-files:*)",
-      "Bash(rg:*)",
-      "Bash(jq:*)",
-      "Bash(fd:*)",
-      "Bash(ls:*)",
-      "Bash(wc:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(file:*)",
-      "Bash(shellcheck:*)",
-      "Bash(shfmt:*)",
-      "Bash(markdownlint:*)",
-      "Bash(ruff:*)",
-      "Bash(gofmt:*)",
-      "Bash(go vet:*)",
-      "Bash(cargo clippy:*)",
-      "Bash(cargo fmt:*)",
-      "Bash(tsc --noEmit:*)",
-      "Bash(eslint:*)",
-      "Bash(prettier --check:*)",
-      "mcp__playwright__*",
-      "mcp__context7__*",
-      "mcp__deepwiki__*",
-      "WebSearch"
-    ],
-    "deny": [],
-    "ask": [
-      "Bash(rm:*)",
-      "Bash(rmdir:*)",
-      "Bash(shred:*)",
-      "Bash(unlink:*)",
-      "Bash(dd:*)",
-      "Bash(mkfs:*)",
-      "Bash(fdisk:*)",
-      "Bash(mount:*)",
-      "Bash(chmod:*)",
-      "Bash(chown:*)",
-      "Bash(sudo:*)",
-      "Bash(git push:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(git clean:*)",
-      "Bash(git rebase:*)",
-      "Bash(npm:*)",
-      "Bash(npx:*)",
-      "Bash(pip:*)",
-      "Bash(pip3:*)",
-      "Bash(yarn:*)",
-      "Bash(pnpm:*)",
-      "Bash(cargo install:*)",
-      "Bash(go install:*)",
-      "Bash(brew:*)",
-      "Bash(apt:*)",
-      "Bash(apt-get:*)",
-      "Bash(docker:*)",
-      "Bash(kubectl:*)",
-      "Bash(helm:*)",
-      "Bash(terraform:*)",
-      "Bash(gcloud:*)",
-      "Bash(aws:*)",
-      "Bash(gh repo:*)",
-      "Bash(gh release:*)",
-      "Bash(curl:*)",
-      "Bash(wget:*)",
-      "Bash(kill:*)",
-      "Bash(killall:*)",
-      "Bash(pkill:*)"
-    ]
-  },
-
-  "attribution": {
-    "commit": "",
-    "pr": ""
-  },
-
-  "env": {
-    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80"
-  },
-
-  "respectGitignore": true,
-  "enableAllProjectMcpServers": true,
-  "outputStyle": "default",
-  "spinnerTipsEnabled": true,
-  "disableAllHooks": false,
-
-  "statusLine": {
-    "type": "command",
-    "command": "printf '%s' \"$(basename \"$PWD\") · $(git branch --show-current 2>/dev/null || echo no-git)\"",
-    "padding": 0
-  },
-
+  "description": "Deal with the Devil: risk enforcement, single-file gates, session briefing, compaction guard.",
   "hooks": {
     "PreToolUse": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": false,
             "statusMessage": "Checking risk"
           }
@@ -120,8 +22,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "Gating the edit"
           }
@@ -133,10 +38,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 10000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 10,
             "async": true,
-            "once": true,
             "statusMessage": "Briefing"
           }
         ]
@@ -147,10 +54,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": false,
-            "once": true,
             "statusMessage": "Preserving facts"
           }
         ]
@@ -161,8 +70,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "PostToolUseFailure"
           }
@@ -174,8 +86,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "PostToolBatch"
           }
@@ -187,8 +102,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "PermissionRequest"
           }
@@ -200,8 +118,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "PermissionDenied"
           }
@@ -213,8 +134,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "UserPromptSubmit"
           }
@@ -226,8 +150,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "UserPromptExpansion"
           }
@@ -239,8 +166,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "Notification"
           }
@@ -252,8 +182,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "MessageDisplay"
           }
@@ -265,8 +198,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "Stop"
           }
@@ -278,8 +214,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "StopFailure"
           }
@@ -291,8 +230,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "SubagentStart"
           }
@@ -304,8 +246,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "SubagentStop"
           }
@@ -317,8 +262,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "PostCompact"
           }
@@ -330,10 +278,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
-            "once": true,
             "statusMessage": "SessionEnd"
           }
         ]
@@ -344,8 +294,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 30000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 30,
             "async": true,
             "statusMessage": "Setup"
           }
@@ -357,8 +310,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "TeammateIdle"
           }
@@ -370,8 +326,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "TaskCreated"
           }
@@ -383,8 +342,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "TaskCompleted"
           }
@@ -396,8 +358,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "ConfigChange"
           }
@@ -409,8 +374,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "WorktreeCreate"
           }
@@ -422,8 +390,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "WorktreeRemove"
           }
@@ -435,8 +406,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "InstructionsLoaded"
           }
@@ -448,8 +422,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "Elicitation"
           }
@@ -461,8 +438,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "ElicitationResult"
           }
@@ -474,8 +454,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "CwdChanged"
           }
@@ -488,8 +471,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PROJECT_DIR}/.claude/hooks/scripts/hooks.py",
-            "timeout": 5000,
+            "command": "python3",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/hooks.py"
+            ],
+            "timeout": 5,
             "async": true,
             "statusMessage": "FileChanged"
           }

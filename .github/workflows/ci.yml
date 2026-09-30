@@ -46,7 +46,9 @@ jobs:
       - name: json is valid
         if: always()
         run: |
-          for f in settings.json .mcp.json hooks/config/hooks-config.json \
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+                   hooks/hooks.json hooks/config/hooks-config.json \
+                   templates/settings.json templates/mcp.json \
                    settings.local.json.example; do
             python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" \
               && echo "ok   $f" || { echo "FAIL $f"; exit 1; }
@@ -58,12 +60,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: tools/selfcheck.sh
-        run: bash tools/selfcheck.sh
+      - name: tools/selfcheck.sh --strict
+        run: bash tools/selfcheck.sh --strict
       - name: tools/context.sh
         run: bash tools/context.sh --summary
       - name: tools/ponytail.sh --strict
         run: bash tools/ponytail.sh --strict
+
+  # The root must load as a Claude Code plugin. Validating plugin.json also reads
+  # hooks/hooks.json; validating the root would pick marketplace.json and skip it.
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install claude code
+        run: npm install -g @anthropic-ai/claude-code
+      - name: claude plugin validate --strict
+        run: |
+          rc=0
+          for t in .claude-plugin/plugin.json .claude-plugin/marketplace.json \
+                   ./skills ./agents ./commands; do
+            echo "── $t"
+            claude plugin validate "$t" --strict || rc=1
+          done
+          exit $rc
 
   test:
     runs-on: ubuntu-latest
