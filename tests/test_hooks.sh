@@ -26,7 +26,10 @@ if ! command -v python3 >/dev/null 2>&1; then
 fi
 
 # fire <json> -> prints the handler's stdout; exit code in $?
-fire() { printf '%s' "$1" | python3 "$HOOK" 2>/dev/null; }
+# The autonomy knob is cleared here on purpose: this suite runs inside unattended
+# sessions too, and a case about the default behaviour must not depend on the
+# environment of whoever ran it. The knob's own cases set it explicitly.
+fire() { printf '%s' "$1" | env -u DEVIL_AUTONOMY python3 "$HOOK" 2>/dev/null; }
 
 # expect <label> <json> <deny|ask|silent>
 expect() {
@@ -73,6 +76,8 @@ expect "ask writing a .env" \
   '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"/x/.env"}}' ask
 expect "ask writing an ssh key" \
   '{"hook_event_name":"PreToolUse","tool_name":"Write","tool_input":{"file_path":"/x/id_ed25519"}}' ask
+
+# The autonomy knob (DEVIL_AUTONOMY) has its own file: tests/test_autonomy.sh.
 
 # --- silent: ordinary work must not be impeded ------------------------------
 expect "ordinary ls" "$(bash_call 'ls -la')" silent

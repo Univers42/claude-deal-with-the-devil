@@ -101,6 +101,18 @@ try {
 is("an ordinary command is not re-checked", respawned, 0)
 is("an ordinary command is not refused", threw, null)
 
+// An autonomous session (DEVIL_AUTONOMY=1) makes ask() return nothing, so the only
+// thing the bridge must do is stay out of the way. The backstop is the strict path,
+// where an ask would have become a thrown refusal: it must not throw on silence.
+bridge.setAsk(() => null)
+threw = null
+try {
+  bridge.guardSegmented({ tool: "shell", input: { command: "echo ready; git push origin develop" } })
+} catch (e) {
+  threw = e.message
+}
+is("a silent hook leaves a segmented command alone", threw, null)
+
 if (bad > 0) {
   console.log(`${bad} assertion(s) failed`)
   process.exit(1)

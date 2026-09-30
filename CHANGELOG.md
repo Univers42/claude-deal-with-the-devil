@@ -13,6 +13,13 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Added
 
+- `DEVIL_AUTONOMY=1`: an opt-in env switch for sessions run unattended. It turns the
+  `PreToolUse` ask into no decision, so the irreversible defers to the session's own
+  permission mode instead of prompting a session the user meant to leave alone. Only the
+  exact value `1` counts, so a typo keeps the prompts; the deny patterns still refuse.
+  Set it with `"env": {"DEVIL_AUTONOMY": "1"}` in the host settings
+  (`hooks/HOOKS-README.md`).
+
 - `tools/index.sh`: the generator behind the README asset tables and the router.
   `--check` (the default) regenerates every block between
   `<!-- devil:index:<kind>:start -->` and `<!-- devil:index:<kind>:end -->` and

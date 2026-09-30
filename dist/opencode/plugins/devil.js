@@ -44,6 +44,11 @@ const dbg = (m) => {
 
 // The kit answers "ask" on the irreversible. OpenCode has a real ask channel, so
 // the decision is passed through rather than flattened into a deny.
+//
+// The autonomy knob (DEVIL_AUTONOMY=1) needs no line here: ask() in
+// hooks/scripts/respond.py returns no decision at all, so this file never receives
+// the ask to pass on, and guardSegmented has nothing to throw. The spawn inherits
+// process.env, so the host sets the knob in its own environment.
 const DECISIONS = ["deny", "ask"]
 
 // risk.py and gates.py only have rules for these; every other action would be a
