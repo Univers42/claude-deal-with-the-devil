@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# test_templates.sh: the two copy-and-fill templates must lint, run headless
-# from a here-string, and trace statically.
+# test_templates.sh: the two copy-and-fill shell templates must lint, run headless
+# from a here-string, and trace statically; the three decision templates
+# (adr, out-of-scope, agent-brief) must keep their required headings, and the
+# kit's own .out-of-scope records must follow the template.
 #
 # The trace is the gate that matters. The agent never runs a wizard end to end
 # (it opens browsers and writes secrets), so the only proof it can give is that
@@ -179,6 +181,97 @@ mkdir "$TMP/dry" && (cd "$TMP/dry" && PATH=/nonexistent "$BASH" "$ROOT/$WIZ" --d
 grep -q '^SKIPPED: set secret DASHBOARD_TOKEN' "$TMP/dry.out" && ok "gh absent prints SKIPPED for set_secret" || no "SKIPPED line missing"
 [ ! -e "$TMP/dry/.env" ] && ok "dry-run writes nothing to .env" || no "dry-run wrote a .env"
 grep -q 's3cr3t-value-XYZ' "$TMP/dry.out" && no "the secret value was printed" || ok "the secret value never appears in the output"
+
+# --- h. the decision templates: headings, size, and the negative control -----
+# A template is a contract with whatever fills it, so its headings are a shape and
+# the shape is worth a check. The negative control is the point: every case below
+# also builds a copy with ONE heading deleted and requires the same assertion to
+# reject it. An assertion that has never been seen to fail is not a gate.
+#
+# Caveat: a fixed-string shape check. It proves the headings are present, not that
+# the prose under them is any good, and a template that needs a new heading has to
+# be added here in the same change. That is the intended cost: the shape is part of
+# the contract, so changing it is a deliberate act.
+
+# shape <name>: the patterns a template of that name must satisfy, one per line.
+shape() {
+  case "$1" in
+  adr)
+    printf '%s\n' '^- Status:' '^## Context$' '^## Decision$' \
+      '^## Alternatives considered$' '^## Consequences$' \
+      'irreversible' 'public surface' 'PROCEED'
+    ;;
+  out-of-scope)
+    printf '%s\n' '^- Decided: ' '^## The concept$' \
+      '^## Why not$' '^## Prior requests$' '^## Reopen when$'
+    ;;
+  agent-brief)
+    printf '%s\n' '^## Objective$' '^## Contract$' '^## Constraints$' '^## Facts$' \
+      '^## Return block$' '^status:' '^gates:' '^changed:' '^deviations:' '^next:'
+    ;;
+  *) return 1 ;;
+  esac
+}
+
+# has_shape <file> <name>: every pattern of that shape is present.
+has_shape() {
+  local pat
+  while read -r pat; do
+    [ -n "$pat" ] || continue
+    grep -qE -- "$pat" "$1" || return 1
+  done < <(shape "$2")
+}
+
+# drop <name>: the one heading the negative control deletes.
+drop() {
+  case "$1" in
+  adr) printf '^## Consequences$\n' ;;
+  out-of-scope) printf '^## Why not$\n' ;;
+  *) printf '^## Facts$\n' ;;
+  esac
+}
+
+DECISIONS="adr out-of-scope agent-brief"
+for t in $DECISIONS; do
+  f="templates/$t.md"
+  if [ ! -f "$f" ]; then
+    no "$f is missing"
+    continue
+  fi
+  has_shape "$f" "$t" && ok "$t.md has every required heading" ||
+    no "$t.md is missing a required heading: $(shape "$t" | tr '\n' ' ')"
+  [ "$(wc -l <"$f")" -le 40 ] && ok "$t.md is at most 40 lines" || no "$t.md exceeds 40 lines"
+  # Negative control: the same assertion, one heading short.
+  grep -vE -- "$(drop "$t")" "$f" >"$TMP/short-$t.md"
+  has_shape "$TMP/short-$t.md" "$t" && no "$t.md assertion must fail on a copy missing $(drop "$t")" ||
+    ok "$t.md assertion fails on a copy with $(drop "$t") deleted"
+done
+
+# The kit's own records follow the out-of-scope template, and a fifth one has to
+# be named here or it lands unnoticed.
+RECORDS="openai-sidecars changesets wizard-interactive skills-array-as-stable-set"
+for r in $RECORDS; do
+  f=".out-of-scope/$r.md"
+  if [ ! -f "$f" ]; then
+    no "$f is missing"
+    continue
+  fi
+  has_shape "$f" out-of-scope && ok "$r.md follows the out-of-scope template" ||
+    no "$r.md is missing a required heading"
+  # A record with no real decision date is a note, not a record.
+  grep -qE '^- Decided: [0-9]{4}-[0-9]{2}-[0-9]{2}' "$f" ||
+    no "$r.md has no ISO decision date"
+done
+found="$(find .out-of-scope -name '*.md' -printf '%f\n' | sed 's/\.md$//' | sort | tr '\n' ' ' | sed 's/ $//')"
+# One line per name, sorted, so the comparison is a set equality and not an order.
+expected="$(printf '%s\n' "$RECORDS" | tr ' ' '\n' | sort | tr '\n' ' ' | sed 's/ $//')"
+[ "$found" = "$expected" ] &&
+  ok "no .out-of-scope record outside the four named ones" ||
+  no ".out-of-scope holds '$found', expected only '$expected'"
+grep -vE '^## Why not$' "$ROOT/.out-of-scope/changesets.md" >"$TMP/short-record.md"
+has_shape "$TMP/short-record.md" out-of-scope &&
+  no "a record missing '## Why not' must fail the assertion" ||
+  ok "a record missing '## Why not' fails the same assertion"
 
 echo
 echo "$PASS passed, $FAIL failed, $SKIP skipped"

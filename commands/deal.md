@@ -43,7 +43,17 @@ summon the tribunal for a one-line fix.
 - Hand the verdict + conditions to the `builder`: TDD + library-first, meeting every condition, the
   quality gate green before "done".
 
-## 6. Record
+## 6. Record the decision
 
-- For an irreversible or high-blast decision, note the verdict and its conditions in the PR / decision
-  log — one short paragraph. Future-you needs to know why this was safe.
+- The decision log is a file, not a paragraph: `docs/adr/NNNN-<slug>.md` in the
+  host repo, numbered in the order taken, written from `templates/adr.md`. Status,
+  Context (the facts with `file:line`), Decision, the alternatives and why each
+  lost, Consequences (the verdict and its conditions live here), so future-you can
+  see why this was safe without re-running the tribunal.
+- Write it when the three-gate rule fires: the decision is irreversible, it
+  changes a public surface, or the verdict was BLOCK / PROCEED-WITH-CONDITIONS.
+  Below all three, a commit message and a line in the handoff carry it.
+- A concept the verdict rejected also gets a file: `.out-of-scope/<concept>.md`
+  from `templates/out-of-scope.md`, so the next request for it is answered by a
+  record instead of a re-argument.
+- Print the paths you wrote. A record nobody knows about is not a record.

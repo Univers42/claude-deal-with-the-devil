@@ -42,7 +42,12 @@ Emit the refined prompt, ready to hand to `agents/builder.md`:
 - **Done-when** — the verifiable gate: the test that must pass, `devil quality` green.
 - **Output contract** — what the builder returns (`rules/prompt-contract.md`).
 
-### Phase 4 — Handoff
+### Phase 4: Hand off
 
-- Offer to execute it with the builder. Don't start building from `/devil:prompt` — this
-  command produces the spec; the builder consumes it.
+- Close with the agent brief from `templates/agent-brief.md`, so the last thing
+  the caller reads is the contract another agent can execute: Objective, Contract
+  (inputs → outputs → done-when, plus out of scope), Constraints, Facts as
+  pointers (`file:line` and the command to re-run, never a pasted copy of a file
+  that will move), and the return block the builder owes back.
+- Offer to execute it with the builder. Don't start building from `/devil:prompt` —
+  this command produces the spec; the builder consumes it.

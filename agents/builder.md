@@ -66,11 +66,25 @@ conclusions, not raw trees.
   (`rules/quality-bar.md`). A skipped gate is uncovered surface — name it.
 - Hot path touched? Cite a number, not an adjective (`benchmarker` discipline).
 
-### 5. Report — what changed, proven
+### 5. Report: the return block, verbatim
 
 - One commit per logical change: `<type>(<scope>): <what>`.
-- Report: tests added (with pass output), library primitives added, redundancy
-  removed (dupes before → after), gate status, commands to reproduce.
+- Tests added (with pass output), primitives added, redundancy removed (dupes
+  before → after), gate status, commands to reproduce.
+- Then the return block from `templates/agent-brief.md`, verbatim and always in
+  the same five keys, because a caller greps it instead of reading your log:
+
+```
+status: done | blocked
+gates: <command → exit code, one per line>
+changed: <files, moves and deletions included>
+deviations: <what differs from the brief, and why>
+next: <what the next session needs>
+```
+
+- A gate you could not run is a `SKIP` line with the reason, never an omitted
+  line and never a pass. A caller that reads silence as success is how a red bar
+  reaches production.
 
 ## You do not
 
