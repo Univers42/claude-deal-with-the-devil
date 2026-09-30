@@ -84,27 +84,39 @@ def emit(payload):
 
 
 def deny(event, reason):
-    emit({"hookSpecificOutput": {"hookEventName": event,
-                                 "permissionDecision": "deny",
-                                 "permissionDecisionReason": reason}})
+    emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": event,
+                "permissionDecision": "deny",
+                "permissionDecisionReason": reason,
+            }
+        }
+    )
 
 
 def ask(event, reason):
-    emit({"hookSpecificOutput": {"hookEventName": event,
-                                 "permissionDecision": "ask",
-                                 "permissionDecisionReason": reason}})
+    emit(
+        {
+            "hookSpecificOutput": {
+                "hookEventName": event,
+                "permissionDecision": "ask",
+                "permissionDecisionReason": reason,
+            }
+        }
+    )
 
 
 def context(event, text):
-    emit({"hookSpecificOutput": {"hookEventName": event,
-                                 "additionalContext": text}})
+    emit({"hookSpecificOutput": {"hookEventName": event, "additionalContext": text}})
 
 
 def run(cmd, cwd=None):
     """Bounded subprocess. Returns (rc, output); rc 124 means it was killed."""
     try:
-        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True,
-                           timeout=TIMEOUT)
+        p = subprocess.run(
+            cmd, cwd=cwd, capture_output=True, text=True, timeout=TIMEOUT
+        )
         return p.returncode, (p.stdout + p.stderr).strip()
     except subprocess.TimeoutExpired:
         return 124, "timed out"
@@ -115,10 +127,14 @@ def run(cmd, cwd=None):
 # --------------------------------------------------------------------------- PreToolUse
 # DENY: no plausible reason to run this from an agent, and no undo.
 DENY_PATTERNS = [
-    (r"\brm\s+(-[a-zA-Z]*[rf][a-zA-Z]*\s+)+(/|/\*|~|~/|\$HOME)\s*$",
-     "recursive delete of / or $HOME"),
-    (r"\bgit\s+push\b.*(--force|-f)\b.*\b(main|master|production)\b",
-     "force-push to a protected branch"),
+    (
+        r"\brm\s+(-[a-zA-Z]*[rf][a-zA-Z]*\s+)+(/|/\*|~|~/|\$HOME)\s*$",
+        "recursive delete of / or $HOME",
+    ),
+    (
+        r"\bgit\s+push\b.*(--force|-f)\b.*\b(main|master|production)\b",
+        "force-push to a protected branch",
+    ),
     (r"\bmkfs(\.|\s)", "filesystem creation"),
     (r"\bdd\b.*\bof=/dev/(sd|nvme|hd)", "raw write to a block device"),
     (r":\(\)\s*\{\s*:\|:&\s*\}\s*;\s*:", "fork bomb"),
@@ -131,8 +147,10 @@ ASK_PATTERNS = [
     (r"\bgit\s+push\b.*(--force|-f)\b", "force-push"),
     (r"\bgit\s+(reset\s+--hard|clean\s+-[a-zA-Z]*f)", "discards uncommitted work"),
     (r"\bgit\s+push\b", "publishes to a remote"),
-    (r"\b(npm|yarn|pnpm)\s+publish\b|\bcargo\s+publish\b|\btwine\s+upload\b",
-     "publishes a package — irreversible"),
+    (
+        r"\b(npm|yarn|pnpm)\s+publish\b|\bcargo\s+publish\b|\btwine\s+upload\b",
+        "publishes a package — irreversible",
+    ),
     (r"\b(kubectl|helm)\s+(delete|uninstall)\b", "deletes live infrastructure"),
     (r"\bterraform\s+(apply|destroy)\b", "changes live infrastructure"),
     (r"\bdocker\s+(system\s+)?prune\b.*(-a|--all)", "removes all unused images"),
@@ -142,8 +160,10 @@ ASK_PATTERNS = [
 ]
 
 # Writing one of these is almost always an accident.
-SECRET_PATHS = re.compile(r"(^|/)(\.env|\.env\.[a-z]+|id_rsa|id_ed25519|"
-                          r"\.npmrc|\.pypirc|credentials|\.aws/config)$")
+SECRET_PATHS = re.compile(
+    r"(^|/)(\.env|\.env\.[a-z]+|id_rsa|id_ed25519|"
+    r"\.npmrc|\.pypirc|credentials|\.aws/config)$"
+)
 
 
 def pre_tool_use(data):
@@ -155,24 +175,30 @@ def pre_tool_use(data):
         flat = " ".join(cmd.split())
         for pattern, why in DENY_PATTERNS:
             if re.search(pattern, flat, re.IGNORECASE):
-                deny("PreToolUse",
-                     f"Refused: {why}. rules/risk.md treats this as a one-way door with "
-                     f"no bounded blast radius. If it is genuinely intended, run it "
-                     f"yourself — an agent should not be the one to do it.")
+                deny(
+                    "PreToolUse",
+                    f"Refused: {why}. rules/risk.md treats this as a one-way door with "
+                    f"no bounded blast radius. If it is genuinely intended, run it "
+                    f"yourself — an agent should not be the one to do it.",
+                )
         for pattern, why in ASK_PATTERNS:
             if re.search(pattern, flat, re.IGNORECASE):
-                ask("PreToolUse",
+                ask(
+                    "PreToolUse",
                     f"This {why}. rules/risk.md: the irreversible needs an explicit "
                     f"human go-ahead. Confirm the target is what you think it is — "
-                    f"state can change under a plan made several steps ago.")
+                    f"state can change under a plan made several steps ago.",
+                )
 
     if tool in ("Write", "Edit", "NotebookEdit"):
         path = inp.get("file_path", "") or ""
         if SECRET_PATHS.search(path):
-            ask("PreToolUse",
+            ask(
+                "PreToolUse",
                 f"`{os.path.basename(path)}` normally holds credentials. Confirm this "
                 f"is intended — and remember no secret belongs in git or in any memory "
-                f"layer (rules/memory.md).")
+                f"layer (rules/memory.md).",
+            )
 
     sys.exit(0)
 
@@ -186,13 +212,13 @@ FILE_GATES = {
     ".py": [["ruff", "check"], ["python3", "-m", "pyflakes"]],
     ".go": [["gofmt", "-l"]],
     ".rs": [["rustfmt", "--check", "--edition", "2021"]],
-    ".json": [["python3", "-c",
-               "import json,sys; json.load(open(sys.argv[1]))"]],
+    ".json": [["python3", "-c", "import json,sys; json.load(open(sys.argv[1]))"]],
 }
 
 
 def which(binary):
     from shutil import which as _which
+
     return _which(binary) is not None
 
 
@@ -210,23 +236,29 @@ def post_tool_use(data):
         rc, out = run(gate + [path], cwd=host_root())
         if rc == 0 or not out:
             break
-        context("PostToolUse",
-                f"`{' '.join(gate)}` on the file you just edited is not clean:\n\n"
-                f"```\n{out[:1500]}\n```\n\n"
-                f"rules/quality-bar.md: a warning is an error, there is no warning "
-                f"budget. Fix it now — it is cheaper here than at the gate.")
+        context(
+            "PostToolUse",
+            f"`{' '.join(gate)}` on the file you just edited is not clean:\n\n"
+            f"```\n{out[:1500]}\n```\n\n"
+            f"rules/quality-bar.md: a warning is an error, there is no warning "
+            f"budget. Fix it now — it is cheaper here than at the gate.",
+        )
         break
 
     # A doc edited inside the kit may name a file that is not there; keep the
     # kit honest as it goes. The host's own docs are not selfcheck's business.
     try:
         if ext == ".md" and Path(path).resolve().is_relative_to(PLUGIN_ROOT):
-            rc, out = run(["bash", str(PLUGIN_ROOT / "tools" / "selfcheck.sh"),
-                           "--summary"], cwd=str(PLUGIN_ROOT))
+            rc, out = run(
+                ["bash", str(PLUGIN_ROOT / "tools" / "selfcheck.sh"), "--summary"],
+                cwd=str(PLUGIN_ROOT),
+            )
             if rc == 1:
-                context("PostToolUse",
-                        f"`selfcheck.sh` now fails — this edit named something that is "
-                        f"not on disk:\n\n{out[-1200:]}")
+                context(
+                    "PostToolUse",
+                    f"`selfcheck.sh` now fails — this edit named something that is "
+                    f"not on disk:\n\n{out[-1200:]}",
+                )
     except Exception:
         pass
     sys.exit(0)
@@ -248,21 +280,25 @@ def session_start(data):
         if rc == 0 and out:
             parts.append(out[:4000])
     if parts:
-        context("SessionStart",
-                f"Project briefing from `{digest}` (cached, fingerprinted to "
-                "git state; no need to re-derive it):\n\n" + "\n\n".join(parts))
+        context(
+            "SessionStart",
+            f"Project briefing from `{digest}` (cached, fingerprinted to "
+            "git state; no need to re-derive it):\n\n" + "\n\n".join(parts),
+        )
     sys.exit(0)
 
 
 # --------------------------------------------------------------------------- PreCompact
 def pre_compact(data):
     """Compaction drops detail. Say what is worth carrying across it."""
-    context("PreCompact",
-            "Before compacting, preserve: measured numbers and the command that "
-            "produced them, any `devil` verdict and its conditions, the current "
-            "done-when, and anything still UNKNOWN. Per rules/memory.md, do NOT "
-            "preserve what the kit's `tools/digest.sh` re-derives; re-run it after "
-            "compaction instead of carrying a copy that will be stale.")
+    context(
+        "PreCompact",
+        "Before compacting, preserve: measured numbers and the command that "
+        "produced them, any `devil` verdict and its conditions, the current "
+        "done-when, and anything still UNKNOWN. Per rules/memory.md, do NOT "
+        "preserve what the kit's `tools/digest.sh` re-derives; re-run it after "
+        "compaction instead of carrying a copy that will be stale.",
+    )
 
 
 # --------------------------------------------------------------------------- sounds
@@ -278,10 +314,17 @@ def play_sound(event, data):
                     if which(player):
                         args = [player, str(f)]
                         if player == "ffplay":
-                            args = ["ffplay", "-nodisp", "-autoexit", "-loglevel",
-                                    "quiet", str(f)]
-                        subprocess.Popen(args, stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL)
+                            args = [
+                                "ffplay",
+                                "-nodisp",
+                                "-autoexit",
+                                "-loglevel",
+                                "quiet",
+                                str(f),
+                            ]
+                        subprocess.Popen(
+                            args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+                        )
                         return
     except Exception:
         return

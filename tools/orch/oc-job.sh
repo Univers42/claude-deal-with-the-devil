@@ -11,22 +11,34 @@
 # Ponytail: `status: done` is the agent's own claim, and without a rows file nothing checks it
 # before the push — pass rows, or re-run the gates yourself before merging the branch.
 set -uo pipefail
-[[ $# -ge 4 ]] || { echo "usage: oc-job.sh <label> <worktree> <agent> <body-file> [rows-file]" >&2; exit 2; }
+[[ $# -ge 4 ]] || {
+  echo "usage: oc-job.sh <label> <worktree> <agent> <body-file> [rows-file]" >&2
+  exit 2
+}
 label=$1 wt=$2 agent=$3 body=$4 rows=${5-}
 here=$(cd "$(dirname "$0")" && pwd)
 for p in $(pgrep -f '/opencode run' || true); do
   [[ $(readlink "/proc/$p/cwd" 2>/dev/null) == "$(cd "$wt" && pwd -P)" ]] &&
-    { echo "refused: pid $p already works in $wt"; exit 3; }
+    {
+      echo "refused: pid $p already works in $wt"
+      exit 3
+    }
 done
-wf=$wt/target/wf; mkdir -p "$wf"; prompt=$wf/$label.prompt
+wf=$wt/target/wf
+mkdir -p "$wf"
+prompt=$wf/$label.prompt
 cat ${OC_COMMON_PROMPT:+"$OC_COMMON_PROMPT"} "$body" >"$prompt"
-"$here/oc-run.sh" "$label" "$wt" "$agent" "$prompt"; rc=$?
+"$here/oc-run.sh" "$label" "$wt" "$agent" "$prompt"
+rc=$?
 ret=$(jq -r 'select(.part.type=="text") | .part.text' "$wf/$label.jsonl" 2>/dev/null | tail -n 30)
-echo "job rc=$rc"; echo "$ret"
+echo "job rc=$rc"
+echo "$ret"
 [[ $rc -eq 0 ]] && grep -q 'status: done' <<<"$ret" || exit 2
 if [[ -n $rows ]]; then
-  (cd "$wt" && "$here/gate.sh" "target/gate-$label" "$rows") >/dev/null; g=$?
-  cat "$wt/target/gate-$label/summary.txt"; [[ $g -eq 0 ]] || exit 1
+  (cd "$wt" && "$here/gate.sh" "target/gate-$label" "$rows") >/dev/null
+  g=$?
+  cat "$wt/target/gate-$label/summary.txt"
+  [[ $g -eq 0 ]] || exit 1
 fi
 ident=()
 [[ -n ${OC_GIT_NAME-} ]] && ident+=(-c "user.name=$OC_GIT_NAME")
