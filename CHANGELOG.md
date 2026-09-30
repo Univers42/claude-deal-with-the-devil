@@ -49,6 +49,24 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   orchestration scripts; an unknown name exits 2.
 - selfcheck FAILs a root `workflows/` file, a tool cited by its old `.claude/tools/`
   path, and a backticked `devil <name>` citation that names no tool.
+- `skills/grill/` (`grill`): the frontier interview. It states what is decided and
+  what is not, gathers the facts itself (`devil digest`, `devil facts`, a subagent
+  for a wide search) instead of asking the user a question the repo can answer, then
+  puts at most three decisions per round, each as `Q:` / `Recommended:` / `Why:` with
+  a cited fact behind the recommendation. It repeats a round only while the
+  done-when is unstateable or a `rules/risk.md` trigger is unresolved, and ends on
+  the contract: inputs, outputs, done-when. `skills/grill/reference.md` holds the
+  fact-vs-decision test with four worked examples and the question format.
+  `commands/prompt.md` now routes to it from its clarification phase instead of
+  saying "Don't interrogate", and its spec carries a `Seams` section: boundaries
+  named by contract, never by file path.
+- `skills/prototype/` (`prototype`): the spike. Question and kill criterion before
+  any code (the criterion comes from the `innovator` agent when the question is a
+  product bet), a throwaway worktree, every long command under `devil watch`, the
+  result measured against the criterion, and an explicit keep or kill. A spike is
+  never merged: keep means writing the real thing with `/devil:feature`, which
+  rebuilds it test-first. `agents/innovator.md` points at it as the cheapest
+  experiment for an idea.
 - This file.
 
 ### Changed

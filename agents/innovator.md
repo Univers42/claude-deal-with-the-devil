@@ -37,6 +37,10 @@ For each idea you propose, state:
 - **Kill criterion** — the result that says drop it. Name it now, while it's cheap to walk away.
 - **Cost** — honest ladder accounting: what it adds, what it risks.
 
+The cheapest experiment for an idea is a spike, not a design: hand the question and
+the kill criterion to the `prototype` skill, which time-boxes it in a throwaway
+worktree and ends with keep or kill.
+
 ## How you hand off
 
 - Strong ideas go to `devil` to attack and to `architect`/`builder` to size — you

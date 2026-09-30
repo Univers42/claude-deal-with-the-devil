@@ -215,6 +215,8 @@ fires, so a wide roster is cheap — and `/skill-doctor` prunes what goes unused
 | `frontend` | Component and state boundaries, tokens, responsive, theme, a11y |
 | `browser-testing` | Drive a real browser via Playwright and come back with evidence |
 | `brainstorm` | Diverge wide, converge on evidence, leave with a kill criterion |
+| `grill` | Close the frontier: facts gathered, the decisions left put to you in rounds |
+| `prototype` | Time-boxed spike in a throwaway worktree, ends keep or kill |
 | `design-review` | Hierarchy, rhythm, type, states — why it "looks off" |
 | `originality` | Prior-art pass: reuse, wrap, borrow, or build — and say which |
 | `perf-budget` | Set the number before optimising, then measure against it |

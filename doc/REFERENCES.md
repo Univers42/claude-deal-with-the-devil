@@ -50,6 +50,23 @@ Its numbers are dated and Claude Code moves. Re-check against
 
 ---
 
+## `mattpocock/skills`
+
+<https://github.com/mattpocock/skills>, read 2026-09-30. Ported as **ideas, not
+text**: no file is copied, so there is nothing to credit line by line, and the shape
+here is this kit's (numbered steps, a `## Report`, `rules/risk.md` gates).
+
+| Source | What was taken | What it became here |
+|---|---|---|
+| The `grilling` skill (rounds of the frontier: facts by subagents, decisions by the user, a fixed `Q` / recommended-answer format) and the spike pattern of the same repo | Two shapes of interview and experiment, with the round cap and the never-merge rule that make them safe to run | `skills/grill/` (model-invoked) and `skills/prototype/` (model-invoked); the fact-vs-decision test, the `Seams` section of `/devil:prompt`, and the pointer in `agents/innovator.md` |
+
+Their own tree has drift, and that is the other half of the reason this repo is
+managed differently: a router that routes a removed asset, a skill reaching a
+command that does not exist, `claude plugin validate` run by hand only. Every asset
+here is checked by a tool instead.
+
+---
+
 ## `Univers42/scripts`
 
 <https://github.com/Univers42/scripts> — pinned at
