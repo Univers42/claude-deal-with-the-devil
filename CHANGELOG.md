@@ -211,11 +211,17 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Changed
 
+- `devil release bump` re-exports every `dist/<harness>/` in the release commit, because
+  each generated manifest copies the plugin version and its `export --check` gate would go
+  red on the tag. The bump half moved to `tools/lib/release-bump.sh` (300-line limit).
+
 - Skill descriptions follow `<what>. Use when <conditions>. Auto-triggers on: ...`.
   A skill is `stable` only with a recorded scenario in `tests/scenarios/<name>.md`
   (a run without the skill, a run with it, and a verdict naming one added behaviour
-  and one thing still wrong). Promoted: `debug`, `api-endpoint`, `commit-craft`.
-  Recorded and kept `beta`: `write-test` (its approval stop ends an unattended run).
+  and one thing still wrong). Promoted: `api-endpoint`, `brainstorm`, `browser-testing`,
+  `caveat`, `commit-craft`, `debug`, `design-review`, `doc-sync`, `frontend`,
+  `originality`, `perf-budget`. Recorded and kept `beta`: `write-test` (its approval stop
+  ends an unattended run) and `context-budget` (its with-skill run was not run).
 
 - The `devil` agent writes what its verdict owes: a `docs/adr/NNNN-<slug>.md` from
   `templates/adr.md` for a three-gate decision on BLOCK or PROCEED-WITH-CONDITIONS,

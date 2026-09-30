@@ -34,7 +34,7 @@ fixture() {
   local d="$1" ver="${2:-0.9.0}"
   mkdir -p "$d/tools/lib" "$d/.claude-plugin" "$d/skills/ghost"
   cp "$ROOT/tools/release.sh" "$d/tools/"
-  cp "$ROOT/tools/lib/common.sh" "$d/tools/lib/"
+  cp "$ROOT/tools/lib/common.sh" "$ROOT/tools/lib/release-bump.sh" "$d/tools/lib/"
   chmod +x "$d/tools/release.sh"
   printf '{ "name": "devil", "version": "%s" }\n' "$ver" >"$d/.claude-plugin/plugin.json"
   printf '{ "name": "univers42", "plugins": [ { "name": "devil", "source": "./" } ] }\n' \
@@ -143,6 +143,29 @@ else
   no "changelog did not open 0.9.1 on the given date"
 fi
 is "$(rc "$TMP/bump" --check)" 0 "--check still passes on the bumped repo"
+
+# --- 6b. bump re-exports every dist/<harness>/ in the release commit ------
+# A stub export.sh copies the version it reads, the way the real generators do.
+fixture "$TMP/dist"
+retired_entry "$TMP/dist"
+mkdir -p "$TMP/dist/dist/stub"
+cat >"$TMP/dist/tools/export.sh" <<'STUB'
+#!/usr/bin/env bash
+root="$(cd "$(dirname "$0")/.." && pwd)"
+grep -o '"version": "[^"]*"' "$root/.claude-plugin/plugin.json" >"$root/dist/$1/version"
+STUB
+bash "$TMP/dist/tools/export.sh" stub
+git -C "$TMP/dist" add -A
+git -C "$TMP/dist" commit -q -m "stub dist"
+is "$(rc "$TMP/dist" bump minor)" 0 "bump minor with a dist exits 0"
+is "$(git -C "$TMP/dist" show HEAD:dist/stub/version)" '"version": "0.10.0"' \
+  "the release commit carries the re-exported dist"
+is "$(git -C "$TMP/dist" status --porcelain)" "" "nothing is left uncommitted"
+rm "$TMP/dist/tools/export.sh"
+git -C "$TMP/dist" commit -qam "drop the generator"
+is "$(rc "$TMP/dist" bump patch)" 0 "no export.sh: the dist is left alone (negative control)"
+is "$(git -C "$TMP/dist" show HEAD:dist/stub/version)" '"version": "0.10.0"' \
+  "without the generator the dist keeps its old version"
 
 # --- 7. a dirty tree is refused ---------------------------------------------
 fixture "$TMP/dirty"
