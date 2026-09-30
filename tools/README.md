@@ -26,6 +26,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `watch.sh` | "Run this without ever hanging" — hard + idle timeouts around any command | wraps a command |
 | `selfcheck.sh` | "Does this config tell the truth about itself?" (the drift gate) | every doc + every frontmatter block |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
+| `skillcheck.sh` | "Is this config MANAGED?" (lifecycle, description form, resolving references) | `skills/`, `commands/`, agents, rules, every doc |
 | `context.sh` | "What does this config cost me every session?" | `rules/`, `skills/`, `commands/` (the `paths:` skills count as lazy) |
 | `caveat.sh` | "Which approximations here don't admit they're approximations?" | every source file |
 | `scripts.sh` | "Is there already a script for this?" | `scripts/REGISTRY.md` + a pinned external clone |
@@ -45,6 +46,7 @@ devil watch --idle 60 -- make build  # run anything without hanging (exit 124 = 
 devil selfcheck                      # this config's own integrity (exit 1 = drift)
 devil release --check                # one version source: plugin.json == changelog heading
 devil release bump patch             # cut a release: edit, commit, tag, never push
+devil skillcheck                     # skill and command management (exit 1 = a finding)
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library

@@ -4,6 +4,8 @@ description: >
   Usage: /devil:onboard-app <repo-url-or-path>
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Onboard External App to the Project

@@ -2,8 +2,12 @@
 description: >
   Author and land a new database migration safely.
   Usage: /devil:migrate-db <what the migration does>
+disable-model-invocation: true
+argument-hint: "<what the migration does>"
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Migrate DB

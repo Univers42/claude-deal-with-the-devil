@@ -2,6 +2,8 @@
 description: Turn a rough request into a precise, fact-grounded spec the builder can execute. Usage: /devil:prompt <rough request>
 metadata:
   kind: command
+  stage: beta
+  since: "1.0.0"
 ---
 
 Request: $ARGUMENTS

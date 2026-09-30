@@ -22,6 +22,29 @@ FILE_GATES = {
 }
 
 
+def check_kit_doc(path, ext):
+    """A doc edited inside the kit may name a file that is not there, or break
+    the lifecycle contract. Keep the kit honest as it goes; the host's own docs
+    are neither checker's business. `context` exits on the first message, so the
+    reports are collected and emitted once: an edit that breaks both is told
+    about both, not about whichever ran first."""
+    if ext != ".md" or not Path(path).resolve().is_relative_to(PLUGIN_ROOT):
+        return
+    reports = []
+    for tool, why in (
+        ("selfcheck.sh", "this edit named something that is not on disk"),
+        ("skillcheck.sh", "this edit broke a skill or command contract"),
+    ):
+        rc, out = run(
+            ["bash", str(PLUGIN_ROOT / "tools" / tool), "--summary"],
+            cwd=str(PLUGIN_ROOT),
+        )
+        if rc == 1:
+            reports.append(f"`{tool}` now fails — {why}:\n\n{out[-1200:]}")
+    if reports:
+        context("PostToolUse", "\n\n".join(reports))
+
+
 def post_tool_use(data):
     if data.get("tool_name") not in ("Write", "Edit", "NotebookEdit"):
         sys.exit(0)
@@ -45,20 +68,8 @@ def post_tool_use(data):
         )
         break
 
-    # A doc edited inside the kit may name a file that is not there; keep the
-    # kit honest as it goes. The host's own docs are not selfcheck's business.
     try:
-        if ext == ".md" and Path(path).resolve().is_relative_to(PLUGIN_ROOT):
-            rc, out = run(
-                ["bash", str(PLUGIN_ROOT / "tools" / "selfcheck.sh"), "--summary"],
-                cwd=str(PLUGIN_ROOT),
-            )
-            if rc == 1:
-                context(
-                    "PostToolUse",
-                    f"`selfcheck.sh` now fails — this edit named something that is "
-                    f"not on disk:\n\n{out[-1200:]}",
-                )
+        check_kit_doc(path, ext)
     except Exception:
         pass
     sys.exit(0)

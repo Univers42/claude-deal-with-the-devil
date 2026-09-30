@@ -4,6 +4,8 @@ description: >
   The decision-quality gate. Usage: /devil:deal <the plan or decision>
 metadata:
   kind: workflow
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Deal with the devil
@@ -47,3 +49,15 @@ summon the tribunal for a one-line fix.
 
 - For an irreversible or high-blast decision, note the verdict and its conditions in the PR / decision
   log — one short paragraph. Future-you needs to know why this was safe.
+
+## 7. Report
+
+- The verdict, verbatim: BLOCK, PROCEED-WITH-CONDITIONS or PROCEED
+- The risks it scored (blast / reversibility / cost / confidence) and the one it named that
+  nobody had mentioned
+- Each condition, as the acceptance criterion it became
+- Which `rules/risk.md` triggers the decision hit, or why none did
+- Where the verdict and its reasoning are recorded for the next reader
+
+If the verdict was BLOCK and nothing has changed yet, that is a complete report: the
+verdict is the output. Do not build to find out.

@@ -67,6 +67,11 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   never merged: keep means writing the real thing with `/devil:feature`, which
   rebuilds it test-first. `agents/innovator.md` points at it as the cheapest
   experiment for an idea.
+- `tools/skillcheck.sh`: every skill and command carries `metadata.stage` (stable, beta,
+  retired, rule) and a quoted `since`; stable skills need a scenario record under
+  `tests/scenarios/`; a retired asset names its replacement; a user-only asset is never
+  a step in a model-invoked body; descriptions are linted for form and size. A quality
+  gate, a CI step, and a PostToolUse check on every kit doc edit.
 - This file.
 
 ### Changed

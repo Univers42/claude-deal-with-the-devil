@@ -5,6 +5,9 @@ description: >
   commits, Conventional Commits, never co-authored. Auto-triggers on: "commit this",
   "write a commit message", "split these changes", "prepare a PR", "clean up the history"
 allowed-tools: Read, Bash, Grep, Glob
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Commit craft

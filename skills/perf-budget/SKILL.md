@@ -6,6 +6,9 @@ description: >
   faster", "is this fast enough", "optimize this", "performance budget", "it feels slow",
   "reduce latency"
 allowed-tools: Read, Edit, Bash, Grep, Glob
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Performance budget
@@ -78,7 +81,7 @@ Never optimise from intuition. Intuition is wrong about which line is hot, relia
 A budget nobody re-checks decays quietly within two releases.
 
 - Add the benchmark to CI, comparing against the recorded baseline. Fail over 5%
-  regression (`/devil:ship` already gates on this).
+  regression (the user can run `/devil:ship`, which already gates on this).
 - Commit the baseline artifact so the comparison is reproducible.
 - Record the budget and its reason where the next person will find it — and in
   `benchmarker`'s project memory (`rules/memory.md`), so it is not re-derived.

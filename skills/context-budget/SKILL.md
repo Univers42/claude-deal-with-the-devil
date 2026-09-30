@@ -6,6 +6,9 @@ description: >
   Auto-triggers on: "reduce token usage", "context is full", "what is loading",
   "trim the config", "context budget", "why is my context so big", "compacting too often"
 allowed-tools: Read, Edit, Grep, Glob, Bash
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Context budget

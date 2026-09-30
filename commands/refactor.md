@@ -2,6 +2,8 @@
 description: Deep refactor at the strictest standard for the technology. Usage: /devil:refactor <technology> [file or module path]
 metadata:
   kind: command
+  stage: beta
+  since: "1.0.0"
 ---
 
 Technology: $ARGUMENTS

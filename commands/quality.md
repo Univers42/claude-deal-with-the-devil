@@ -2,6 +2,8 @@
 description: Run every strict quality gate in the repo and report PASS/FAIL/SKIP. Usage: /devil:quality [--no-audit] [--with-tests]
 metadata:
   kind: command
+  stage: beta
+  since: "1.0.0"
 ---
 
 Args: $ARGUMENTS

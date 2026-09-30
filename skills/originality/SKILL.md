@@ -6,6 +6,9 @@ description: >
   Auto-triggers on: "has this been done", "is there a library for", "should I build this",
   "prior art", "am I reinventing", "write a X from scratch"
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
+metadata:
+  stage: beta
+  since: "1.0.0"
 ---
 
 # Originality
