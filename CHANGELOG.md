@@ -107,6 +107,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   agent never runs a wizard end to end; the static trace is the only honest proof)
   and `skills-array-as-stable-set.md` (the manifest `skills` array adds to the scan
   and cannot exclude a beta skill, so the stage is shown, not enforced by omission).
+- `commands/to-tickets.md` (`/devil:to-tickets <spec file | issue number>`): cuts a
+  spec into vertical tracer-bullet slices, each with an objective, a done-when that is
+  a command a test can run, and the blocking edges to the tickets that gate it. It
+  stops rather than guess when the spec has no stateable done-when or when the host
+  has no tracker configured, shows the list and the dependency order for approval
+  before anything is written, then publishes in blockers-first order through the
+  adapter's `create-ticket` verb, plus one map ticket listing every ticket with its
+  blockers. A wide mechanical refactor is the documented exception: expand, migrate
+  by blast radius, contract.
+- `templates/ticket.md`: the body shape a published ticket is filled in from
+  (Objective, Done when, Blocks, Seams, Notes). Both tracker adapters reference it
+  instead of restating it.
 - This file.
 
 ### Changed

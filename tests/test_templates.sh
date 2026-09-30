@@ -209,6 +209,9 @@ shape() {
     printf '%s\n' '^## Objective$' '^## Contract$' '^## Constraints$' '^## Facts$' \
       '^## Return block$' '^status:' '^gates:' '^changed:' '^deviations:' '^next:'
     ;;
+  ticket)
+    printf '%s\n' '^## Objective$' '^## Done when$' '^## Blocks$' '^## Seams$' '^## Notes$'
+    ;;
   *) return 1 ;;
   esac
 }
@@ -272,6 +275,23 @@ grep -vE '^## Why not$' "$ROOT/.out-of-scope/changesets.md" >"$TMP/short-record.
 has_shape "$TMP/short-record.md" out-of-scope &&
   no "a record missing '## Why not' must fail the assertion" ||
   ok "a record missing '## Why not' fails the same assertion"
+
+# --- i. ticket.md: the five sections a ticket body needs ---------------------
+# A body that loses `Blocks` has no dependency edge and reads as ready when it is
+# blocked, so the negative controls drop that heading and `Seams`.
+has_shape "$ROOT/templates/ticket.md" ticket && ok "templates/ticket.md carries its five headings" ||
+  no "templates/ticket.md is missing one of: $(shape ticket | tr '\n' ' ')"
+for h in Blocks Seams; do
+  grep -vx "## $h" "$ROOT/templates/ticket.md" >"$TMP/ticket-no$h.md"
+  has_shape "$TMP/ticket-no$h.md" ticket && no "a ticket body without '## $h' must fail the check" ||
+    ok "a ticket body with '## $h' removed fails the check"
+done
+# both tracker adapters point at the one body shape
+for t in github local; do
+  grep -q 'templates/ticket.md' "$ROOT/templates/tracker/$t.md" &&
+    ok "templates/tracker/$t.md references templates/ticket.md" ||
+    no "templates/tracker/$t.md must reference templates/ticket.md"
+done
 
 echo
 echo "$PASS passed, $FAIL failed, $SKIP skipped"

@@ -10,7 +10,8 @@ gh issue create --title "<title>" --body "<body>" --label ready-for-agent
 
 One ticket per vertical slice, with its objective, its test-checkable done-when and
 its blocking edges in the body. A slice that cannot be verified by a test is not a
-ticket yet.
+ticket yet. The body shape is `templates/ticket.md`; this adapter only decides
+how the body is delivered.
 
 ## list-ready
 
