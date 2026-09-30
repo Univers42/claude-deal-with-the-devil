@@ -1,15 +1,15 @@
 ---
 name: caveat
 description: >
-  Make an approximation admit it is one. Find the heuristics, samples, regex parsers,
-  caches and timeouts in a change and give each the one line saying what it gets wrong.
-  Use when a change adds a heuristic, a sample, a bounded read, a timeout, a cache or
-  a derived number, or when you need to know what a piece of code is bad at.
+  Give every heuristic, sample, regex parser, cache, timeout and derived number the one
+  line saying what it gets wrong.
+  Use when a change adds an approximation, a bounded read, an estimate or a retry bound,
+  or you need to know what a code is bad at.
   Auto-triggers on: "is this exact", "add a caveat", "what are the limitations",
   "document the limits", "how accurate is this"
 allowed-tools: Read, Edit, Grep, Glob, Bash
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 

@@ -1,12 +1,15 @@
 ---
 name: doc-sync
 description: >
-  Find the documentation a change just made false, and fix it — examples copied from
-  passing tests, never composed. Auto-triggers on: "update the docs", "are the docs
-  current", "the README is out of date", "document this change", "sync the documentation"
+  Find the documentation a change just made false and fix exactly that, examples
+  copied from a passing run.
+  Use when a flag was renamed, a path moved, a default changed, a command was removed,
+  or a README example no longer matches what the code prints.
+  Auto-triggers on: "update the docs", "are the docs current", "the README is out of
+  date", "document this change", "the docs are stale"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 metadata:
-  stage: beta
+  stage: stable
   since: "1.0.0"
 ---
 
