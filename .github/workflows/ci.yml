@@ -66,6 +66,8 @@ jobs:
         run: bash tools/context.sh --summary
       - name: tools/ponytail.sh --strict
         run: bash tools/ponytail.sh --strict
+      - name: tools/release.sh --check
+        run: bash tools/release.sh --check
 
   # The root must load as a Claude Code plugin. Validating plugin.json also reads
   # hooks/hooks.json; validating the root would pick marketplace.json and skip it.
