@@ -1,7 +1,7 @@
 {
   "name": "devil",
   "displayName": "Deal with the Devil",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Quality kit for Claude Code: spec, risk verdict, test-first build, strict gate.",
   "author": {
     "name": "Univers42"

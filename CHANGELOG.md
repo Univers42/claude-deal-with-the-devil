@@ -11,6 +11,8 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-09-30
+
 ### Changed
 
 - `devil setup` leaves `permissions.ask` to the host when the host's settings set
