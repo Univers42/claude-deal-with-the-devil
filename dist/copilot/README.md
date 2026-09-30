@@ -166,5 +166,5 @@ ran and the gate is not installed.
 
 ---
 
-Generated from: 11 agents and 18 commands. The skills and the agents are
+Generated from: 11 agents and 19 commands. The skills and the agents are
 symlinked, not copied.
