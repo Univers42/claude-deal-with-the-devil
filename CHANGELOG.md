@@ -13,6 +13,24 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Added
 
+- `devil export copilot`: the GitHub Copilot CLI target. `tools/lib/export-copilot.sh`
+  writes `dist/copilot/` from the Claude sources, and `--check` is a `quality.sh`
+  gate and a CI step. Four generated files, because Copilot already reads the kit's
+  `skills/` and `agents/` as they are and the install symlinks those two rather
+  than copying them. The four that are generated each exist because a measurement
+  on 1.0.89 found a defect: 10 of the kit's 18 commands carry a `description:`
+  plain scalar holding `Usage:`, which is a YAML mapping value that Copilot's
+  parser rejects outright, so the descriptions are emitted as folded blocks; the
+  Claude hook shape does not run, because Copilot reads `command` as a shell line
+  and ignores `args`, so a `command: python3` + `args: [hooks.py]` hook runs
+  `python3` with the event JSON as its program; a plugin cannot ship
+  always-on instructions at all, so the 12 rules travel as a file the host copies
+  to `.github/copilot-instructions.md`; and the manifest's version is copied from
+  `.claude-plugin/plugin.json` so a bump that is not re-exported fails `--check`.
+  Measured live: the risk gate refuses a force-push through the dist with the
+  kit's own wording. Start at `dist/copilot/README.md`; the evidence is in
+  `doc/HARNESSES.md`.
+
 - `tools/index.sh`: the generator behind the README asset tables and the router.
   `--check` (the default) regenerates every block between
   `<!-- devil:index:<kind>:start -->` and `<!-- devil:index:<kind>:end -->` and

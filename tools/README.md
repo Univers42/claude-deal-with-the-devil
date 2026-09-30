@@ -57,6 +57,8 @@ devil index --write                  # regenerate those tables from the frontmat
 devil index --router                 # the same tables, for /devil:guide
 devil export opencode                # regenerate dist/opencode from the Claude sources
 devil export --check opencode        # exit 1 if dist/opencode drifted (CI runs this)
+devil export copilot                 # regenerate dist/copilot from the Claude sources
+devil export --check copilot         # exit 1 if dist/copilot drifted (CI runs this)
 devil context                        # always-on vs lazy bytes, per file
 devil caveat --strict              # approximations with no stated limitation
 devil scripts list                   # the vetted, sha-pinned external script library
@@ -99,3 +101,13 @@ Add a harness? Put its emitters in `lib/export-<harness>.sh` and one `case` arm 
 knows another dialect, and `--check` is what keeps the two from drifting. `opencode` is the
 worked example; its install contract and its measured limits are in
 `dist/opencode/README.md`.
+
+Then add a `check config export_<harness>` row in `quality.sh` and a
+`tools/export.sh --check <harness>` step in CI. A target that is generated but not gated
+drifts silently, which is the whole failure mode the generator exists to prevent.
+
+`copilot` is the second target, and it is the counter-example worth reading: it needed
+four small files out of twenty-two, because it already reads `skills/` and `agents/` as
+they are. **Measure before you generate.** Each of its four files exists because a
+measurement found a defect, and the file it was checked against is
+`dist/copilot/README.md`.

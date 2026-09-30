@@ -125,11 +125,14 @@ copy from drifting.
 | Harness | State |
 | --- | --- |
 | **OpenCode 2.x** | supported. `devil export opencode` writes `dist/opencode/`: 11 subagents with their `tools:` list mapped to V2 permissions, 13 commands, the 12 always-on rules, and a plugin that bridges `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing and `bin/` on the agent's `PATH` all work. Verified live on 2.0.18. Start at [`dist/opencode/README.md`](dist/opencode/README.md) |
-| Copilot CLI, Gemini CLI, Codex CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
+| **Copilot CLI** | supported. `devil export copilot` writes `dist/copilot/`: 18 commands with a YAML description copilot can parse (10 of the kit's own do not), the hook manifest in the shape copilot reads, and the always-on rules as a file the host copies. The skills and the agents are symlinked, not copied, because copilot reads them as they are. Verified live on 1.0.89. Start at [`dist/copilot/README.md`](dist/copilot/README.md) |
+| Gemini CLI, Codex CLI | planned. What each one can and cannot read is measured in [`doc/HARNESSES.md`](doc/HARNESSES.md); the exporters are not written yet |
 
 ```sh
 devil export opencode            # write dist/opencode
 devil export --check opencode    # exit 1 on drift; CI runs this
+devil export copilot             # write dist/copilot
+devil export --check copilot     # exit 1 on drift; CI runs this
 ```
 
 ---

@@ -22,7 +22,7 @@ for a in "$@"; do
   case "$a" in
   --check) CHECK=1 ;;
   -h | --help)
-    echo "usage: export.sh [--check] <harness>   (harnesses: opencode)"
+    echo "usage: export.sh [--check] <harness>   (harnesses: opencode, copilot)"
     exit 0
     ;;
   -*)
@@ -51,8 +51,19 @@ opencode)
     xoc_readme
   }
   ;;
+copilot)
+  # shellcheck source=lib/export-copilot.sh
+  . "$DIR/lib/export-copilot.sh"
+  generate() {
+    xcp_plugin_json
+    xcp_commands
+    xcp_hooks_file
+    xcp_instructions
+    xcp_readme
+  }
+  ;;
 *)
-  echo "export.sh: unknown harness '$HARNESS' (known: opencode)" >&2
+  echo "export.sh: unknown harness '$HARNESS' (known: opencode, copilot)" >&2
   exit 2
   ;;
 esac
