@@ -124,6 +124,15 @@ is "asset_names templates lists files under templates/, nested too" "agent.md sk
 is "asset_names workflows = commands tagged metadata.kind: workflow + legacy workflows/" "harden legacy " "$(names workflows)"
 is "asset_names commands is unchanged by the tag" "harden quality toplevel " "$(names commands)"
 
+# --- has_ext ----------------------------------------------------------------
+# The bug was a flake, not a wrong answer: `grep -q` quits at the first match,
+# `git ls-files` takes SIGPIPE, and under pipefail the pipeline reported "no such
+# file" about one call in five. One call proves nothing, so ask 100 times.
+misses=0
+for _ in $(seq 1 100); do has_ext 'md' || misses=$((misses + 1)); done
+is "has_ext finds a tracked .md on every one of 100 calls under pipefail" 0 "$misses"
+is "has_ext refuses an extension nothing here carries" no "$(has_ext 'zzzz' && echo yes || echo no)"
+
 # --- the real payload -------------------------------------------------------
 bad=""
 for f in "$ROOT"/commands/*.md "$ROOT"/skills/*/SKILL.md; do
