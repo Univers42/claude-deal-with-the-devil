@@ -2,7 +2,10 @@
 
 ## Scenario
 
-> Every session in this repo seems to start with a lot of my context already used before I type anything, and we keep compacting mid-task. I want to cut that. Measure what is actually being loaded on every session and tell me what to cut, with the numbers before and after.
+> Every session in this repo seems to start with a lot of my context already used before
+> I type anything, and we keep compacting mid-task. I want to cut that. Measure what is
+> actually being loaded on every session and tell me what to cut, with the numbers
+> before and after.
 
 Fixture: `.claude/rules/` with three rules carrying Cursor `globs:`/`alwaysApply:` and one
 with no frontmatter, plus `chart`, `slides` and `spreadsheet` skills. One file,

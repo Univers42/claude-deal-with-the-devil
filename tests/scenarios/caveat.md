@@ -2,7 +2,9 @@
 
 ## Scenario
 
-> I want to rely on logsum to rank errors from our production logs. Before I do, I need to know what it gets wrong: what are its limitations, and what should I not trust it for? Do not change how it counts.
+> I want to rely on logsum to rank errors from our production logs. Before I do, I need
+> to know what it gets wrong: what are its limitations, and what should I not trust it
+> for? Do not change how it counts.
 
 Fixture: `logsum.py` with one regex, `MAX_LINES = 200000`, `BYTES_PER_TOKEN = 4`,
 `errors="replace"`, and message-string keying. A `README.md` claiming the counts are exact

@@ -2,7 +2,10 @@
 
 ## Scenario
 
-> Our fact store writes one JSON file per fact, so `facts/` grows forever and listing it is getting slow. Before I touch anything, I want to understand what the options are for storing and indexing these. What are our options, and what would you actually do? I am not asking you to implement it yet.
+> Our fact store writes one JSON file per fact, so `facts/` grows forever and listing it
+> is getting slow. Before I touch anything, I want to understand what the options are
+> for storing and indexing these. What are our options, and what would you actually do?
+> I am not asking you to implement it yet.
 
 Fixture: `README.md`, `src/store.py` (tmp+rename append), `src/list.py` (glob + sort, reads
 every file). The two rough edges named in the README are latency and unbounded growth. No

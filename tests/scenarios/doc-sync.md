@@ -2,7 +2,10 @@
 
 ## Scenario
 
-> release.sh used to hardcode dist/ and now takes an output directory and a gzip level, and it excludes __pycache__ from the tarball. The README still documents the old behaviour. Can you check whether the README is out of date and fix what it says about releasing? Do not change release.sh.
+> release.sh used to hardcode dist/ and now takes an output directory and a gzip level,
+> and it excludes __pycache__ from the tarball. The README still documents the old
+> behaviour. Can you check whether the README is out of date and fix what it says about
+> releasing? Do not change release.sh.
 
 Fixture: `release.sh` reading `$1`/`$2` positionally, a `VERSION` file, and a README whose
 Options section still advertises `--out-dir` and `--gzip-level` as flags. The exclusion is

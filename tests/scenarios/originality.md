@@ -2,7 +2,10 @@
 
 ## Scenario
 
-> Before I add real rate fetching to this converter: we ship a static rates.csv, and the next thing on the roadmap is live rates plus better formatting. Is there already a library that does currency conversion with live rates that I should be using instead of writing this myself? Tell me plainly whether to reuse, wrap or build, and why.
+> Before I add real rate fetching to this converter: we ship a static rates.csv, and the
+> next thing on the roadmap is live rates plus better formatting. Is there already a
+> library that does currency conversion with live rates that I should be using instead
+> of writing this myself? Tell me plainly whether to reuse, wrap or build, and why.
 
 Fixture: `usdconv.py` (argparse, `rates.csv` lookup, `FALLBACK = 1.0` on a missing code),
 `rates.csv` with four currencies, and a README that admits the fallback is a known bug. No
