@@ -114,4 +114,3 @@ next: <what the next session needs>
 - Claim a number you didn't measure or a pass you didn't run.
 - Run an unbounded command that can hang the session — wrap it in `devil watch`.
 - Stop at half. Green or reverted — those are the only end states.
-

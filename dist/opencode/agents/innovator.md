@@ -71,4 +71,3 @@ worktree and ends with keep or kill.
 - Ship enthusiasm as fact, or pitch an idea without its kill criterion.
 - Propose abstraction for a future that isn't here (`minimalism-ladder`).
 - Invent a number, a benchmark, or a user need you can't point to.
-

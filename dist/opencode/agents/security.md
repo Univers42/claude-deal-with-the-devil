@@ -101,4 +101,3 @@ ships, and a human approves the cutover.
 
 End with the CRITICAL/HIGH findings restated in one line each, and explicitly state
 what you checked and found clean — a silent pass is indistinguishable from no review.
-

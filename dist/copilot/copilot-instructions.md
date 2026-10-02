@@ -546,4 +546,3 @@ RSpec/Minitest · PHP → PHPUnit/Pest · Swift → Swift Testing/XCTest · Elix
 - The `write-test` skill generates coverage in that framework, in its idiom.
 - Property-based tests count toward "done" (`quality-bar.md`) for anything that parses
   external input — generate inputs, don't only hand-pick examples.
-

@@ -50,4 +50,3 @@ You verify behavioral parity with the declared reference, endpoint by endpoint. 
 |          |           |              | MATCH / DIVERGE / MISSING |
 
 End with the divergences that block "compatible", ranked by how common the call is.
-
