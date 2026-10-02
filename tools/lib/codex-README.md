@@ -121,7 +121,7 @@ directory for the same reason: it is read where it already is.
 | Kit asset | On Codex | How it was proved |
 |---|---|---|
 | Plugin manifest | full | `codex plugin add` accepted this `plugin.json` and `codex plugin list` printed `installed, enabled 0.9.0`, the version read from `.claude-plugin/plugin.json` |
-| Skills | full | `codex debug prompt-input` lists 23 of 23 kit skills (0.159.2, before the `ponytail` tombstone was removed) under `devil:<name>` with the plugin cache as their skill root, and no others |
+| Skills | full | `codex debug prompt-input` lists 23 of 23 kit skills (0.159.2, before a retired tombstone skill was removed in 1.1.0) under `devil:<name>` with the plugin cache as their skill root, and no others |
 | Install from a local path | full | `codex plugin marketplace add /absolute/path` succeeded, then `codex plugin add` installed from it |
 | `commands/*.md` reach the model | one of eighteen | Codex rewrites a command into `.codex-plugin/migrated-command-skills/source-command-<name>/SKILL.md`. With the kit installed exactly one of the eighteen came across, `compat-audit`, reproducibly across two installs. Which property of the other seventeen decides this is UNVERIFIED |
 | Always-on rules | full | a marker in a project-root `AGENTS.md` was injected into the first user message inside `<INSTRUCTIONS>`; the same marker in a plugin root was not |
@@ -169,7 +169,7 @@ codex debug prompt-input "list your skills" | grep -c 'devil:'
 The first line proves the plugin is installed and enabled with the expected version.
 The second counts the kit's skills in the model-visible prompt: the 22 skills plus
 however many commands Codex migrates. It printed 24 on 0.159.2, when the kit had 23
-skills (one was the `ponytail` tombstone, removed in 1.1.0) and one migrated command; the
+skills (one a retired tombstone, removed in 1.1.0) and one migrated command; the
 count has not been re-measured since. Proving
 that a hook denies a force-push needs a session and a model call, so it is not part of
 this check.
