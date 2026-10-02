@@ -11,6 +11,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+### Added
+
+- `tools/quality.sh` runs markdownlint with the file glob and ignores of the CI lint
+  step, and records SKIP when `markdownlint` is not installed.
+
+### Fixed
+
+- `has_ext` in `tools/lib/common.sh` answered "no" about one call in five under
+  `pipefail`, so a `quality.sh` gate could drop out of a run without a SKIP row.
+- The OpenCode and Copilot exports no longer end on a blank line, and the README
+  rule-skill table writes each glob as a code span.
+
 ## [1.1.1] - 2026-09-30
 
 ### Changed
