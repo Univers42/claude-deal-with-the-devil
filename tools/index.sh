@@ -125,6 +125,9 @@ skills_table() {
   done < <(asset_names skills)
 }
 
+# Each glob is a code span: a bare `**/x` pairs its asterisks into emphasis, which
+# renders wrong and fails MD037. A glob that itself contains a backtick would break
+# its span; none of the shipped ones does.
 rules_table() {
   local f name globs
   printf '| Rule skill | Loads for |\n| --- | --- |\n'
@@ -132,7 +135,7 @@ rules_table() {
     [ -f "skills/$name/SKILL.md" ] || continue
     f="skills/$name/SKILL.md"
     [ "$(fm_meta "$f" stage)" = rule ] || continue
-    globs="$(_paths "$f" | paste -sd, - | sed 's/,/, /g')"
+    globs="$(_paths "$f" | sed 's/.*/`&`/' | paste -sd, - | sed 's/`,`/`, `/g')"
     printf '| `%s` | %s |\n' "$(_cell "$name")" "$(_cell "$globs")"
   done < <(asset_names skills)
 }

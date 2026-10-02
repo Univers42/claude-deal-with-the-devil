@@ -347,13 +347,13 @@ tables above.
 
 | Rule skill | Loads for |
 | --- | --- |
-| `api-convention` | **/routes/**, **/handlers/**, **/controllers/**, **/api/**, **/*router*, **/*controller* |
-| `refactor-c` | **/*.c, **/*.h |
-| `refactor-go` | **/*.go |
-| `refactor-rust` | **/*.rs |
-| `refactor-shell` | **/*.sh, **/*.bash |
-| `refactor-typescript` | **/*.ts, **/*.tsx |
-| `script-library` | **/*.sh, **/*.bash, **/*.py, **/Makefile, **/makefile |
+| `api-convention` | `**/routes/**`, `**/handlers/**`, `**/controllers/**`, `**/api/**`, `**/*router*`, `**/*controller*` |
+| `refactor-c` | `**/*.c`, `**/*.h` |
+| `refactor-go` | `**/*.go` |
+| `refactor-rust` | `**/*.rs` |
+| `refactor-shell` | `**/*.sh`, `**/*.bash` |
+| `refactor-typescript` | `**/*.ts`, `**/*.tsx` |
+| `script-library` | `**/*.sh`, `**/*.bash`, `**/*.py`, `**/Makefile`, `**/makefile` |
 
 <!-- devil:index:rules:end -->
 
