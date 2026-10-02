@@ -12,7 +12,7 @@ with no frontmatter, plus `chart`, `slides` and `spreadsheet` skills. One file,
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 | Bucket | Bytes | ~tokens | Loads |
 | Always-on rules | 26,328 | 6,582 | every session |
 | **Always-on total** | **33,635** | **8,408** | **the target** |
@@ -30,7 +30,7 @@ edited nothing and produced no before/after pair.
 
 Skill loaded: `Skill "context-budget"` on attempt 1. Excerpt from `with.attempt1.out`:
 
-```
+```text
 -globs: "**/*.py"
 -alwaysApply: true
 +paths:

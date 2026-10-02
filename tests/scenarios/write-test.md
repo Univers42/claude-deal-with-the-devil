@@ -11,7 +11,7 @@ config roots redirected (no user-level skills, no kit), outside the kit tree, `q
 
 ## Baseline
 
-```
+```text
 ----------------------------------------------------------------------
 Ran 68 tests in 0.001s
 
@@ -27,7 +27,7 @@ says "Present the test plan. Wait for approval", the agent asked, `opencode run`
 answer, and the session died with `Session interrupted: shutdown` both times. No tests were written
 in either attempt, so this arm is recorded as not run.
 
-```
+```text
 **Proposed plan (~50 cases, pytest, `test_ledger.py`)**
 
 | Target | Cases |

@@ -11,7 +11,7 @@ runner, no dependencies, no bench harness.
 
 ## Baseline
 
-```
+```text
 **Done: 1.647s → 0.001s (~1600x faster), with byte-identical output.**
 
 [...the "## The problem" heading between the two is elided...]
@@ -29,7 +29,7 @@ Verified:
 
 Skill loaded: yes, `→ Skill "perf-budget"` on line 4 of the run.
 
-```
+```text
 **Budget, written down before measuring anything.** Deriving it from the human threshold rather than from whatever I end up achieving:
 
 | Metric | Budget | Why this number |
@@ -39,7 +39,7 @@ Skill loaded: yes, `→ Skill "perf-budget"` on line 4 of the run.
 | Peak RSS | **≤ baseline** | Latency must not be bought with memory. |
 ```
 
-```
+```text
 - **Budget came first.** I set ≤0.200 s from the "100 ms feels instant" human threshold *before* profiling, so the measurement couldn't become the target.
 - **One change, then stop.** `discount_schedule()` has the same bug — rebuilds a constant list 400 times — but I measured it at **0.62%**, under the 3% noise floor, so I left it. Cost of the fix outweighs the gain.
 ```

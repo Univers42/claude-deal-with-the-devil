@@ -15,7 +15,7 @@ not the conclusion. Re-record with a browser attached.
 
 ## Baseline
 
-```
+```text
 I couldn't do the browser part: the desktop browser isn't connected to this session. `browser.tabs.list` returns `[browser.disconnected]`, and the tool explicitly says retrying while disconnected won't help. So I have no real observations of the page or its console.
 
 What I can report is from reading the fixture, not from running it. In `/tmp/opencode/scen/browser-testing/base/app.js`:
@@ -31,7 +31,7 @@ const email = form.elements.mail.value;
 
 Skill loaded: yes, `→ Skill "browser-testing"` on line 4 of the run.
 
-````
+````text
 [...the setup note, in which it falls back from the disconnected `browser` tool to the Chromium binary over CDP, is elided...]
 
 **Nothing visible. The button is dead.** No confirmation, no error, no navigation — the page looks identical before and after.

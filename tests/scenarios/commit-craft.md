@@ -11,7 +11,7 @@ user-level skills, no kit), outside the kit tree, `question` tool denied.
 
 ## Baseline
 
-```
+```text
 | Commit | Change |
 |---|---|
 | `f83e489` | chore: ignore `.venv/` and `dist/` |
@@ -33,7 +33,7 @@ I also combined `to_csv()` with its test rather than separating them. Splitting 
 Skill loaded: yes, `→ Skill "commit-craft"` on line 4 of `with.out`. It committed 4 plus the import,
 not the baseline's 6, and proved the result.
 
-```
+```text
 The obvious split was file-by-file, which would have given you a commit that adds `to_csv` to `format.py` and *another* that wires up the CLI — a history where no single commit is a working `--csv`. I kept those together, along with the README and the `to_csv` test, because the fix and its proof belong in one place.
 
 The subtler seam was the untracked test file. It looked like one atomic change — but `test_money` and `test_label` cover code that shipped in the original import, while `test_to_csv` covers the new feature. Splitting it as `d400ce6` gives you a commit that pins current behaviour *before* the feature lands, so when `to_csv` moves next to it you can see exactly what the new code did or didn't disturb.

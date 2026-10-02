@@ -12,7 +12,7 @@ tests, no dependency manifest, so the design is genuinely open.
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 | files | `glob+sort` | `list.py` read-all (warm) |
 | 25,000 | 0.141s | — |
 | 50,000 | 0.329s | 0.769s |
@@ -30,7 +30,7 @@ scoring table, no "do nothing" rung, and no kill criterion anywhere in the outpu
 
 Skill loaded: `Skill "brainstorm"`. Excerpt from `with.out`:
 
-```
+```text
 | Option | Impact | Conf | Cost | Reversibility | Score |
 | **2** Fix key, keep files | 4 | 5 | 1 | full | **20.0** |
 | **3** Shard by date | 4 | 5 | 2 | easy | **10.0** |

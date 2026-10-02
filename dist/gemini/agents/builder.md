@@ -81,7 +81,7 @@ conclusions, not raw trees.
 - Then the return block from `templates/agent-brief.md`, verbatim and always in
   the same five keys, because a caller greps it instead of reading your log:
 
-```
+```text
 status: done | blocked
 gates: <command → exit code, one per line>
 changed: <files, moves and deletions included>

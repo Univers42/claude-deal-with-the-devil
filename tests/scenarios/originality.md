@@ -12,7 +12,7 @@ dependency manifest exists, which is the honest signal for the search.
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 Verdict: wrap, don't reuse, don't build
 | Package | Last release | Verdict |
 | **`forex-python`** | May 2025 | **Dead sources.** Its two upstreams now return HTTP 403/404 |
@@ -30,7 +30,7 @@ roadmap items.
 
 Skill loaded: `Skill "originality"`. Excerpt from `with.out`:
 
-```
+```text
 Answer: wrap — what you wrap is a **free no-key API**, not a library.
 Use **Babel** (2.18.0, Feb 2026, very actively maintained) for `babel.numbers.format_currency`.
 **Caveat:** ... web search was cancelled mid-task, so I couldn't survey the long tail of

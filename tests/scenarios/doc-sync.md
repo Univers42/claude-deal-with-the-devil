@@ -12,7 +12,7 @@ undocumented. The fixture has no `src/`, so the script cannot run in place.
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 1. **Flags that don't exist.** The old Options section documented `--out-dir` and
    `--gzip-level`, but `release.sh:6-7` reads them as positional `$1`/`$2`.
 2. **Undocumented exclusion.** `release.sh:11` passes `--exclude='__pycache__'`; the README
@@ -29,7 +29,7 @@ confirm the tarball contents or the flag behaviour.
 
 Skill loaded: `Skill "doc-sync"`. Excerpt from `with.out`:
 
-```
+```text
 --- Positional, not flags ---
 $ bash release.sh out/9 9
 wrote out/9/storefacts-1.4.0.tar.gz
