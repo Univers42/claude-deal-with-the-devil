@@ -20,30 +20,30 @@ and "Gemini CLI, measured for X3" for what was run and what was not).
 
 | Kit asset | Claude Code | OpenCode 2.x | Copilot CLI | Gemini CLI | Codex CLI |
 |---|---|---|---|---|---|
-| Skills (`SKILL.md`) | plugin `skills/` [1] | `.opencode/skills`, `.claude/skills`, `.agents/skills` [2] verified [L1], plus the `skills` config array [L13] | `.github/skills`, `.claude/skills`, `.agents/skills`, `~/.copilot/skills` [15] | extension `skills/<id>/SKILL.md` [20][L36] | `.agents/skills` only, plus plugin `skills/` [26][28] |
-| Skill frontmatter honoured | 20 fields incl. `paths`, `allowed-tools`, `disable-model-invocation` [1] | `name`, `description`, `license`, `compatibility`, `metadata`; ignores `paths:` [2] | `name`, `description`; `paths:`, `user-invocable` and `disable-model-invocation` are read and ignored, verified [L50][L51] | **only `name` and `description`**; every other key is dropped [L36] | `name`, `description` required; `paths:` no [26] |
-| Path-scoped rule skills | `paths:` lazy-load [1] | no glob scoping; nearest `AGENTS.md` loads when a file under it is read [3] | `applyTo:` exists in `*.instructions.md` [14] but is **not** a lazy-load gate: every file is listed whatever its pattern, verified [L57][L58] | no equivalent found; `GEMINI.md` hierarchy only | no equivalent found; `AGENTS.md` plus `.rules` for command policy [24][25] |
-| Always-on rules | `CLAUDE.md`, `rules/*.md` with `paths:` [1] | `AGENTS.md` only; `CLAUDE.md` is **not** a fallback [3] | `.github/copilot-instructions.md` and `.github/instructions/*.instructions.md` in a **host** [14] verified [L47][L56]; a **plugin** ships none of them, verified [L56]; `.claude/CLAUDE.md` is **not** read, verified [L59] | `GEMINI.md`, plus extension `contextFileName` [20] | `AGENTS.md`, project root only: a plugin-root `AGENTS.md` is not injected [L28][L29] |
-| Agents | plugin `agents/*.md`, `tools:` list [1] | `.opencode/agents/*.md` with `mode: subagent` + `permissions:`; `.claude/agents` **not read**; the frontmatter must be a closed YAML block or `mode` is silently dropped [4][L20] | `.github/agents/*.md`, `.claude/agents/`, plugin `agents/*.md` with no suffix needed [11][16] verified [L42] | extension `agents/*.md`, preview feature [20]; frontmatter schema is **`.strict()`**, so an unknown key fails the file silently [L36] | `.codex/agents/*.toml`, TOML not Markdown [27] |
-| Commands | plugin `commands/<name>.md`, `/plugin:name` [1] | `.opencode/commands/*.md`, nested path becomes `/a/b` [5] | `.claude/commands/` read; plugin `commands/`, and a file whose frontmatter does not parse is dropped with a line-numbered error [11] verified [L41] | `commands/*.toml`, nested becomes `/a:b` [20][22][L32] | plugin `commands/*.md` **rewritten** into skills `source-command-<name>`; 1 of 18 for this kit [L26], and no template syntax [L28] |
+| Skills (`SKILL.md`) | plugin `skills/` [1] | `.opencode/skills`, `.claude/skills`, `.agents/skills` [2] verified [L1], plus the `skills` config array [L13] | `.github/skills`, `.claude/skills`, `.agents/skills`, `~/.copilot/skills` [15] | extension `skills/<id>/SKILL.md` [20], [L36] | `.agents/skills` only, plus plugin `skills/` [26], [28] |
+| Skill frontmatter honoured | 20 fields incl. `paths`, `allowed-tools`, `disable-model-invocation` [1] | `name`, `description`, `license`, `compatibility`, `metadata`; ignores `paths:` [2] | `name`, `description`; `paths:`, `user-invocable` and `disable-model-invocation` are read and ignored, verified [L50], [L51] | **only `name` and `description`**; every other key is dropped [L36] | `name`, `description` required; `paths:` no [26] |
+| Path-scoped rule skills | `paths:` lazy-load [1] | no glob scoping; nearest `AGENTS.md` loads when a file under it is read [3] | `applyTo:` exists in `*.instructions.md` [14] but is **not** a lazy-load gate: every file is listed whatever its pattern, verified [L57], [L58] | no equivalent found; `GEMINI.md` hierarchy only | no equivalent found; `AGENTS.md` plus `.rules` for command policy [24], [25] |
+| Always-on rules | `CLAUDE.md`, `rules/*.md` with `paths:` [1] | `AGENTS.md` only; `CLAUDE.md` is **not** a fallback [3] | `.github/copilot-instructions.md` and `.github/instructions/*.instructions.md` in a **host** [14] verified [L47], [L56]; a **plugin** ships none of them, verified [L56]; `.claude/CLAUDE.md` is **not** read, verified [L59] | `GEMINI.md`, plus extension `contextFileName` [20] | `AGENTS.md`, project root only: a plugin-root `AGENTS.md` is not injected [L28], [L29] |
+| Agents | plugin `agents/*.md`, `tools:` list [1] | `.opencode/agents/*.md` with `mode: subagent` + `permissions:`; `.claude/agents` **not read**; the frontmatter must be a closed YAML block or `mode` is silently dropped [4], [L20] | `.github/agents/*.md`, `.claude/agents/`, plugin `agents/*.md` with no suffix needed [11], [16] verified [L42] | extension `agents/*.md`, preview feature [20]; frontmatter schema is **`.strict()`**, so an unknown key fails the file silently [L36] | `.codex/agents/*.toml`, TOML not Markdown [27] |
+| Commands | plugin `commands/<name>.md`, `/plugin:name` [1] | `.opencode/commands/*.md`, nested path becomes `/a/b` [5] | `.claude/commands/` read; plugin `commands/`, and a file whose frontmatter does not parse is dropped with a line-numbered error [11] verified [L41] | `commands/*.toml`, nested becomes `/a:b` [20], [22], [L32] | plugin `commands/*.md` **rewritten** into skills `source-command-<name>`; 1 of 18 for this kit [L26], and no template syntax [L28] |
 | Commands: arguments | `$ARGUMENTS`, `$1` [1] | `$ARGUMENTS`, `$1` [5] | `$ARGUMENTS` substituted, verified [L44] | `{{args}}` [22] | no: a migrated command is a `SKILL.md`, which carries no placeholder [L28] |
 | Commands: shell injection | bare `` !`cmd` `` line [1] | `` !`cmd` `` block [5] | **no**, reaches the model as literal text, verified [L53] | `!{cmd}` block [22] | UNVERIFIED |
 | Workflows (long prompts) | a command with `metadata.kind` is indistinguishable from any command | same | same, and a command is advertised as a **skill** rather than a slash command: `skill list --json` reports the 8 loadable commands with `path` = the `commands/` directory [L41] | TOML prompt string | UNVERIFIED |
-| Hooks: declaration | `hooks/hooks.json`, settings shape [1] | JS/TS plugin under `.opencode/plugins/` [7][8] | `.github/hooks/*.json`, `hooks.json` in a plugin [12][11] | `hooks/hooks.json`, also `.gemini/settings.json` [21][20]; checked only for `typeof hooks === "object"`, so unknown top-level keys are ignored [L36] | `hooks/hooks.json` by default in a plugin, `.codex/hooks.json` [24] |
-| Hooks: event names | Claude set (`PreToolUse`, `PostToolUse`, `SessionStart`, ...) [1] | typed hook domains: `tool`, `permission`, `session`, `shell` [8] | Claude set plus `permissionRequest`, `postToolUseFailure`, `preCompact` [13] | **nine** names: `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`, `BeforeModel`, `AfterModel`, `BeforeToolSelection`, `PreCompress`, `SessionStart`, `SessionEnd`, `Notification` [21][L36] | Claude set plus `PermissionRequest`, `PostCompact`, `Interrupt` [24] |
-| Hooks: matcher | Claude semantics (`Bash`, `Edit\|Write`) [1] | none (hook is per domain, not per tool) [8] | Claude semantics, verified: `Bash` fires for a shell call, an unknown tool name does not, an absent matcher fires [L9] | regex on tool name [21][L36] | regex, `Bash` matches shell [24] |
-| Hooks: deny a tool call | `permissionDecision: "deny"` [1] | `throw` in `ctx.tool.hook("execute.before")`, or `ctx.permission.hook("evaluate")` sets `effect: "deny"`; the permission hook is the one that sees the raw command text, and it is the closer analogue of `PreToolUse` [8] verified [L4][L5][L18] | `permissionDecision: "deny"` on stdout, or exit 2 [13], verified end to end with the kit's own gate [L45] | top-level `decision` with `deny` or `block` blocking, `ask` interactive, plus a sibling `reason`; or exit 2 [21][L36] | `hookSpecificOutput.permissionDecision: "deny"`, or exit 2 [24] |
-| Hooks: inject context at session start | `SessionStart` `additionalContext` [1] | no session-start hook; `ctx.session.hook("context")` pushes system text on every model call, `session.prompt` rewrites the user prompt, both reach the model [8][L16] | `sessionStart` `additionalContext` [13] | `hookSpecificOutput.additionalContext` — the same key Claude Code uses [21][L36] | `SessionStart` `additionalContext` [24] |
-| Hooks: call an external script | `command` + `args` [1] | JS/TS in-process; spawn via `child_process` (the `$` shell API is not in the V2 plugin context) [8][L16] | `command` is a shell line: `args` is **not** read, and the line is word-split and glob-expanded, so a path with a space needs quoting [13] verified [L48][L49][L60] | `type: "command"` with a **shell command string and no `args` array** [21][L36]; `timeout` is **milliseconds** [21][L36] | `type: "command"` or `type: "mcp_tool"` [24] |
-| Adds an agent / a skill from a plugin | n/a | **no / no**: `AgentEditor` has no `add`, and `skill.transform` resolves without applying [8][L12] | UNVERIFIED | UNVERIFIED | UNVERIFIED |
-| `bin/` on the agent PATH | yes: `command -v devil` printed the plugin's `bin/devil` under `--plugin-dir` (slice F3, 2026-09-30) | **yes, via a plugin**: `ctx.shell.hook("create.before")` sets `event.env` [8][L14] | **no**, verified [L55] | no | no |
-| Plugin-root variable | `${CLAUDE_PLUGIN_ROOT}` [1] | `ctx.location.directory` is the **project** dir, not the plugin's; use `import.meta.url` [8][L16] | `${PLUGIN_ROOT}` in MCP, LSP and agent `mcp-servers`; **not documented for hooks** but measured to expand there, and `${CLAUDE_PLUGIN_ROOT}` is exported to the hook's environment [11] verified [L48] | `${extensionPath}` in manifest and `hooks/hooks.json` [20] | `PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT` in plugin hooks [24][28] |
-| MCP | root `.mcp.json` of a plugin [1] | `mcp.servers` in config, or a plugin `ctx.mcp.transform` [9][8] | `mcp.json` (portable) or `.mcp.json` / `.github/mcp.json` [11] | `mcpServers` in `gemini-extension.json` [20] | `mcp.json` (portable) or `.mcp.json` via manifest [28] |
-| Install | `claude plugin marketplace add owner/repo` then `claude plugin install name@marketplace`; `--plugin-dir` [1] | `opencode plugin add <npm name>[@ver]` or a git spec; a **local path in the `plugins` array does not load in 2.0.18** — symlink into `.opencode/plugins/` instead [7][L15] | `copilot plugin install plugin@marketplace \| owner/repo \| owner/repo:path \| URL \| ./path`; `plugin update`, `plugin list` [11] | `gemini extensions install <github url \| path> [--ref] [--auto-update]` [20] | `codex plugin marketplace add <local path \| owner/repo \| URL>`, then `codex plugin add <plugin>@<marketplace>`; a local path works, unlike Copilot CLI [L9][L22] |
-| Manifest | `.claude-plugin/plugin.json`, `name` required [1] | none; config file plus npm `package.json` for a plugin [7][8] | `plugin.json` at root, or `.plugin/`, `.github/plugin/`, **`.claude-plugin/plugin.json`** [11] verified [L7] | `gemini-extension.json` at root; `name` and `version` both required, name charset enforced, resolvable `contextFileName`; unknown keys ignored [20][L33] | root portable `plugin.json` **and** `.claude-plugin/plugin.json` both read [L22][L28]; the portable schema forbids unknown keys, so a Claude-only field must be dropped |
-| Versioning | `version` in `plugin.json`, marketplace entry may not repeat it [1] | npm or git version; git SHA stays pinned [7] | `version` in manifest or marketplace entry; `plugin update`, auto-update for first-party marketplaces [11] | `version` in `gemini-extension.json`, `extensions update`; `extensions link` for a symlinked checkout [20][22] | `version` in manifest; marketplace entry, no CLI update command documented [28] |
-| Reads Claude Code formats natively | is the source | `.claude/skills` yes [L1]; `.claude/agents` no [L1]; `.claude/commands` UNVERIFIED | `.claude-plugin/plugin.json` and `marketplace.json`, `.claude/skills`, `.claude/agents`, `.claude/commands`, `.claude/settings.json` hooks [11][13][14][15] verified [L7][L41][L42]; **not** `.claude/CLAUDE.md` and **not** any instruction file, verified [L56][L59] | nothing except `GEMINI.md` as a custom-instructions filename for other tools | `plugin.json` may be legacy or Claude-compatible; `.claude-plugin/marketplace.json` is read by the desktop app [28] |
-| Shared portable plugin format | n/a | n/a | Agent Plugins 1.0: root `plugin.json` + `skills/` + `mcp.json` [10][11] | none, own manifest [20] | Agent Plugins 1.0, same three files [28] |
+| Hooks: declaration | `hooks/hooks.json`, settings shape [1] | JS/TS plugin under `.opencode/plugins/` [7], [8] | `.github/hooks/*.json`, `hooks.json` in a plugin [12], [11] | `hooks/hooks.json`, also `.gemini/settings.json` [21], [20]; checked only for `typeof hooks === "object"`, so unknown top-level keys are ignored [L36] | `hooks/hooks.json` by default in a plugin, `.codex/hooks.json` [24] |
+| Hooks: event names | Claude set (`PreToolUse`, `PostToolUse`, `SessionStart`, ...) [1] | typed hook domains: `tool`, `permission`, `session`, `shell` [8] | Claude set plus `permissionRequest`, `postToolUseFailure`, `preCompact` [13] | **nine** names: `BeforeTool`, `AfterTool`, `BeforeAgent`, `AfterAgent`, `BeforeModel`, `AfterModel`, `BeforeToolSelection`, `PreCompress`, `SessionStart`, `SessionEnd`, `Notification` [21], [L36] | Claude set plus `PermissionRequest`, `PostCompact`, `Interrupt` [24] |
+| Hooks: matcher | Claude semantics (`Bash`, `Edit\|Write`) [1] | none (hook is per domain, not per tool) [8] | Claude semantics, verified: `Bash` fires for a shell call, an unknown tool name does not, an absent matcher fires [L9] | regex on tool name [21], [L36] | regex, `Bash` matches shell [24] |
+| Hooks: deny a tool call | `permissionDecision: "deny"` [1] | `throw` in `ctx.tool.hook("execute.before")`, or `ctx.permission.hook("evaluate")` sets `effect: "deny"`; the permission hook is the one that sees the raw command text, and it is the closer analogue of `PreToolUse` [8] verified [L4], [L5], [L18] | `permissionDecision: "deny"` on stdout, or exit 2 [13], verified end to end with the kit's own gate [L45] | top-level `decision` with `deny` or `block` blocking, `ask` interactive, plus a sibling `reason`; or exit 2 [21], [L36] | `hookSpecificOutput.permissionDecision: "deny"`, or exit 2 [24] |
+| Hooks: inject context at session start | `SessionStart` `additionalContext` [1] | no session-start hook; `ctx.session.hook("context")` pushes system text on every model call, `session.prompt` rewrites the user prompt, both reach the model [8], [L16] | `sessionStart` `additionalContext` [13] | `hookSpecificOutput.additionalContext` — the same key Claude Code uses [21], [L36] | `SessionStart` `additionalContext` [24] |
+| Hooks: call an external script | `command` + `args` [1] | JS/TS in-process; spawn via `child_process` (the `$` shell API is not in the V2 plugin context) [8], [L16] | `command` is a shell line: `args` is **not** read, and the line is word-split and glob-expanded, so a path with a space needs quoting [13] verified [L48], [L49], [L60] | `type: "command"` with a **shell command string and no `args` array** [21], [L36]; `timeout` is **milliseconds** [21], [L36] | `type: "command"` or `type: "mcp_tool"` [24] |
+| Adds an agent / a skill from a plugin | n/a | **no / no**: `AgentEditor` has no `add`, and `skill.transform` resolves without applying [8], [L12] | UNVERIFIED | UNVERIFIED | UNVERIFIED |
+| `bin/` on the agent PATH | yes: `command -v devil` printed the plugin's `bin/devil` under `--plugin-dir` (slice F3, 2026-09-30) | **yes, via a plugin**: `ctx.shell.hook("create.before")` sets `event.env` [8], [L14] | **no**, verified [L55] | no | no |
+| Plugin-root variable | `${CLAUDE_PLUGIN_ROOT}` [1] | `ctx.location.directory` is the **project** dir, not the plugin's; use `import.meta.url` [8], [L16] | `${PLUGIN_ROOT}` in MCP, LSP and agent `mcp-servers`; **not documented for hooks** but measured to expand there, and `${CLAUDE_PLUGIN_ROOT}` is exported to the hook's environment [11] verified [L48] | `${extensionPath}` in manifest and `hooks/hooks.json` [20] | `PLUGIN_ROOT` and `CLAUDE_PLUGIN_ROOT` in plugin hooks [24], [28] |
+| MCP | root `.mcp.json` of a plugin [1] | `mcp.servers` in config, or a plugin `ctx.mcp.transform` [9], [8] | `mcp.json` (portable) or `.mcp.json` / `.github/mcp.json` [11] | `mcpServers` in `gemini-extension.json` [20] | `mcp.json` (portable) or `.mcp.json` via manifest [28] |
+| Install | `claude plugin marketplace add owner/repo` then `claude plugin install name@marketplace`; `--plugin-dir` [1] | `opencode plugin add <npm name>[@ver]` or a git spec; a **local path in the `plugins` array does not load in 2.0.18** — symlink into `.opencode/plugins/` instead [7], [L15] | `copilot plugin install plugin@marketplace \| owner/repo \| owner/repo:path \| URL \| ./path`; `plugin update`, `plugin list` [11] | `gemini extensions install <github url \| path> [--ref] [--auto-update]` [20] | `codex plugin marketplace add <local path \| owner/repo \| URL>`, then `codex plugin add <plugin>@<marketplace>`; a local path works, unlike Copilot CLI [L9], [L22] |
+| Manifest | `.claude-plugin/plugin.json`, `name` required [1] | none; config file plus npm `package.json` for a plugin [7], [8] | `plugin.json` at root, or `.plugin/`, `.github/plugin/`, **`.claude-plugin/plugin.json`** [11] verified [L7] | `gemini-extension.json` at root; `name` and `version` both required, name charset enforced, resolvable `contextFileName`; unknown keys ignored [20], [L33] | root portable `plugin.json` **and** `.claude-plugin/plugin.json` both read [L22], [L28]; the portable schema forbids unknown keys, so a Claude-only field must be dropped |
+| Versioning | `version` in `plugin.json`, marketplace entry may not repeat it [1] | npm or git version; git SHA stays pinned [7] | `version` in manifest or marketplace entry; `plugin update`, auto-update for first-party marketplaces [11] | `version` in `gemini-extension.json`, `extensions update`; `extensions link` for a symlinked checkout [20], [22] | `version` in manifest; marketplace entry, no CLI update command documented [28] |
+| Reads Claude Code formats natively | is the source | `.claude/skills` yes [L1]; `.claude/agents` no [L1]; `.claude/commands` UNVERIFIED | `.claude-plugin/plugin.json` and `marketplace.json`, `.claude/skills`, `.claude/agents`, `.claude/commands`, `.claude/settings.json` hooks [11], [13], [14], [15] verified [L7], [L41], [L42]; **not** `.claude/CLAUDE.md` and **not** any instruction file, verified [L56], [L59] | nothing except `GEMINI.md` as a custom-instructions filename for other tools | `plugin.json` may be legacy or Claude-compatible; `.claude-plugin/marketplace.json` is read by the desktop app [28] |
+| Shared portable plugin format | n/a | n/a | Agent Plugins 1.0: root `plugin.json` + `skills/` + `mcp.json` [10], [11] | none, own manifest [20] | Agent Plugins 1.0, same three files [28] |
 
 ---
 
@@ -183,30 +183,30 @@ reads a file under it [3].
 
 **Copilot CLI.** The most shareable harness: it reads `.claude-plugin/plugin.json` [L7],
 `.claude/skills`, `.claude/agents`, `.claude/commands` and `.claude/settings.json` hooks
-[11][13][14][15]. Slice X2 measured this rather than trusting it, and the picture changed:
+[11], [13], [14], [15]. Slice X2 measured this rather than trusting it, and the picture changed:
 `skills/` and `agents/` need nothing generated, agents load from `agents/*.md` with no
 `.agent.md` suffix and are namespaced `devil:<name>` [L42], and `${CLAUDE_PLUGIN_ROOT}`
 does expand in a hook command [L48]. What does need generating is three defects: the
 `description:` of a command has to be a YAML block, the hook `command` has to be one
 shell line with no `args`, and the always-on rules cannot live in a plugin at all so they
 travel as a file the host copies. `*.instructions.md` with `applyTo:` is not generated,
-because it is not a lazy-load gate here [L57][L58].
+because it is not a lazy-load gate here [L57], [L58].
 
 **Gemini CLI.** Nothing is shared but the file bodies. Generate `gemini-extension.json`
 [20], commands as TOML with `{{args}}` and `!{...}` [22], hooks in `hooks/hooks.json` with
 `BeforeTool` instead of `PreToolUse` and a regex matcher [21], and `${extensionPath}` in
-place of `${CLAUDE_PLUGIN_ROOT}` [20]. Skills can be copied verbatim into `skills/` [20][29].
+place of `${CLAUDE_PLUGIN_ROOT}` [20]. Skills can be copied verbatim into `skills/` [20], [29].
 Agents in an extension are a preview feature [20]. Both of the last two sentences survived
 measurement and one of them sharpened: a sub-agent's frontmatter schema is `.strict()`, so
 verbatim is not an option there and only the four accepted keys may be emitted [L36].
 
 **Codex CLI.** The most shareable harness after Copilot: it reads a Claude-compatible plugin
-root as it stands, so skills and commands need nothing generated [L22][L25][L26]. What
+root as it stands, so skills and commands need nothing generated [L22], [L25], [L26]. What
 differs is worth generating: a root portable `plugin.json`, because it is the forward format
 and the Claude one is a compatibility fallback [L28]; `hooks/hooks.json` reduced to the twelve
 events Codex fires, with `command` plus `args` folded into the single command string it runs
 and `${CLAUDE_PLUGIN_ROOT}` rewritten to `${PLUGIN_ROOT}` [24]; and an `AGENTS.md`, which has
-to be linked into the **project** because a plugin-root one is never injected [L28][L29]. One
+to be linked into the **project** because a plugin-root one is never injected [L28], [L29]. One
 command of eighteen survives Codex's own rewrite, which is a fact about the migration nobody
 has explained yet [L26].
 
@@ -258,13 +258,13 @@ Install command a user would type per harness, and what this slice actually ran:
 | Harness | Command | Verified here |
 |---|---|---|
 | Claude Code | `claude plugin marketplace add Univers42/claude-deal-with-the-devil && claude plugin install devil@univers42` | no, from the plan [1] |
-| OpenCode | commit `dist/opencode/opencode.json` in the host repo, or symlink the generated trees into the project | no; plugin file loading and hook deny were run [L4][L5] |
-| Copilot CLI | `copilot --plugin-dir /path/to/repo/dist/copilot` (no install, no account), or `copilot plugin install <path>` | `plugin install` of a Claude-location manifest worked on 1.0.59 [L7] and is **UNVERIFIED** on 1.0.89, whose help omits a local path; `--plugin-dir` on the real dist worked on 1.0.89 for skills, agents, commands, instructions and the deny path [L1][L2][L5]; a local-path marketplace add failed [L9] |
+| OpenCode | commit `dist/opencode/opencode.json` in the host repo, or symlink the generated trees into the project | no; plugin file loading and hook deny were run [L4], [L5] |
+| Copilot CLI | `copilot --plugin-dir /path/to/repo/dist/copilot` (no install, no account), or `copilot plugin install <path>` | `plugin install` of a Claude-location manifest worked on 1.0.59 [L7] and is **UNVERIFIED** on 1.0.89, whose help omits a local path; `--plugin-dir` on the real dist worked on 1.0.89 for skills, agents, commands, instructions and the deny path [L1], [L2], [L5]; a local-path marketplace add failed [L9] |
 | Gemini CLI | `gemini extensions install https://github.com/Univers42/claude-deal-with-the-devil --ref v1.0.0` | **partly.** `gemini extensions validate` accepted the generated extension in a container on 0.62.0 [L34]. `install`, `list` and `link` were attempted and refused for want of an auth method, so a real install is still not run [L35] |
-| Codex CLI | `codex plugin marketplace add Univers42/claude-deal-with-the-devil` then `codex plugin add devil@univers42` | **yes**, a local-path marketplace add and an install both worked [L22][L23]. Hook behaviour was not run: it needs a session |
+| Codex CLI | `codex plugin marketplace add Univers42/claude-deal-with-the-devil` then `codex plugin add devil@univers42` | **yes**, a local-path marketplace add and an install both worked [L22], [L23]. Hook behaviour was not run: it needs a session |
 
 One layout decision worth recording now: Agent Plugins 1.0 is the same portable format in
-Copilot CLI [10][11] and Codex [28], and its three files are `plugin.json`, `skills/`,
+Copilot CLI [10], [11] and Codex [28], and its three files are `plugin.json`, `skills/`,
 `mcp.json`. Emitting that as the Copilot and Codex target would make the skills and MCP
 config shared rather than generated twice. Gemini CLI cannot read it, and OpenCode has no
 plugin concept at all, so it stays out of the plan until X2 and X4 confirm it.
@@ -516,7 +516,7 @@ kit itself needs nothing generated at all.
   appeared inside the first **user** message wrapped as
   `<INSTRUCTIONS># AGENTS.md instructions for /tmp/probe ...</INSTRUCTIONS>`. So a
   project-root `AGENTS.md` is read and a plugin-root one is not, and `.agents/skills` is
-  the portable location (shared with Copilot CLI [11][15]).
+  the portable location (shared with Copilot CLI [11], [15]).
 - **L30** `codex --version` returned `codex-cli 0.159.2`.
 - **L31** `codex debug prompt-input "list your skills"` with the kit installed, counting the
   prefixed entries with `grep -oE '\- devil:[a-z0-9-]+:' | sort -u | wc -l` against
@@ -529,20 +529,20 @@ kit itself needs nothing generated at all.
 ### What this changed in the matrix above
 
 - **Skills** — `.agents/skills` and a plugin's `skills/` both confirmed, and the plugin
-  route needs no generated copy [L25][L29]. The "plus plugin `skills/`" reading of the
+  route needs no generated copy [L25], [L29]. The "plus plugin `skills/`" reading of the
   cell was right.
 - **Commands** — no longer UNVERIFIED that they are read: Codex **rewrites** a plugin's
   `commands/*.md` into skills named `source-command-<name>` [L26]. What it does **not**
   do is read a command template: `$ARGUMENTS`, `$1` and the `` !`cmd` `` block have no
   representation in the migrated `SKILL.md`, which carries the command body under a
   `## Command Template` heading. So a migrated command is model-invoked, not typed.
-  For the kit the result is one command of eighteen [L26][L27].
+  For the kit the result is one command of eighteen [L26], [L27].
 - **Always-on rules** — `AGENTS.md` confirmed, and the scope pinned: **project** root
-  yes, plugin root no [L28][L29]. That is why `dist/codex/AGENTS.md` is a file a host
+  yes, plugin root no [L28], [L29]. That is why `dist/codex/AGENTS.md` is a file a host
   links into the project rather than a file the plugin carries.
 - **Install** — the cell said the install is from the Plugins Directory. The CLI route
   works and is scriptable: `codex plugin marketplace add <local path>` then
-  `codex plugin add <plugin>@<marketplace>` [L22][L23].
+  `codex plugin add <plugin>@<marketplace>` [L22], [L23].
 - **Manifest** — the root portable `plugin.json` is accepted and read, not only the
   `.codex-plugin/plugin.json` compatibility form [L28]. The portable schema
   (`https://agent-plugins.org/schemas/1.0.0/plugin.schema.json`, fetched 2026-09-30)
@@ -665,7 +665,7 @@ exist.
   `metadata` are inert, not rejected, so the copy is verbatim. [L36]
 - **Skill frontmatter honoured** — narrower than "standard set": exactly two fields. [L36]
 - **Commands** — `commands/*.toml` with `description` and `prompt`, nested path becomes
-  `/a:b` [20][22], and `{{args}}` for arguments. Confirmed as v1 TOML. [L32]
+  `/a:b` [20], [22], and `{{args}}` for arguments. Confirmed as v1 TOML. [L32]
 - **Commands: shell injection** — `!{...}` with balanced braces, and a confirmation dialog
   before the command runs [22]. The kit's commands are written for Claude's raw
   `$ARGUMENTS`, and the generated TOML rewrites that to `{{args}}`; a body that also used a
@@ -681,15 +681,15 @@ exist.
   sibling `reason` key rather than a nested one [L36].
 - **Hooks: declaration** — `hooks/hooks.json` in the extension root, not in the manifest,
   and the file is parsed with a `typeof .hooks === "object"` check only, so unknown
-  top-level keys are ignored [L20][L36].
+  top-level keys are ignored [L20], [L36].
 - **Hooks: call an external script** — `type: "command"` with a **shell command string** and
-  **no `args` array** [21][L36]. This is the correction with teeth: the CLI's own Claude
+  **no `args` array** [21], [L36]. This is the correction with teeth: the CLI's own Claude
   migration drops `args`, so a hook that relied on one silently becomes a command naming only
   its interpreter. The generated file names the interpreter and the script in one string.
 - **Hooks: event names** — nine names, confirmed as the reverse of the CLI's own map [L36].
 - **Hooks: matcher** — a regex over the Gemini tool name, and the CLI ships the exact tool
   vocabulary a matcher has to be written against [L36].
-- **Hook timeouts are milliseconds here and seconds in the Claude manifest** [21][L36]. The
+- **Hook timeouts are milliseconds here and seconds in the Claude manifest** [21], [L36]. The
   same `5` is 5 ms. `gemini hooks migrate` copies the number across unchanged, which is a
   trap rather than a conversion. The generated file restates the budgets (5000, 10000).
 - **Plugin-root variable** — `${extensionPath}` in the manifest and in `hooks/hooks.json`,
@@ -698,7 +698,7 @@ exist.
   cell did not say that `version` is required or that the name charset is enforced, and both
   fail the manifest [L33].
 - **Versioning** — `version` in `gemini-extension.json`, `gemini extensions update`, and
-  `gemini extensions link` for a symlinked checkout [20][22]. The generated manifest reads
+  `gemini extensions link` for a symlinked checkout [20], [22]. The generated manifest reads
   its version from `.claude-plugin/plugin.json` at export time, so one bump needs a re-run.
 - **Install** — was "no, CLI not installed". Now: `gemini extensions validate` **ran** and
   accepted the generated extension [L34]; `install` and `list` were attempted and refused for
@@ -827,7 +827,7 @@ times out of three [L47].
   description; `paths:`, `user-invocable` and `disable-model-invocation` ignored".
 - **Path-scoped rule skills** — the `applyTo:` mechanism exists but is not a lazy-load
   gate. Every instruction file is listed whatever its pattern, and only the form changes: a
-  body inlined for `**` and `**/*`, a pointer row for anything narrower [L57][L58]. A rule
+  body inlined for `**` and `**/*`, a pointer row for anything narrower [L57], [L58]. A rule
   delivered this way is delivered either way, so the plan's example of generating seven
   `*.instructions.md` for the rule skills would buy nothing and cost seven files.
 - **Commands** — a command whose frontmatter is invalid YAML is dropped with a parse error
@@ -840,7 +840,7 @@ times out of three [L47].
   text [L53].
 - **Hooks: call an external script** — `command` is a shell line, not an executable plus an
   argument list. `args` is not read at all [L48], and the line is word-split and
-  glob-expanded, so a path with a space needs quoting [L49][L60].
+  glob-expanded, so a path with a space needs quoting [L49], [L60].
 - **Plugin-root variable** — not silent for hooks after all: both `${PLUGIN_ROOT}` and
   `${CLAUDE_PLUGIN_ROOT}` expand in a hook `command`, and `CLAUDE_PLUGIN_ROOT` is exported
   to the hook's environment [L48]. It remains undocumented for hooks; it is also true.

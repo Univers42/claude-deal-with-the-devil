@@ -135,7 +135,7 @@ looks right".
   `permissionRequest`, `postToolUseFailure` and `preCompact`. The generated
   `hooks.json` keeps all 30 declarations, because a declaration for an event the host
   does not have is inert rather than harmful; what actually runs is
-  `PreToolUse`, `PostToolUse` and `SessionStart` [L5][L6][L14].
+  `PreToolUse`, `PostToolUse` and `SessionStart` [L5], [L6], [L14].
 - **A hook that needs `args`.** The array is not read [L8], so a hook that separates an
   executable from its arguments cannot be expressed. The generated file collapses each
   one into a single shell line, which works and is quoted; it is not a general
