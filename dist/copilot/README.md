@@ -69,7 +69,7 @@ copilot --plugin-dir "$DIST" instruction list         # the host's instruction f
 | File | Why it is not just the kit's own file |
 | --- | --- |
 | `plugin.json` | the manifest is the version source, so it is copied from `.claude-plugin/plugin.json` at export time and a bump that is not re-exported fails `--check` |
-| `commands/<name>.md` | **10 of the kit's 18 commands do not load unfixed.** A `description:` written as a plain scalar holding `Usage: /devil:bench ...` is a YAML mapping value, and copilot's parser rejects it: `commands/bench.md: failed to parse YAML frontmatter: mapping values are not allowed in this context at line 1 column 108`. The generated form is a folded block |
+| `commands/<name>.md` | **11 of the kit's 19 commands do not load unfixed.** Ten were measured on 1.0.89, when the kit had 18 commands; `wayfinder`, added since, has the same plain-scalar description, and a YAML parser rejects it too (checked with a parser, not with copilot). A `description:` written as a plain scalar holding `Usage: /devil:bench ...` is a YAML mapping value, and copilot's parser rejects it: `commands/bench.md: failed to parse YAML frontmatter: mapping values are not allowed in this context at line 1 column 108`. The generated form is a folded block |
 | `hooks.json` | **the Claude hook shape does not run.** copilot reads `command` as a shell line and ignores `args` entirely, so the kit's `command: python3` + `args: [".../hooks.py"]` invokes `python3` with the event JSON piped to stdin, where it dies: `NameError: name 'false' is not defined`. The generated form is one quoted line, and the kit's `hooks/` is symlinked in because `${CLAUDE_PLUGIN_ROOT}` is the dist |
 | `copilot-instructions.md` | a plugin cannot ship instructions at all, so this is a file the host copies. It is generated rather than assembled by hand so the 12 rules come from `rules/` and cannot drift |
 | `README.md` | this file |
@@ -135,7 +135,7 @@ looks right".
   `permissionRequest`, `postToolUseFailure` and `preCompact`. The generated
   `hooks.json` keeps all 30 declarations, because a declaration for an event the host
   does not have is inert rather than harmful; what actually runs is
-  `PreToolUse`, `PostToolUse` and `SessionStart` [L5][L6][L14].
+  `PreToolUse`, `PostToolUse` and `SessionStart` [L5], [L6], [L14].
 - **A hook that needs `args`.** The array is not read [L8], so a hook that separates an
   executable from its arguments cannot be expressed. The generated file collapses each
   one into a single shell line, which works and is quoted; it is not a general

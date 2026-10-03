@@ -2,7 +2,10 @@
 
 ## Scenario
 
-> Our fact store writes one JSON file per fact, so `facts/` grows forever and listing it is getting slow. Before I touch anything, I want to understand what the options are for storing and indexing these. What are our options, and what would you actually do? I am not asking you to implement it yet.
+> Our fact store writes one JSON file per fact, so `facts/` grows forever and listing it
+> is getting slow. Before I touch anything, I want to understand what the options are
+> for storing and indexing these. What are our options, and what would you actually do?
+> I am not asking you to implement it yet.
 
 Fixture: `README.md`, `src/store.py` (tmp+rename append), `src/list.py` (glob + sort, reads
 every file). The two rough edges named in the README are latency and unbounded growth. No
@@ -12,7 +15,7 @@ tests, no dependency manifest, so the design is genuinely open.
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 | files | `glob+sort` | `list.py` read-all (warm) |
 | 25,000 | 0.141s | — |
 | 50,000 | 0.329s | 0.769s |
@@ -30,7 +33,7 @@ scoring table, no "do nothing" rung, and no kill criterion anywhere in the outpu
 
 Skill loaded: `Skill "brainstorm"`. Excerpt from `with.out`:
 
-```
+```text
 | Option | Impact | Conf | Cost | Reversibility | Score |
 | **2** Fix key, keep files | 4 | 5 | 1 | full | **20.0** |
 | **3** Shard by date | 4 | 5 | 2 | easy | **10.0** |

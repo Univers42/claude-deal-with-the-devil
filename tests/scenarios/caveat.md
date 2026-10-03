@@ -2,7 +2,9 @@
 
 ## Scenario
 
-> I want to rely on logsum to rank errors from our production logs. Before I do, I need to know what it gets wrong: what are its limitations, and what should I not trust it for? Do not change how it counts.
+> I want to rely on logsum to rank errors from our production logs. Before I do, I need
+> to know what it gets wrong: what are its limitations, and what should I not trust it
+> for? Do not change how it counts.
 
 Fixture: `logsum.py` with one regex, `MAX_LINES = 200000`, `BYTES_PER_TOKEN = 4`,
 `errors="replace"`, and message-string keying. A `README.md` claiming the counts are exact
@@ -12,7 +14,7 @@ and the cap is "far more than any single day of output". No `Caveat:` marker any
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 It silently drops most real error volume ... On a 45-line probe, 18 error lines vanished
 **Token estimate.** `estimate_tokens` is documented as bytes-per-token but divides `len(str)`
 '支付失败：银行拒绝了这张卡'  len=13  true bytes=39  estimate=3
@@ -29,7 +31,7 @@ the README untouched (`grep -c 'Caveat:' logsum.py` is 0 in `base/`).
 Skill loaded: `Skill "caveat"` (attempt 1 ended on a stream error, attempt 2 rc=0).
 Excerpt from `with.out`:
 
-```
+```text
 | `logsum.py:6` (`ERROR_LINE`) | regex stands in for a log parser | 8 error-ish lines in → 1 counted |
 | `logsum.py:24` (`MAX_LINES`) | silent prefix cap | 200,001-line file → 200,000 counted |
 **Routed to a fix, not a caveat** — two are breakage, which a label would only disguise:

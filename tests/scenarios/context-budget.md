@@ -2,7 +2,10 @@
 
 ## Scenario
 
-> Every session in this repo seems to start with a lot of my context already used before I type anything, and we keep compacting mid-task. I want to cut that. Measure what is actually being loaded on every session and tell me what to cut, with the numbers before and after.
+> Every session in this repo seems to start with a lot of my context already used before
+> I type anything, and we keep compacting mid-task. I want to cut that. Measure what is
+> actually being loaded on every session and tell me what to cut, with the numbers
+> before and after.
 
 Fixture: `.claude/rules/` with three rules carrying Cursor `globs:`/`alwaysApply:` and one
 with no frontmatter, plus `chart`, `slides` and `spreadsheet` skills. One file,
@@ -12,7 +15,7 @@ with no frontmatter, plus `chart`, `slides` and `spreadsheet` skills. One file,
 
 Excerpt from `base.out` (no skill loaded):
 
-```
+```text
 | Bucket | Bytes | ~tokens | Loads |
 | Always-on rules | 26,328 | 6,582 | every session |
 | **Always-on total** | **33,635** | **8,408** | **the target** |
@@ -30,7 +33,7 @@ edited nothing and produced no before/after pair.
 
 Skill loaded: `Skill "context-budget"` on attempt 1. Excerpt from `with.attempt1.out`:
 
-```
+```text
 -globs: "**/*.py"
 -alwaysApply: true
 +paths:

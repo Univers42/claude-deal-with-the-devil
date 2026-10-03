@@ -101,7 +101,7 @@ else no "the skills block is missing the stable row"; fi
 if row "$TMP/clean" skills '| `legacy` | beta | Still on the old description form (no Use when yet) |'; then
   ok "a beta description with no 'Use when' falls back to its first sentence, and says so"
 else no "the fallback for a missing 'Use when' is wrong or missing"; fi
-if row "$TMP/clean" rules '| `rule` | **/*.go, **/gen/*.pb.go |'; then
+if row "$TMP/clean" rules '| `rule` | `**/*.go`, `**/gen/*.pb.go` |'; then
   ok "a stage rule skill lands in the rules table with its globs joined"
 else no "the rules block is missing the rule skill or its globs"; fi
 if ! row "$TMP/clean" skills '`rule`'; then

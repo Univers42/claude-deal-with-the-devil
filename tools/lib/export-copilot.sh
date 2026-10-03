@@ -171,7 +171,7 @@ xcp_hooks_file() { xcp_hooks | xcp_emit "hooks.json"; }
 # root, all invisible to `copilot instruction list`), so the rules travel as a
 # file the host copies to .github/copilot-instructions.md.
 xcp_instructions() {
-  local f
+  local f sep=""
   {
     echo "$XCP_MD"
     echo
@@ -182,8 +182,9 @@ xcp_instructions() {
     echo
     for f in "$(claude_root)"/rules/*.md; do
       [ -e "$f" ] || continue
+      printf '%s' "$sep"
       cat "$f"
-      echo
+      sep=$'\n'
     done
   } | xcp_emit "copilot-instructions.md"
 }

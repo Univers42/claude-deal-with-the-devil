@@ -103,4 +103,3 @@ A finding appears in exactly one table. Report the two counts separately, then e
 with one line: **APPROVE**, or **CHANGES REQUESTED** naming the blockers from both
 axes. Never a combined score: the axes do not share a scale, and a total invites
 a MINOR on one axis to cancel a BLOCKER on the other.
-

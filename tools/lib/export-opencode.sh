@@ -112,8 +112,9 @@ xoc_agent() {
     # agent that no subagent tool can launch. Measured on 2.0.18.
     echo "---"
   } | xemit "agents/$name.md"
+  # The body is appended as it is: xagent_body already ends every line with a
+  # newline, and one more is what left a double blank line at the end of the file.
   xagent_body "$f" >>"$XOUT/agents/$name.md"
-  printf '\n' >>"$XOUT/agents/$name.md"
 }
 
 xoc_agents() {

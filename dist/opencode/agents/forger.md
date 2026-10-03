@@ -85,4 +85,3 @@ You turn recurring manual labor into one command — and then you make that comm
 - Build product features — that's the `builder`. You build the builder's instruments.
 - Add a tool where a one-liner suffices, or an option nobody asked for (`minimalism-ladder`).
 - Leave a tool untested, unregistered, or undocumented.
-

@@ -94,7 +94,9 @@ list_files() {
 manifest() { [ -f "$(repo_root)/$1" ]; }
 
 # Does any tracked file carry one of these extensions? (regex alternation, no dots)
-has_ext() { list_files | grep -qiE "\.($1)$"; }
+# Counts instead of `grep -q`: -q quits on the first match, the writer upstream
+# takes SIGPIPE, and pipefail turned that into "no" on about one call in five.
+has_ext() { [ "$(list_files | grep -ciE "\.($1)$")" -gt 0 ]; }
 
 # Language of a path by extension; empty string for unknown.
 lang_of() {

@@ -70,7 +70,7 @@ Every subagent obeys these, even for a one-off slice:
   with `kind: command`, also `/devil:<name>`.
 - Durable constraints → a `rules/*.md`; a constraint scoped to file types → a `paths:` skill
   tagged `metadata.stage: rule`, because a plugin ships skills but not `rules/`. Orientation
-  + conventions → [`README.md`](README.md).
+  and conventions → [`README.md`](README.md).
 - Recurring parse or enforceable check → a `tools/<name>.sh` (index in [`tools/README.md`](tools/README.md)),
   run as `devil <name>` through `bin/devil`; the `forger` builds and maintains these.
 - A constraint that must be impossible to ignore → a hook in `hooks/`
