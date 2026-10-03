@@ -77,4 +77,3 @@ For each decision:
   `docs/adr/NNNN-<slug>.md`, when the three-gate rule fires (irreversible, public
   surface, or a `devil` verdict other than PROCEED). Say "no ADR, below the
   three gates" when it does not. The absence is the useful information.
-

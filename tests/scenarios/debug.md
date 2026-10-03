@@ -11,7 +11,7 @@ user-level skills, no kit), outside the kit tree, `question` tool denied.
 
 ## Baseline
 
-````
+````text
 - `parse_amount` — fine, both tests pass.
 - **`split_bill`'s "losing nothing" promise genuinely holds.** I swept 20,000 amounts × 5 party sizes: zero violations of `share*(p-1) + remainder == amount`. My first sweep appeared to show ~16,000 violations, but that was **my own faulty invariant** (I summed `share*p` instead of `share*(p-1)`), not a defect in your code.
 - Minor untested edge: `split_bill(x, 1)` returns `(round(x,2), round(x,2))`, double-counting the amount.
@@ -21,7 +21,7 @@ user-level skills, no kit), outside the kit tree, `question` tool denied.
 
 Skill loaded: yes, `→ Skill "debug"` on line 52 of `with.out`, then "I'll follow the debug skill".
 
-````
+````text
 My first hypothesis was Python's banker's rounding (ties-to-even). **That hypothesis is wrong**, and one test kills it:
 
 | input | float value is a true tie? | `HALF_EVEN` on the exact float | result |

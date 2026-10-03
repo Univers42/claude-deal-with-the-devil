@@ -99,6 +99,11 @@ g_shellcheck() { list_files | grep -iE '\.(sh|bash)$' | xargs -r "$1"; }
 # default tab indent, so it disagreed with CI on a repo that is 2-space. Drive it
 # from list_files like the shellcheck gate, at the width CI enforces.
 g_shfmt() { list_files | grep -iE '\.(sh|bash)$' | xargs -r "$1" -d -i 2; }
+# The CI lint job's markdownlint step, same file glob and ignores, run from the root
+# so `.markdownlint.json` applies as it does there. Caveat: CI pins
+# markdownlint-cli@0.42.0 and this runs whichever version is installed, so a newer
+# one can report a rule 0.42.0 does not have; install the pinned one to match CI.
+g_markdownlint() { "$1" '**/*.md' --ignore node_modules --ignore cache --ignore claude-code-best-practice; }
 g_clangfmt() { list_files | grep -iE '\.(c|h)$' | xargs -r "$1" --dry-run -Werror; }
 g_cppcheck() { "$1" --error-exitcode=1 --enable=warning,style --quiet .; }
 g_semgrep() { if manifest .semgrep.yml; then _t "$1" --error --config .semgrep.yml; else _t "$1" --error --config auto; fi; }
@@ -123,6 +128,7 @@ RUST=$(manifest Cargo.toml && echo 1 || (has_ext 'rs' && echo 1 || echo 0))
 PY=$({ manifest pyproject.toml || manifest requirements.txt || has_ext 'py'; } && echo 1 || echo 0)
 SH=$(has_ext 'sh|bash' && echo 1 || echo 0)
 C=$(has_ext 'c|h' && echo 1 || echo 0)
+MD=$(has_ext 'md' && echo 1 || echo 0)
 TS=$({ manifest tsconfig.json; } && echo 1 || echo 0)
 
 # --- run gates, in canonical order -----------------------------------------
@@ -196,6 +202,7 @@ check lint golangci-lint "$GO" "$(resolve golangci-lint)" g_golangci
 check lint clippy "$RUST" "$(resolve cargo)" g_clippy
 check lint "ruff check" "$PY" "$(resolve ruff)" g_ruff_lint
 check lint shellcheck "$SH" "$(resolve shellcheck)" g_shellcheck
+check lint markdownlint "$MD" "$(resolve markdownlint)" g_markdownlint
 check lint cppcheck "$C" "$(resolve cppcheck)" g_cppcheck
 
 # types

@@ -11,7 +11,7 @@ type), `app.js` (renders six rows, no empty, loading or error branch).
 
 ## Baseline
 
-```
+```text
 [...the hierarchy, spacing and alignment findings above are elided...]
 
 `app.js:1-2` states the premise outright: *"the empty case is not handled anywhere, because the server never sends an empty list."* That premise doesn't survive contact with a read/unread page — the moment you read everything, the list is empty. You'd get a bare heading, three buttons, and nothing. There are no loading or error states either. Also `innerHTML` with unescaped interpolation at `app.js:13-20` is an injection risk once this hits real server data.
@@ -21,7 +21,7 @@ type), `app.js` (renders six rows, no empty, loading or error branch).
 
 Skill loaded: yes, `→ Skill "design-review"` on line 4 of the run.
 
-```
+```text
 The dominant problem: one blue, four meanings
 
 `#2563eb` is doing the work of *primary action* (all three buttons), *secondary action* (also all three buttons), *tertiary action* (also), and *unread state* (`.unread`). When one colour carries four meanings it stops signalling anything, and the result reads as a wall of competing emphasis with no entry point.

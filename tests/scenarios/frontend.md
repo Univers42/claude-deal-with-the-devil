@@ -12,7 +12,7 @@ light-only custom properties), `app.js` (renders the rows).
 
 ## Baseline
 
-```
+```text
 Two things to flag honestly:
 
 - **The row divider doesn't reach 3:1** (1.47:1 light, 2.35:1 dark) — I improved it from the original 1.26:1 but stopped short deliberately; 3:1 hairlines are visually heavy and the table stays fully readable without them. Worth a second opinion if rows need to read as grouped.
@@ -29,7 +29,7 @@ Three pre-existing issues I found but did **not** change, since they're outside 
 
 Skill loaded: yes, `→ Skill "frontend"` on line 4 of the run.
 
-```
+```text
 Stress data at 320px — empty, 200 rows, and a 70-char unbroken token: **0 overflow** in each. The table doesn't even need to scroll for normal data.
 
 Screenshots in `/tmp/opencode/shots/`: `after-375-light/dark.png`, `after-900-light/dark.png`. Before/after at 375px dark went from "2 columns, no buttons visible" to everything on screen.

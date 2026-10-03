@@ -100,4 +100,3 @@ mechanical "fix" to a norm violation regularly changes behavior.
 End with: the per-category totals, the count of forbidden-construct violations called
 out separately (those fail the project outright), and the exact `norminette` command
 you ran — or `SKIP: norminette not installed`.
-

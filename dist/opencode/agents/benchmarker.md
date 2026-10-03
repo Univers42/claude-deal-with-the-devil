@@ -56,4 +56,3 @@ When reviewing code written with the minimalism ladder:
 - Flag any convenience function that allocates unnecessarily.
 - Flag any "simple" solution that makes more syscalls than needed.
 - For each flag: show both versions, benchmark both, pick the winner with numbers — not opinions.
-

@@ -83,4 +83,3 @@ that fires on every answer trains people to skip it.
 
 You don't write the fix or the code — you rule, and hand the verdict + conditions
 back to the `builder`.
-

@@ -11,7 +11,7 @@ route to path wrongly, so no route works. Both arms run with HOME and the XDG co
 
 ## Baseline
 
-```
+```text
 Verified all of the above with a throwaway probe (real HTTP requests, 11 cases: the table plus empty-orders, query-string, unknown-route, and POST-is-not-GET) — all passed. I deleted it afterward since the project has no test setup and you didn't ask for one; say the word if you'd like it kept as a real test file.
 ```
 
@@ -20,7 +20,7 @@ Verified all of the above with a throwaway probe (real HTTP requests, 11 cases: 
 Skill loaded: yes, `→ Skill "api-endpoint"` on line 4 of `with.out`, and it looked for the
 `api-convention` skill the body names. It also left a 9/9 check under `scripts/verify/`.
 
-```
+```text
 **Two things I did not do**
 
 - **No auth.** The skill wanted API-key→identity and per-request owner-scope, but this project has no auth layer at all — `/users/{user_id}` serves any user unauthenticated. I scoped orders by path param, matching that. So `GET /users/u1/orders` returns u1's orders to anyone who asks. Pre-existing, but the new endpoint inherits it. Worth deciding on before this leaves localhost.

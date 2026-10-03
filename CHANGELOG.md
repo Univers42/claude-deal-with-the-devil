@@ -11,6 +11,18 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+### Added
+
+- `tools/quality.sh` runs markdownlint with the file glob and ignores of the CI lint
+  step, and records SKIP when `markdownlint` is not installed.
+
+### Fixed
+
+- `has_ext` in `tools/lib/common.sh` answered "no" about one call in five under
+  `pipefail`, so a `quality.sh` gate could drop out of a run without a SKIP row.
+- The OpenCode and Copilot exports no longer end on a blank line, and the README
+  rule-skill table writes each glob as a code span.
+
 ## [1.1.1] - 2026-09-30
 
 ### Changed
@@ -19,6 +31,32 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   `DEVIL_AUTONOMY=1`, so seeding a host that runs unattended no longer brings the prompts back.
 
 ## [1.1.0] - 2026-09-30
+
+### Added
+
+- `commands/wayfinder.md` (`/devil:wayfinder`): multi-session planning on the host's
+  ticket tracker. The map ticket is the index (one line per ticket with its state
+  and blockers, one line per unknown with the question that would clear it, one log
+  line per session) and its tickets are decisions, not slices of a build, so
+  `/devil:to-tickets` cuts the build from the spec once the map is clear. A session
+  takes one ready ticket or one fog patch, reduces it to a fact, a decision or a
+  closed ticket, updates the map and stops; it never clears two fog patches in one
+  session. `templates/wayfinder-map.md` owns the map's four sections, and the GitHub
+  and local tracker adapters gained the five wayfinding verbs (`create-map`,
+  `read-map`, `list-tickets`, `claim-ticket`, `close-ticket`), the local one keeping
+  the map at `.scratch/wayfinder/map.md`. The GitLab adapter below maps only the three
+  `to-tickets` verbs, so `wayfinder` has no GitLab mapping yet.
+- `templates/tracker/gitlab.md`: the GitLab adapter for `to-tickets`, the third of
+  the three abstract verbs mapped onto a real tracker (`glab issue create --title
+  --description --label ready-for-agent`, `glab issue list --label ready-for-agent`,
+  `glab issue note` plus `glab issue close <iid>`). Every command is marked
+  UNVERIFIED in the file: it was written on a host with no `glab`, so no
+  `--help` output was ever read. `devil setup --tracker gitlab` seeds it, and
+  setup now detects it when `glab` is installed and a remote names `gitlab.com`
+  (a self-hosted GitLab reads as local until someone passes the flag; a repo with
+  both remotes still gets github). The tracker stage moved to
+  `tools/lib/seed-tracker.sh`, seed.sh having been at the 300-line ceiling.
+  Covered by `tests/test_setup_tracker.sh`, with a negative control per case.
 
 ### Removed
 
@@ -70,29 +108,6 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
   Measured live: the risk gate refuses a force-push through the dist with the
   kit's own wording. Start at `dist/copilot/README.md`; the evidence is in
   `doc/HARNESSES.md`.
-
-- `commands/wayfinder.md` (`/devil:wayfinder`): multi-session planning on the host's
-  ticket tracker. The map ticket is the index (one line per ticket with its state
-  and blockers, one line per unknown with the question that would clear it, one log
-  line per session) and its tickets are decisions, not slices of a build, so
-  `/devil:to-tickets` cuts the build from the spec once the map is clear. A session
-  takes one ready ticket or one fog patch, reduces it to a fact, a decision or a
-  closed ticket, updates the map and stops; it never clears two fog patches in one
-  session. `templates/wayfinder-map.md` owns the map's four sections, and both
-  tracker adapters gained the five wayfinding verbs (`create-map`, `read-map`,
-  `list-tickets`, `claim-ticket`, `close-ticket`) with the local one keeping the
-  map at `.scratch/wayfinder/map.md`.
-- `templates/tracker/gitlab.md`: the GitLab adapter for `to-tickets`, the third of
-  the three abstract verbs mapped onto a real tracker (`glab issue create --title
-  --description --label ready-for-agent`, `glab issue list --label ready-for-agent`,
-  `glab issue note` plus `glab issue close <iid>`). Every command is marked
-  UNVERIFIED in the file: it was written on a host with no `glab`, so no
-  `--help` output was ever read. `devil setup --tracker gitlab` seeds it, and
-  setup now detects it when `glab` is installed and a remote names `gitlab.com`
-  (a self-hosted GitLab reads as local until someone passes the flag; a repo with
-  both remotes still gets github). The tracker stage moved to
-  `tools/lib/seed-tracker.sh`, seed.sh having been at the 300-line ceiling.
-  Covered by `tests/test_setup_tracker.sh`, with a negative control per case.
 
 - `tools/index.sh`: the generator behind the README asset tables and the router.
   `--check` (the default) regenerates every block between
