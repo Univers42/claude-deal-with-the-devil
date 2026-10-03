@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
   workflow_dispatch:
 
@@ -54,8 +54,12 @@ jobs:
                    dist/codex/plugin.json dist/codex/hooks/hooks.json \
                    templates/settings.json templates/mcp.json \
                    settings.local.json.example; do
-            python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" \
-              && echo "ok   $f" || { echo "FAIL $f"; exit 1; }
+            if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; then
+              echo "ok   $f"
+            else
+              echo "FAIL $f"
+              exit 1
+            fi
           done
 
   # The config must tell the truth about itself. This is the gate that stops the
