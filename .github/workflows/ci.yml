@@ -70,10 +70,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: tools/selfcheck.sh --strict
         run: bash tools/selfcheck.sh --strict
-      # Not --strict: the A14 `Use when` migration is slice M4's work, and a
-      # warning that is a tracked migration is not a broken gate.
-      - name: tools/skillcheck.sh
-        run: bash tools/skillcheck.sh
+      # --strict: the A14 `Use when` migration is done (0 warned), so a beta
+      # skill that drops its triggers now fails here instead of only warning.
+      - name: tools/skillcheck.sh --strict
+        run: bash tools/skillcheck.sh --strict
       - name: tools/context.sh
         run: bash tools/context.sh --summary
       - name: tools/caveat.sh --strict
