@@ -79,7 +79,8 @@ Only when there is no map yet, or the person handed an idea rather than a map.
 3. Write the map from `templates/wayfinder-map.md`, filled: goal, the tickets you
    can state now, the fog you cannot, and an empty log.
 4. Create one ticket per question that is sharp enough to state now, through
-   `create-ticket`, each with the question it answers and the tickets that block
+   `create-ticket` in the wayfinding form the adapter gives (the one `list-tickets`
+   reads back), each with the question it answers and the tickets that block
    it. Wire the blockers in a second pass, because a ticket needs to exist before
    another can name it.
 5. Stop. Charting resolves nothing.
