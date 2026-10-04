@@ -27,6 +27,10 @@ Append `## Closed <date> by <commit>` to the file, with the gate output.
 The map is a file too, and its tickets are files beside it, so a session's state
 outlives the session without a network call.
 
+A wayfinding ticket is written the way `create-ticket` writes one, but into
+`.scratch/wayfinder/tickets/` instead of `.scratch/tickets/`. It is a decision, not a
+build slice, so `list-ready` must not offer it, and `list-tickets` finds it there.
+
 ### create-map
 
 Write `.scratch/wayfinder/map.md`, filled in from `templates/wayfinder-map.md`.
