@@ -11,6 +11,11 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+### Changed
+
+- CI runs `tools/skillcheck.sh --strict`: the A14 `Use when` migration left no
+  warning, so a beta skill that drops its triggers now fails the build.
+
 ### Added
 
 - `tools/quality.sh` runs markdownlint with the file glob and ignores of the CI lint
