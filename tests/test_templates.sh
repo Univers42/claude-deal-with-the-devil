@@ -323,6 +323,53 @@ for t in github local; do
     ok "templates/tracker/$t.md loses the map reference in the negative control"
 done
 
+# --- k. every adapter maps all eight verbs and lists what it creates -----------
+# wayfinder creates its tickets through create-ticket and reads them back through
+# list-tickets. An adapter whose list-tickets filters on a label or a directory
+# that nothing in the adapter writes hands every session an empty frontier.
+VERBS=('## create-ticket' '## list-ready' '## close-ticket' '### create-map'
+  '### read-map' '### list-tickets' '### claim-ticket' '### close-ticket')
+
+# maps_verbs FILE: every verb heading is present.
+maps_verbs() {
+  local h
+  for h in "${VERBS[@]}"; do grep -qxF "$h" "$1" || return 1; done
+}
+
+# section_in FILE HEADING / section_out FILE HEADING: the section HEADING opens,
+# or the file without it.
+section_in() { awk -v h="$2" '$0==h{on=1;next} /^##+ /{on=0} on' "$1"; }
+section_out() { awk -v h="$2" '$0==h{on=1;next} /^##+ /{on=0} !on' "$1"; }
+
+# lists_what_it_creates FILE: the label or directory list-tickets reads is named
+# again elsewhere in the adapter, where tickets are created.
+lists_what_it_creates() {
+  local from rest
+  from="$(section_in "$1" '### list-tickets' | grep -oE -- '--label [a-z:-]+|ls [^ ]+' | head -1)"
+  rest="$(section_out "$1" '### list-tickets')"
+  case "$from" in
+  --label*) grep -qE -- "${from}([^a-z:-]|\$)" <<<"$rest" ;;
+  ls*) grep -qF -- "${from#ls }" <<<"$rest" ;;
+  *) return 1 ;;
+  esac
+}
+
+for t in github gitlab local; do
+  a="$ROOT/templates/tracker/$t.md"
+  maps_verbs "$a" && ok "templates/tracker/$t.md maps all eight verbs" ||
+    no "templates/tracker/$t.md is missing one of: ${VERBS[*]}"
+  grep -vxF '### claim-ticket' "$a" >"$TMP/noclaim-$t.md"
+  maps_verbs "$TMP/noclaim-$t.md" && no "an adapter without claim-ticket must fail the check" ||
+    ok "the $t adapter fails the verb check without claim-ticket"
+  lists_what_it_creates "$a" && ok "templates/tracker/$t.md lists the wayfinding tickets it creates" ||
+    no "templates/tracker/$t.md: list-tickets reads a label or directory no create step writes"
+  from="$(section_in "$a" '### list-tickets' | grep -oE -- '--label [a-z:-]+|ls [^ ]+' | head -1)"
+  grep -vF -- "${from#ls }" "$a" >"$TMP/nocreate-$t.md"
+  printf '### list-tickets\n\n%s\n' "$from" >>"$TMP/nocreate-$t.md"
+  lists_what_it_creates "$TMP/nocreate-$t.md" && no "the $t adapter must fail when nothing creates what list-tickets reads" ||
+    ok "the $t adapter fails the listing check once its create step is removed"
+done
+
 echo
 echo "$PASS passed, $FAIL failed, $SKIP skipped"
 [ "$FAIL" -eq 0 ] || exit 1

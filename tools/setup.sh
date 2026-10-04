@@ -151,6 +151,7 @@ KIT_VERSION="$(_plugin_version)"
 # wrote nothing then reports ok. That is how a merge stage can look clean on a
 # host it never touched.
 # shellcheck disable=SC2317
+# shellcheck disable=SC2329  # called from tools/lib/seed*.sh, which this file sources
 ensure() {
   local path="$1" label="$2" tmp
   tmp="$(mktemp)" || return 1
@@ -178,6 +179,7 @@ ensure() {
 # content and hands it to ensure(), so the three modes still have exactly one
 # place that writes.
 # shellcheck disable=SC2317
+# shellcheck disable=SC2329  # called from tools/lib/seed*.sh, which this file sources
 append_line() {
   local file="$1" line="$2" label="$3" tmp rc l
   if [ -f "$file" ] && grep -qxF -- "$line" "$file"; then return 1; fi

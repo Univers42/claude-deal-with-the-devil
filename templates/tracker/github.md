@@ -34,6 +34,11 @@ The map is one issue and its tickets are the rest, so a session's claim and its
 resolution are visible in the tracker's own UI: nobody has to open the map to see
 what another session took.
 
+A wayfinding ticket is created with the `create-ticket` command, carrying
+`--label wayfinder` in place of `--label ready-for-agent`. It is a decision, not a
+build slice, so `list-ready` must not offer it, and `list-tickets` finds it by that
+label.
+
 ### create-map
 
 ```sh

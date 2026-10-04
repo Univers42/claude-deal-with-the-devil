@@ -11,6 +11,11 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ## [Unreleased]
 
+### Changed
+
+- CI runs `tools/skillcheck.sh --strict`: the A14 `Use when` migration left no
+  warning, so a beta skill that drops its triggers now fails the build.
+
 ### Added
 
 - `tools/quality.sh` runs markdownlint with the file glob and ignores of the CI lint
@@ -18,6 +23,19 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Fixed
 
+- `wayfinder` could never list a ticket it created: it creates them through
+  `create-ticket`, which writes `ready-for-agent` on GitHub and `.scratch/tickets/`
+  locally, while `list-tickets` reads the `wayfinder` label and
+  `.scratch/wayfinder/tickets/`. Each adapter now says how a wayfinding ticket is
+  created so `list-tickets` reads it back and `list-ready` does not offer it, and
+  `tests/test_templates.sh` fails an adapter whose `list-tickets` reads what nothing
+  writes.
+- `templates/tracker/gitlab.md` maps the five wayfinding verbs, so `wayfinder` works
+  on GitLab. Its commands were checked against `glab` 1.120.0, which removed the
+  UNVERIFIED notes and fixed two of them: `glab issue note` takes the text in
+  `--message` (a second argument was refused), and `glab label create` needs
+  `--name`. The caveat that `glab issue list --label` shows closed issues was wrong:
+  it lists open ones unless told otherwise.
 - `has_ext` in `tools/lib/common.sh` answered "no" about one call in five under
   `pipefail`, so a `quality.sh` gate could drop out of a run without a SKIP row.
 - The OpenCode and Copilot exports no longer end on a blank line, and the README
