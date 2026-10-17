@@ -15,7 +15,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 ## The tools
 
 | Tool | Answers | Reads |
-|---|---|---|
+| --- | --- | --- |
 | `digest.sh` | "What am I working with?" — the start-of-task briefing | composes the summaries below |
 | `facts.sh` | "How do I build/test/lint? Which gates and test frameworks exist?" | manifests, toolchain |
 | `preflight.sh` | "Is the environment ready?" — `.env` / secrets / toolchain before building | manifests, `.env.example` |

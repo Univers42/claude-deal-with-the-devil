@@ -4,7 +4,7 @@ Delegate bulk building to headless OpenCode jobs (one per git worktree), watch t
 line per job, and never merge on an agent's say-so.
 
 | Script | Does |
-|---|---|
+| --- | --- |
 | `oc-run.sh <label> <worktree> <agent> <prompt>` | one headless `opencode run` in the worktree; journal in `<worktree>/target/wf/<label>.{jsonl,pid,rc,session-id,stderr}` |
 | `oc-job.sh <label> <worktree> <agent> <body> [rows]` | prompt = `$OC_COMMON_PROMPT` + body; runs `oc-run.sh`; commits and pushes the branch only if the job exited 0, its return block says `status: done`, and the optional rows gate is green. Exit 0 ok · 1 gate red · 2 agent not done · 3 worktree already busy |
 | `oc-status.sh [root]` | one line per job under `<root>/*/target/wf`: state (`RUNNING`, `done(rc=N)`, `DEAD`, `STALLED`), minutes since the last event, session id, last ~200 chars the model wrote |

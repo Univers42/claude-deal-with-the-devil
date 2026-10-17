@@ -38,7 +38,7 @@ You verify behavioral parity with the declared reference, endpoint by endpoint. 
 ## Output
 
 | Endpoint | Reference | Your project | Verdict |
-| -------- | --------- | ------------ | ------- |
-|          |           |              | MATCH / DIVERGE / MISSING |
+| --- | --- | --- | --- |
+| | | | MATCH / DIVERGE / MISSING |
 
 End with the divergences that block "compatible", ranked by how common the call is.

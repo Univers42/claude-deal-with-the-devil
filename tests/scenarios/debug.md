@@ -25,7 +25,7 @@ Skill loaded: yes, `→ Skill "debug"` on line 52 of `with.out`, then "I'll foll
 My first hypothesis was Python's banker's rounding (ties-to-even). **That hypothesis is wrong**, and one test kills it:
 
 | input | float value is a true tie? | `HALF_EVEN` on the exact float | result |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `2.675` | no, it's *below* midpoint | 2.67 | 2.67 |
 | `2.675` as a **Decimal literal** | yes, a true tie | **2.68** | — |
 

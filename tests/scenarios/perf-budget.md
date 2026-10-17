@@ -33,7 +33,7 @@ Skill loaded: yes, `→ Skill "perf-budget"` on line 4 of the run.
 **Budget, written down before measuring anything.** Deriving it from the human threshold rather than from whatever I end up achieving:
 
 | Metric | Budget | Why this number |
-|---|---:|---|
+| --- | ---: | --- |
 | `checkout.py` internal `elapsed` (pricing region) | **≤ 0.200 s** | 400 baskets is a batch CLI job — no user waits on it, but 100 ms is the "instant" threshold and 1 s breaks flow. 200 ms leaves headroom over "instant" while still being ~8x stricter than the reported 1.6 s. Set before profiling. |
 | `catalog.json` reads per run | **≤ 1** | The rate table is a constant. Re-reading it is the bug, not a tuning knob. This is a harder gate than the timer — it can't drift. |
 | Peak RSS | **≤ baseline** | Latency must not be bought with memory. |

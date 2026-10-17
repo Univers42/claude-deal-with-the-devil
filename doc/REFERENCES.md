@@ -22,7 +22,7 @@ git clone https://github.com/shanraisshan/claude-code-best-practice.git
 What was taken from it — each of these corrected a real defect here:
 
 | Fact | Where it came from | What it fixed |
-|---|---|---|
+| --- | --- | --- |
 | Skills take `allowed-tools:`; there is no `tools:` field | `best-practice/claude-skills.md`, 20 documented fields | Both skills here used `tools:`, which Claude Code silently ignores |
 | Rules lazy-load via `paths:`; without frontmatter they load every session | `CLAUDE.md`, "Workflow Best Practices" | All 11 rules used Cursor's `globs:`/`alwaysApply:` — 22,018 bytes loading every session |
 | Subagents take `memory:`, `effort:`, `isolation:`, `skills:`, `mcpServers:` | `best-practice/claude-subagents.md`, 16 fields | The memory layer in `doc/MEMORY.md` |
@@ -42,7 +42,7 @@ Its numbers are dated and Claude Code moves. Re-check against
 `plugins/manifest-reference.md`, `skills.md`, `claude-directory.md`, read 2026-09-30.
 
 | Fact | Where it came from | What it fixed here |
-|---|---|---|
+| --- | --- | --- |
 | A plugin ships commands, agents, skills, hooks and MCP, but **not** `.claude/rules/*.md`, `settings.json` permissions or a `CLAUDE.md` fragment | `plugins/components.md` | The 7 path-scoped rules moved to `paths:` skills tagged `stage: rule`; the always-on rules are seeded into a host by `/devil:setup` |
 | A skill carries `paths:` and then loads only when matching files are touched, the same mechanism rules use | `skills.md` | The lazy-loading guarantee survived the move; `tools/context.sh` counts those bodies as lazy |
 | `SKILL.md` frontmatter takes `paths:`, `user-invocable:` and a `metadata:` map; unknown keys parse and do nothing | `skills.md` | `tools/selfcheck.sh` fails a skill carrying Cursor's `globs:`/`alwaysApply:` |
@@ -58,7 +58,7 @@ text**: no file is copied, so there is nothing to credit line by line, and the s
 here is this kit's (numbered steps, a `## Report`, `rules/risk.md` gates).
 
 | Source | What was taken | What it became here |
-|---|---|---|
+| --- | --- | --- |
 | The `grilling` skill (rounds of the frontier: facts by subagents, decisions by the user, a fixed `Q` / recommended-answer format) and the spike pattern of the same repo | Two shapes of interview and experiment, with the round cap and the never-merge rule that make them safe to run | `skills/grill/` (model-invoked) and `skills/prototype/` (model-invoked); the fact-vs-decision test, the `Seams` section of `/devil:prompt`, and the pointer in `agents/innovator.md` |
 
 Their own tree has drift, and that is the other half of the reason this repo is
@@ -103,7 +103,7 @@ Read on 2026-09-30, for turning this tree into the `devil` plugin. Each row is o
 and the fact it settled; the last column says what changed here because of it.
 
 | Page | What it settled | What it fixed |
-|---|---|---|
+| --- | --- | --- |
 | <https://code.claude.com/docs/en/plugins/manifest-reference.md> | `plugin.json` documents `name` (required), `displayName`, `version`, `description`, `author.name`, `repository` (not validated), `license`, `keywords`. `hooks/hooks.json` is the default hook location. A root `settings.json` is read as plugin settings and only `agent` and `subagentStatusLine` survive; a root `.mcp.json` loads as plugin MCP servers; a root `CLAUDE.md` is not loaded and warns | `.claude-plugin/plugin.json`; `settings.json` and `.mcp.json` moved to `templates/` |
 | <https://code.claude.com/docs/en/plugins/components.md> | Plugin hooks live in `hooks/hooks.json` under a top-level `hooks` key, same shape as the settings object. Every hook process gets `CLAUDE_PLUGIN_ROOT` in its environment. With `args`, each element is one argument and needs no quoting; without `args`, the path must be double-quoted | Exec form (`command` + `args`) in `hooks/hooks.json` |
 | <https://code.claude.com/docs/en/plugins/marketplace-reference.md> | `name`, `owner.name` and `plugins` are required; a missing `description` is a warning. An entry takes `name`, `source` (a relative path starting `./`, or `.`), `description`, `category`. An entry `version` warns when `plugin.json` also sets one | `.claude-plugin/marketplace.json`, no `version` on the entry |
@@ -126,7 +126,7 @@ exporter has to generate per harness. Each row is one page and the fact it
 settled; nothing here changed the tree, this slice only recorded facts.
 
 | Page | What it settled |
-|---|---|
+| --- | --- |
 | <https://opencode.ai/v2/docs/skills/> | OpenCode V2 reads `.opencode/skills`, `.claude/skills` and `.agents/skills`; the ID is the path, the frontmatter `name` is a display label; `paths:` is not interpreted |
 | <https://opencode.ai/v2/docs/instructions/> | V2 recognises `AGENTS.md` only, `CLAUDE.md` is not a fallback, and the config `instructions` array is accepted but not loaded |
 | <https://opencode.ai/v2/docs/agents/> | Agents are `.opencode/agents/*.md` with `mode:` and an ordered `permissions:` list; `.claude/agents` is not a source |

@@ -119,7 +119,7 @@ directory for the same reason: it is read where it already is.
 ## What works
 
 | Kit asset | On Codex | How it was proved |
-|---|---|---|
+| --- | --- | --- |
 | Plugin manifest | full | `codex plugin add` accepted this `plugin.json` and `codex plugin list` printed `installed, enabled 0.9.0`, the version read from `.claude-plugin/plugin.json` |
 | Skills | full | `codex debug prompt-input` lists 23 of 23 kit skills (0.159.2, before a retired tombstone skill was removed in 1.1.0) under `devil:<name>` with the plugin cache as their skill root, and no others |
 | Install from a local path | full | `codex plugin marketplace add /absolute/path` succeeded, then `codex plugin add` installed from it |
@@ -134,7 +134,7 @@ directory for the same reason: it is read where it already is.
 ## What is degraded
 
 | Gap | Consequence | Why it cannot be fixed here |
-|---|---|---|
+| --- | --- | --- |
 | Commands | seventeen of eighteen never reach the model | Codex migrates a plugin's commands to skills itself, and the result for this kit is one of eighteen. The generator cannot hand it a different `commands/` tree without second-guessing the harness's own migration |
 | A migrated command is a skill, not a slash command | it is invoked by the model, not typed as `/name`, and it carries no `$ARGUMENTS` | the migration writes its own `SKILL.md` with a `## Command Template` section. The command body survives; the invocation does not |
 | `disable-model-invocation`, `argument-hint`, `allowed-tools` | dropped | the migrated skill's frontmatter carries `name` and `description` only, which is what the Agent Skills specification asks for |

@@ -31,7 +31,7 @@ in either attempt, so this arm is recorded as not run.
 **Proposed plan (~50 cases, pytest, `test_ledger.py`)**
 
 | Target | Cases |
-|---|---|
+| --- | --- |
 | `parse` | empty input; whitespace-only & blank lines; `#` comments incl. indented; single/multi line; multi-word note; quoted note unwrapped; `""`→`""`; unterminated quote **not** stripped; bare `"` not stripped; trailing `#` stays in note; CRLF; negative & scientific & underscore amounts; leading/trailing line whitespace; plus parametrized `ValueError` for 1/2/3-field lines, double space, tab-separated, non-numeric amount |
 | `total` | sums with negatives; empty→`0`; propagates parse errors; float precision via `pytest.approx` |
 | `total_by_category` | grouping & summing; empty→`{}`; nets across months; key insertion order = first appearance; propagates errors |

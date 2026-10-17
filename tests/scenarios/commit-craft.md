@@ -13,7 +13,7 @@ user-level skills, no kit), outside the kit tree, `question` tool denied.
 
 ```text
 | Commit | Change |
-|---|---|
+| --- | --- |
 | `f83e489` | chore: ignore `.venv/` and `dist/` |
 | `3d0faa8` | test: cover `money()` and `label()` |
 | `883451e` | feat(format): add `to_csv()` helper |

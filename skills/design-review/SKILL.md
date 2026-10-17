@@ -88,7 +88,7 @@ Accessibility is part of the review, not a later pass (`skills/frontend/a11y.md`
 ## Report
 
 | Issue | Where | Principle | Smallest fix |
-|---|---|---|---|
+| --- | --- | --- | --- |
 
 - Lead with the one change that improves it most — there is usually a single dominant
   problem, and fixing it resolves several symptoms.

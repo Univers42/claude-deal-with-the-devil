@@ -13,7 +13,7 @@ subprocesses). It does two jobs.
 ## 1. Enforcement — the part that matters
 
 | Event | What it does | Rule it enforces |
-|---|---|---|
+| --- | --- | --- |
 | `PreToolUse` | **Denies** the catastrophic (`rm -rf /`, force-push to `main`, `mkfs`, a fork bomb). **Asks** on the irreversible (any push, `publish`, `terraform apply`, `kubectl delete`, an unqualified `DELETE`/`UPDATE`, writing a `.env` or a private key). | `rules/risk.md` — confirm the irreversible |
 | `PostToolUse` | Runs the matching fast gate on the single file just edited — `shellcheck`, `ruff`, `gofmt`, `rustfmt --check`, JSON parse. Re-runs `selfcheck.sh` when a doc in this config changes. | `rules/quality-bar.md` — a warning is an error |
 | `SessionStart` | Injects `tools/digest.sh` so the agent starts briefed instead of re-deriving the tree. Cached and fingerprinted to git state. | `rules/prompt-contract.md` — facts first |

@@ -39,7 +39,7 @@ Claude Code gives a subagent a persistent store through `memory:` frontmatter, s
 Four agents here carry `memory: project` — the ones that otherwise re-derive the most:
 
 | Agent | What it keeps |
-|---|---|
+| --- | --- |
 | `reviewer` | contracts this repo treats as public; recurring defect classes and where they live |
 | `benchmarker` | measured baselines and the artifact each number came from |
 | `architect` | decisions and the interface that resulted, with the reason |
@@ -107,7 +107,7 @@ connection string — local or remote.
 ## Choosing
 
 | You want | Use |
-|---|---|
+| --- | --- |
 | A fact about the code as it is now | **A tool.** `digest.sh` — it cannot go stale |
 | A measured number, a decision, a convention | **Agent memory.** `memory: project` |
 | The same fact across repos, machines and tools | **Supermemory** — with the tradeoff above understood |

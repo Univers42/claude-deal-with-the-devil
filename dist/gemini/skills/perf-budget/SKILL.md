@@ -91,7 +91,7 @@ A budget nobody re-checks decays quietly within two releases.
 ## Report
 
 | Metric | Budget | Before | After | Delta | Status |
-|---|---:|---:|---:|---:|---|
+| --- | ---: | ---: | ---: | ---: | --- |
 
 - The command that reproduces every number, and the hardware it ran on.
 - What the profiler named as dominant, and what you actually changed.

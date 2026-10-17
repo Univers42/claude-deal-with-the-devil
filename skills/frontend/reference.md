@@ -9,7 +9,7 @@ One source of truth per axis. A value that appears twice is a token that has not
 named yet.
 
 | Axis | Shape | Why |
-|---|---|---|
+| --- | --- | --- |
 | Colour | semantic names (`--surface`, `--text-muted`, `--danger`), not literals (`--blue-500`) | a redesign changes the mapping, not 400 call sites |
 | Spacing | one scale, 4px or 8px base — `4 8 12 16 24 32 48 64` | arbitrary values are why nothing lines up |
 | Type | a scale with paired line-heights, not ad-hoc `font-size` | vertical rhythm survives |

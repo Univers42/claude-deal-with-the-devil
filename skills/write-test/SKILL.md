@@ -65,7 +65,7 @@ Present the test plan. Wait for approval.
 ## Report
 
 | Metric | Value |
-|---|---|
+| --- | --- |
 | Framework detected | |
 | Tests added (passing) | |
 | Existing tests still green | |
