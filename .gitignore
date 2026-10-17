@@ -13,3 +13,7 @@ hooks/sounds/*/
 # Python bytecode from the hook handler.
 __pycache__/
 *.pyc
+
+# Claude Code's runtime lock, written here when the kit is a host's .claude/
+# submodule; untracked, it would mark that submodule dirty.
+scheduled_tasks.lock
