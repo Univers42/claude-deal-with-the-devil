@@ -2,7 +2,7 @@
 
 ![mascot](image.png)
 
-A drop-in `.claude/` setup that helps Claude Code write code like a careful engineer
+A Claude Code plugin that makes Claude write code like a careful engineer
 instead of a fast one. It works in any project, whatever the language or stack.
 
 The idea is simple: look before guessing, write a test before the code, think twice

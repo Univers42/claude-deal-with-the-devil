@@ -19,7 +19,7 @@ and "Gemini CLI, measured for X3" for what was run and what was not).
 ## Capability matrix
 
 | Kit asset | Claude Code | OpenCode 2.x | Copilot CLI | Gemini CLI | Codex CLI |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | Skills (`SKILL.md`) | plugin `skills/` [1] | `.opencode/skills`, `.claude/skills`, `.agents/skills` [2] verified [L1], plus the `skills` config array [L13] | `.github/skills`, `.claude/skills`, `.agents/skills`, `~/.copilot/skills` [15] | extension `skills/<id>/SKILL.md` [20], [L36] | `.agents/skills` only, plus plugin `skills/` [26], [28] |
 | Skill frontmatter honoured | 20 fields incl. `paths`, `allowed-tools`, `disable-model-invocation` [1] | `name`, `description`, `license`, `compatibility`, `metadata`; ignores `paths:` [2] | `name`, `description`; `paths:`, `user-invocable` and `disable-model-invocation` are read and ignored, verified [L50], [L51] | **only `name` and `description`**; every other key is dropped [L36] | `name`, `description` required; `paths:` no [26] |
 | Path-scoped rule skills | `paths:` lazy-load [1] | no glob scoping; nearest `AGENTS.md` loads when a file under it is read [3] | `applyTo:` exists in `*.instructions.md` [14] but is **not** a lazy-load gate: every file is listed whatever its pattern, verified [L57], [L58] | no equivalent found; `GEMINI.md` hierarchy only | no equivalent found; `AGENTS.md` plus `.rules` for command policy [24], [25] |
@@ -256,7 +256,7 @@ TOML home and no dialect was measured for it.
 Install command a user would type per harness, and what this slice actually ran:
 
 | Harness | Command | Verified here |
-|---|---|---|
+| --- | --- | --- |
 | Claude Code | `claude plugin marketplace add Univers42/claude-deal-with-the-devil && claude plugin install devil@univers42` | no, from the plan [1] |
 | OpenCode | commit `dist/opencode/opencode.json` in the host repo, or symlink the generated trees into the project | no; plugin file loading and hook deny were run [L4], [L5] |
 | Copilot CLI | `copilot --plugin-dir /path/to/repo/dist/copilot` (no install, no account), or `copilot plugin install <path>` | `plugin install` of a Claude-location manifest worked on 1.0.59 [L7] and is **UNVERIFIED** on 1.0.89, whose help omits a local path; `--plugin-dir` on the real dist worked on 1.0.89 for skills, agents, commands, instructions and the deny path [L1], [L2], [L5]; a local-path marketplace add failed [L9] |
@@ -299,7 +299,7 @@ states and that together make a correct plugin a no-op:
 Partly, and the parts differ per domain.
 
 | Domain | Programmatic registration | Measured |
-|---|---|---|
+| --- | --- | --- |
 | Agents | **no.** `ctx.agent.transform` has no `add` | [L12] |
 | Commands | **yes.** `ctx.command.transform` + `editor.add` | [L12] |
 | Skills | **no.** `ctx.skill.transform` resolves, the skill never appears | [L12] |

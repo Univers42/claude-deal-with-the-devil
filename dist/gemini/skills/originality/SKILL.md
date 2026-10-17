@@ -57,7 +57,7 @@ library, a validator, a fetch wrapper, a retry helper — rung 4 of
 For each real candidate:
 
 | Question | Why it decides |
-|---|---|
+| --- | --- |
 | Maintained? Last release, open-issue trend | An abandoned dependency is future work you have not scheduled |
 | What does it pull in? | A transitive tree is the real cost (`rules/quality-bar.md` layer 5) |
 | Licence compatible? | Not optional, and easy to check |

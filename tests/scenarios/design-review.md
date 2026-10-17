@@ -27,7 +27,7 @@ The dominant problem: one blue, four meanings
 `#2563eb` is doing the work of *primary action* (all three buttons), *secondary action* (also all three buttons), *tertiary action* (also), and *unread state* (`.unread`). When one colour carries four meanings it stops signalling anything, and the result reads as a wall of competing emphasis with no entry point.
 
 | Issue | Where | Principle | Smallest fix |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Blue = primary + secondary + tertiary + unread | `styles.css:13-21, 40-42` | One primary action per view | Keep `.cta` on **Mark all read** only; Export → ghost/text button |
 | Unread signalled by hue alone | `.unread` `:40-42` | Emphasis from size/weight/space before colour | Unread → `font-weight: 600` on the row + 2px left rail or dot; drop the blue text |
 

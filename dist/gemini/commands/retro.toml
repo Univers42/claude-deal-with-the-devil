@@ -91,13 +91,13 @@ Two lists, and nothing else. No files written, no tool built, no rule changed.
 **Mechanical: briefs for the `forger`** (`<finding>` → check · tool · FAIL fixture · cost)
 
 | Finding | Check | Tool | FAIL fixture | Cost |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | <finding> | <what must be caught> | <the tool that owns it> | <the bad input> | <what it cost> |
 
 **Judgement: proposed bullets** (`<finding>` → bullet · target file)
 
 | Finding | Proposed bullet | Target |
-|---|---|---|
+| --- | --- | --- |
 | <finding> | <one line> | `rules/<x>.md` / `skills/<name>/SKILL.md` / `agents/<name>.md` |
 
 Then the return block (`status`, `gates`, `changed`, `deviations`, `next`) and the count

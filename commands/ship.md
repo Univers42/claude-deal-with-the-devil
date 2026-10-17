@@ -52,7 +52,7 @@ Bump type: $ARGUMENTS
 ## 7. Report
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | Version | |
 | Tests / linters at pre-flight | |
 | Benchmark vs last tag | |

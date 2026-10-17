@@ -205,7 +205,11 @@ if [ "$RC" -ne 0 ]; then ok "an unknown argument is refused"; else no "an unknow
 # --- 13. the tracker is detected, not asked for -----------------------------
 D="$(host detected)"
 git -C "$D" remote add origin git@github.com:example/host.git
-run "$D" --apply
+# Detection needs gh on PATH; a stub makes the case independent of the runner.
+mkdir -p "$TMP/stubbin"
+printf '#!/bin/sh\nexit 0\n' >"$TMP/stubbin/gh"
+chmod +x "$TMP/stubbin/gh"
+PATH="$TMP/stubbin:$PATH" run "$D" --apply
 if head -1 "$D/.claude/devil/tracker.md" | grep -q GitHub; then ok "a github.com remote detects the GitHub adapter"; else no "a github.com remote should detect the GitHub adapter"; fi
 E="$(host nodetect)"
 run "$E" --apply

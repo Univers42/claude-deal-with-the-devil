@@ -82,7 +82,7 @@ tree left for someone else.**
 ## 8. Report
 
 | Field | Value |
-|---|---|
+| --- | --- |
 | What shipped | |
 | Tests added, with pass output | |
 | Primitives extracted into the library | |
