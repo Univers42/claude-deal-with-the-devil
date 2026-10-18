@@ -55,7 +55,7 @@ host's.
 already has an `opencode.json`. The implementation is `tools/lib/seed-opencode.sh`.
 
 | Path in the host | Value | Why |
-|---|---|---|
+| --- | --- | --- |
 | `.opencode/agents/<name>.md` | one symlink per generated agent | the subagents, linked file by file so a host that owns the directory keeps it |
 | `.opencode/commands/<name>.md` | one symlink per generated command | the commands and workflows, same reason |
 | `.opencode/plugins/devil.js` | symlink to `<kit>/dist/opencode/plugins/devil.js` | the hook bridge |
@@ -84,7 +84,7 @@ key is touched.
 ## What works
 
 | Kit asset | On OpenCode | How |
-|---|---|---|
+| --- | --- | --- |
 | Skills | full | the `skills` config key; `name` and `description` are read, the ID comes from the path |
 | Agents | full | `.opencode/agents/*.md` with `mode: subagent` and a `permissions` list |
 | Tool restrictions | full | a Claude `tools:` list becomes a V2 `permissions` list: a deny-all base rule, then one allow per granted action |
@@ -108,7 +108,7 @@ file itself from the kit's rules:
 ## What is degraded
 
 | Gap | Consequence | Why it cannot be fixed here |
-|---|---|---|
+| --- | --- | --- |
 | No `paths:` scoping | the 7 `stage: rule` skills (`refactor-c`, `refactor-go`, `refactor-rust`, `refactor-typescript`, `refactor-shell`, `api-convention`, `script-library`) load whenever the model picks them, not only on a matching file | V2 skill frontmatter has no glob field. The nearest equivalent is an `AGENTS.md` inside the subtree, which loads when the agent reads a file under it |
 | No `!` shell injection under `opencode run` | a command template's shell block reaches the model as prompt text | measured: `opencode run` neither expands a template nor runs the block. It is a TUI command-evaluation feature |
 | No plugin path in `opencode.json` | `plugins: ["<path>"]` is documented and does not work in 2.0.18 | measured four ways: a bare directory of `.js` files, and a directory with a `package.json`; absolute and relative paths; with and without `--standalone`. The symlink is the route that works |

@@ -28,7 +28,7 @@ script and ran it.
 ## Vetted
 
 | name | runner | file | does | args | exit |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `strip-comments` | `python3` | `strip_comments.py` | Strip comments from a source tree in any language; dry-run by default | `[paths...] [--apply] [--keep-header] [--keep-todo] [--stats]` | 0 ok |
 | `header-cycles` | `python3` | `check_header_cycles.py` | Detect `#include` cycles across a C/C++ header tree | `<dir>` | 0 ok, 1 cycle found |
 | `valgrind-check` | `bash` | `valgrind_check.sh` | Compile every `.c` under a path and run it under valgrind | `<src-dir> <out-exe>` | 0 clean, 1 misuse or leak |
@@ -47,7 +47,7 @@ script and ran it.
 Run against a real tree on 2026-09-20 at the pinned sha:
 
 | Entry | Evidence |
-|---|---|
+| --- | --- |
 | `strip-comments` | `--help` lists a complete `argparse` surface; dry-run is the default, `--apply` is opt-in |
 | `header-cycles` | Run on an empty directory: `No header files found`, exit 0 |
 | `gen-password` | Emitted `$2b$12$…`, exit 0 |
@@ -68,7 +68,7 @@ script, and check the output before you act on it. Move a row up once you have r
 Not a judgement on the code — these are the ones an agent should not reach for.
 
 | Why | Scripts |
-|---|---|
+| --- | --- |
 | **Destructive or account-level.** Needs a human with the consequences in view (`rules/risk.md`). | `gh_delete_repo.sh`, `remove_empty_repo_gh.sh`, `create_fake_repos.sh`, `backup.sh`, `backups/github-backup.sh` |
 | **Mutates a whole tree in place**, with no dry run. | `add_42_headers.js`, `modify_prefix.sh`, `search_and_replace.sh`, `organize_file.sh`, `norm_fix.py`, `norm_align.py`, `norm_fmt.py`, `norm_preproc.py`, `opti-norminette.sh` |
 | **Changes the machine**, not the project. | `setup_pyenv.sh`, `register_shell.sh`, `obsidian_installation.sh`, `theme.sh`, `env_manager.ps1` |

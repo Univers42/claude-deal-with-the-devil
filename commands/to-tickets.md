@@ -103,7 +103,7 @@ to argue about in step 4, not as a rule already satisfied.
 Print the proposed breakdown as a numbered list, one row per ticket:
 
 | # | Objective | Done when | Blocked by |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | <end-to-end behaviour> | `<command>` | none |
 
 Then print the order: which tickets can start now (no open blocker), and which

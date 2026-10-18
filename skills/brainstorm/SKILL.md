@@ -64,7 +64,7 @@ Write each as one line. No elaboration yet — elaboration is a commitment.
 Score each surviving option:
 
 | Option | Impact | Confidence | Cost | Reversibility | Score |
-|---|---:|---:|---:|---|---:|
+| --- | ---: | ---: | ---: | --- | ---: |
 
 - **Impact** (1–5) — how much better does the world get?
 - **Confidence** (1–5) — how much of this rests on an unverified assumption? Every

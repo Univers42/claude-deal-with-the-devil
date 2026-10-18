@@ -553,7 +553,7 @@ the framework — "passing" means its runner reports pass.
 ## Reference (canonical default first)
 
 | Lang | Unit / runner | Property-based | Mock | E2E / integration | Bench |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | **C** | Unity, Criterion, CMocka, Check | theft | CMocka, FFF | — | custom + `clock_gettime` |
 | **C++** | GoogleTest (+GoogleMock), Catch2, doctest | rapidcheck | GoogleMock, trompeloeil | — | Google Benchmark, nanobench |
 | **Go** | `testing` (stdlib, table-driven) + testify | `testing/quick`, rapid, gopter | gomock (`go.uber.org/mock`), testify/mock | `httptest`, testcontainers-go | `testing.B` + benchstat |

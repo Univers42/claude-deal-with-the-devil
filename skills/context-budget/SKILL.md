@@ -36,7 +36,7 @@ The number that matters is **always-on total**: always-on rules plus every invoc
 ## 2. Know what loads when
 
 | Loads | What |
-|---|---|
+| --- | --- |
 | **Every session** | `rules/*.md` with **no** `paths:` — full text |
 | **Every session** | the `description:` of every skill, command and workflow |
 | On a matching file | `rules/*.md` **with** `paths:` |
@@ -99,7 +99,7 @@ measure is a claim (`rules/prompt-contract.md`).
 ## Report
 
 | | Before | After |
-|---|---:|---:|
+| --- | ---: | ---: |
 | Always-on rules | | |
 | Invocable descriptions | | |
 | **Always-on total** | | |
