@@ -125,9 +125,9 @@ copy from drifting.
 
 | Harness | State |
 | --- | --- |
-| **OpenCode 2.x** | supported. `devil export opencode` writes `dist/opencode/`: 11 subagents with their `tools:` list mapped to V2 permissions, 19 commands, the 12 always-on rules, and a plugin that bridges `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing and `bin/` on the agent's `PATH` all work. Verified live on 2.0.18. Start at [`dist/opencode/README.md`](dist/opencode/README.md) |
+| **OpenCode 2.x** | supported. `devil export opencode` writes `dist/opencode/`: 11 subagents with their `tools:` list mapped to V2 permissions, 19 commands, the 13 always-on rules, and a plugin that bridges `hooks/scripts/hooks.py` so the deny, the post-edit gate, the session briefing and `bin/` on the agent's `PATH` all work. Verified live on 2.0.18. Start at [`dist/opencode/README.md`](dist/opencode/README.md) |
 | **Codex CLI** | supported, with two honest gaps. `devil export codex` writes `dist/codex/`: a portable Agent Plugins 1.0 manifest, the twelve hook events Codex actually fires with `command` plus `args` folded into the one command string it runs, and the always-on rules as an `AGENTS.md`. Skills and commands are **not** generated: Codex reads a plugin's `skills/` natively and rewrites `commands/` itself. Measured on 0.159.2 in a container; one of eighteen commands came across, which is the gap. Start at [`dist/codex/README.md`](dist/codex/README.md) |
-| **Gemini CLI** | supported, with three measured gaps. `devil export gemini` writes `dist/gemini/` as a real extension: `gemini-extension.json` with the version read from `plugin.json`, the 12 rules as its `contextFileName`, 19 commands as TOML with `{{args}}`, 22 skills copied verbatim, 11 sub-agents with only the keys Gemini's `.strict()` schema accepts, and `hooks/hooks.json` calling a translator that puts `hooks.py` behind Gemini's payload. Verified against 0.62.0. What is degraded: the post-edit gate cannot run on an *edit* (Gemini's `replace` reports no path), the session briefing needs `tools/` which is not shipped, and `bin/` is not on the agent's `PATH`. Start at [`dist/gemini/README.md`](dist/gemini/README.md) |
+| **Gemini CLI** | supported, with three measured gaps. `devil export gemini` writes `dist/gemini/` as a real extension: `gemini-extension.json` with the version read from `plugin.json`, the 13 rules as its `contextFileName`, 19 commands as TOML with `{{args}}`, 22 skills copied verbatim, 11 sub-agents with only the keys Gemini's `.strict()` schema accepts, and `hooks/hooks.json` calling a translator that puts `hooks.py` behind Gemini's payload. Verified against 0.62.0. What is degraded: the post-edit gate cannot run on an *edit* (Gemini's `replace` reports no path), the session briefing needs `tools/` which is not shipped, and `bin/` is not on the agent's `PATH`. Start at [`dist/gemini/README.md`](dist/gemini/README.md) |
 | **Copilot CLI** | supported. `devil export copilot` writes `dist/copilot/`: 19 commands with a YAML description copilot can parse (11 of the kit's own do not: 10 measured on 1.0.89, plus `wayfinder`, added since with the same form), the hook manifest in the shape copilot reads, and the always-on rules as a file the host copies. The skills and the agents are symlinked, not copied, because copilot reads them as they are. Verified live on 1.0.89. Start at [`dist/copilot/README.md`](dist/copilot/README.md) |
 
 ```sh
@@ -463,7 +463,7 @@ These hold for everything here, even one-off tasks:
 ├── AGENTS.md          multi-agent discipline
 ├── .claude-plugin/    plugin.json and marketplace.json
 ├── agents/*.md        specialist personas (builder, forger, devil, reviewer, …)
-├── rules/*.md         always-on constraints (12)
+├── rules/*.md         always-on constraints (13)
 ├── commands/*.md      actions and multi-phase workflows, all /devil:<name>
 │                      (kind: command → /devil:prompt, /devil:quality, …;
 │                       kind: workflow → /devil:feature, /devil:harden, /devil:deal, …)

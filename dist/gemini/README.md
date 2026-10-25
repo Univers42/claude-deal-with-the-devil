@@ -43,7 +43,7 @@ below instead, marked UNVERIFIED, because an unmeasured claim is a hope.
 | Skills | full | `skills/<id>/SKILL.md` copied verbatim. The loader reads only `name` and `description` and ignores every other frontmatter key, so `allowed-tools` and `metadata` cost nothing and are not misread |
 | Sub-agents | full, with a caveat on the schema | `agents/<name>.md` carrying only `name`, `description`, `kind` and `tools`. The loader's schema is `.strict()`, so `model:` and `memory:` are dropped: an unknown key fails the file, it does not warn |
 | Tool restrictions on an agent | full, deny by default | a Claude `tools:` list becomes a Gemini allow list. An agent with no recognisable grant gets `tools: []`, which is truthy in JS and so means none, where an omitted key would inherit every tool |
-| Always-on rules | full | the manifest's `contextFileName` points at `DEVIL.md`, the 12 rules concatenated. The validator fails when a named context file is missing, so a broken reference cannot ship |
+| Always-on rules | full | the manifest's `contextFileName` points at `DEVIL.md`, the 13 rules concatenated. The validator fails when a named context file is missing, so a broken reference cannot ship |
 | Deny a catastrophic command | translation proved, firing UNVERIFIED | `gemini-hook.py` in this directory turns `BeforeTool` + `run_shell_command` into `PreToolUse` + `Bash` and returns `{"decision": "deny", "reason": ...}`. `tests/test_export_gemini.sh` asserts that on a force-push payload. Whether the CLI fires the hook is not run here |
 | Ask on the irreversible | translation proved, firing UNVERIFIED | the same payload path, returning `{"decision": "ask", ...}`, which the CLI's own `isAskDecision()` reads as ask |
 | The post-edit gate on a new file | translation proved, firing UNVERIFIED | `AfterTool` + `write_file` becomes `PostToolUse` + `Write`, and the file path is lifted from the same four keys the CLI's own path extractor probes |
@@ -103,4 +103,4 @@ than as a pass.
 
 ---
 
-Generated from: 11 agents, 19 commands, 22 skills, 12 always-on rules, 7 path-scoped rule skills.
+Generated from: 11 agents, 19 commands, 22 skills, 13 always-on rules, 7 path-scoped rule skills.

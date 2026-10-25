@@ -84,7 +84,7 @@ if [ "$RC" -eq 0 ] && [ "$(status rules)" = ok ]; then ok "an applied host passe
   no "an applied host must pass --check, got rc=$RC"
 fi
 n="$(find "$H/.claude/rules/devil" -maxdepth 1 -name '*.md' | wc -l)"
-if [ "$n" -eq "$(find "$ROOT/rules" -maxdepth 1 -name '*.md' | wc -l)" ]; then ok "all 12 always-on rules were seeded ($n)"; else no "expected the kit's rule count, seeded $n"; fi
+if [ "$n" -eq "$(find "$ROOT/rules" -maxdepth 1 -name '*.md' | wc -l)" ]; then ok "all 13 always-on rules were seeded ($n)"; else no "expected the kit's rule count, seeded $n"; fi
 for s in refactor-c refactor-go api-convention script-library; do
   if [ -e "$H/.claude/rules/devil/$s.md" ]; then no "the path-scoped rule $s was seeded"; fi
 done

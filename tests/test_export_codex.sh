@@ -218,7 +218,7 @@ PY
   [ -z "$hookfaults" ] && ok "every hook command is one string on PLUGIN_ROOT, within the caps" ||
     no "hook dialect not translated:"$'\n'"$hookfaults"
 
-  # The generated AGENTS.md is the twelve rules verbatim, so a rule edited in the
+  # The generated AGENTS.md is the thirteen rules verbatim, so a rule edited in the
   # kit must show up in it. Compared by rule heading, not by byte count.
   missing_rules=""
   for f in "$ROOT"/rules/*.md; do

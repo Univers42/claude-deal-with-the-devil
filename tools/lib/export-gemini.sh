@@ -10,7 +10,7 @@
 #                          the Claude layout is read natively, so the manifest,
 #                          the context file, the commands, the skills and the
 #                          hooks all have to exist here.
-#   DEVIL.md               the 12 always-on rules, as the manifest's
+#   DEVIL.md               the 13 always-on rules, as the manifest's
 #                          contextFileName. Named DEVIL.md, not GEMINI.md, so
 #                          the host's own memory file is never shadowed.
 #   commands/<n>.toml      description plus body, $ARGUMENTS rewritten to the

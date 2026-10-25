@@ -97,7 +97,7 @@ function additionalContext(payload) {
   return answer && typeof answer.additionalContext === "string" ? answer.additionalContext : null
 }
 
-// The 12 always-on rules, as one system entry. OpenCode V2 reads AGENTS.md and
+// The 13 always-on rules, as one system entry. OpenCode V2 reads AGENTS.md and
 // nothing else; this is the file-free route to the same always-on text Claude Code
 // gets from rules/. Read once, at setup, so no model call pays for a disk walk.
 function rulesText() {

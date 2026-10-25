@@ -96,7 +96,7 @@ ln -sfn "$KIT/dist/codex/AGENTS.md" "$HOST/AGENTS.md"
 ```
 
 Codex wraps that file in `<INSTRUCTIONS>` inside the first user message of a session,
-which is where the twelve rules have to be to be always-on.
+which is where the thirteen rules have to be to be always-on.
 
 ### How a host gets the skills
 
@@ -178,4 +178,4 @@ this check.
 
 ---
 
-Generated from: 22 skills, 12 always-on rules, 19 commands.
+Generated from: 22 skills, 13 always-on rules, 19 commands.

@@ -18,6 +18,9 @@ agree, and `bash tools/release.sh bump <major|minor|patch>` cuts the next one.
 
 ### Added
 
+- `rules/pull-requests.md`: a PR is understood from its title and first line; the
+  body runs why → what → structure → trade-offs → openings → evidence, visible
+  changes ship before/after media, and a not-ready PR is a draft, never a red build.
 - `tools/quality.sh` runs markdownlint with the file glob and ignores of the CI lint
   step, and records SKIP when `markdownlint` is not installed.
 

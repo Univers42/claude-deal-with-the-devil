@@ -11,7 +11,7 @@
 #                      written here, so plugin.json stays the one version source.
 #   hooks/hooks.json   the kit's hooks/hooks.json reduced to the twelve events Codex
 #                      fires, by codex-hooks.py.
-#   AGENTS.md          the twelve always-on rules as the one file a host drops in a
+#   AGENTS.md          the thirteen always-on rules as the one file a host drops in a
 #                      project root, which is the only place Codex reads them.
 #   README.md          the install contract and the honest capability table.
 #

@@ -89,6 +89,7 @@ by setting `attribution` to empty strings. Do not add one by hand.
 - **Pushing is irreversible enough to confirm** — and a force-push always is
   (`rules/risk.md`). Ask before you push; never force-push a shared branch without an
   explicit go-ahead.
+- The PR title, body and draft state follow `rules/pull-requests.md`.
 
 ## Report
 
