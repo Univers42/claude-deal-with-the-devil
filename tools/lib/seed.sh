@@ -193,14 +193,7 @@ stage_claude-md() {
 # The host CLAUDE.md on argv, the same file with the block written on stdout. awk,
 # not sed: the replacement is multi-line and the file may be empty.
 _claude_md_render() {
-  awk -v s="$CLAUDE_MD_START" -v e="$CLAUDE_MD_END" -v blk="$KIT/templates/claude-md-block.md" '
-    BEGIN { while ((getline line < blk) > 0) body = body line "\n"; close(blk) }
-    !done && index($0, s) { printf "%s\n%s%s\n", s, body, e; done = 1; skip = 1; next }
-    skip && index($0, e) { skip = 0; next }
-    skip { next }
-    { print }
-    END { if (!done) { if (NR > 0) print ""; printf "%s\n%s%s\n", s, body, e } }
-  ' "$1"
+  render_block "$1" "$KIT/templates/claude-md-block.md" "$CLAUDE_MD_START" "$CLAUDE_MD_END"
 }
 
 # --- 4. opencode lives in lib/seed-opencode.sh, which this file is sourced

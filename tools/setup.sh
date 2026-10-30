@@ -29,6 +29,8 @@ set -uo pipefail # not -e: a stage that fails is data, not a script error
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/common.sh
 . "$DIR/lib/common.sh"
+# shellcheck source=lib/stage.sh
+. "$DIR/lib/stage.sh"
 # shellcheck source=lib/seed.sh
 . "$DIR/lib/seed.sh"
 # shellcheck source=lib/seed-opencode.sh
@@ -42,10 +44,8 @@ TRACKER=""
 SEED_MCP=0
 SKIP=" "
 ONLY=""
-CHANGED=""
-DRIFT=0
-CANNOT=0
-ROWS=""
+# shellcheck disable=SC2034  # the runner state, read and written by lib/stage.sh
+CHANGED="" DRIFT=0 CANNOT=0 ROWS=""
 
 say() { printf '%s\n' "$*"; }
 warn() { printf 'setup.sh: %s\n' "$*" >&2; }
@@ -139,107 +139,16 @@ KIT_VERSION="$(_plugin_version)"
   exit 2
 }
 
-# --- write helpers ----------------------------------------------------------
-
-# ensure <path> <label>: the content arrives on stdin. 0 when the file did not
-# match, 1 when it did. Writing is the only difference between the three modes,
-# so it is the only thing this function branches on. Called from lib/seed.sh,
-# which shellcheck does not read from here.
-#
-# Callers must REDIRECT (`< <(...)`), never pipe. In a pipeline this function
-# runs in a subshell, the CHANGED it records is lost with it, and a stage that
-# wrote nothing then reports ok. That is how a merge stage can look clean on a
-# host it never touched.
-# shellcheck disable=SC2317
-# shellcheck disable=SC2329  # called from tools/lib/seed*.sh, which this file sources
-ensure() {
-  local path="$1" label="$2" tmp
-  tmp="$(mktemp)" || return 1
-  cat >"$tmp"
-  chmod 644 "$tmp"
-  if cmp -s "$tmp" "$path" 2>/dev/null; then
-    rm -f "$tmp"
-    return 1
-  fi
-  CHANGED+="$label"$'\n'
-  if [ "$MODE" = apply ]; then
-    mkdir -p "$(dirname "$path")" && mv "$tmp" "$path"
-  else
-    rm -f "$tmp"
-  fi
-  return 0
-}
-
-# append_line <file> <line> <label>: 0 when the line was missing, 1 when it was
-# already there, 2 when no temporary file could be made. It appends at the end,
-# contiguously and with no separator: a .gitignore is a set of patterns, and the
-# property that matters is that a line is added at most once, so a second apply
-# finds all three and writes nothing. A file whose last line has no newline gets
-# one, because `cat` alone would glue the new line onto it. It builds the new
-# content and hands it to ensure(), so the three modes still have exactly one
-# place that writes.
-# shellcheck disable=SC2317
-# shellcheck disable=SC2329  # called from tools/lib/seed*.sh, which this file sources
-append_line() {
-  local file="$1" line="$2" label="$3" tmp rc l
-  if [ -f "$file" ] && grep -qxF -- "$line" "$file"; then return 1; fi
-  tmp="$(mktemp)" || return 2
-  {
-    if [ -f "$file" ]; then
-      while IFS= read -r l || [ -n "$l" ]; do printf '%s\n' "$l"; done <"$file"
-    fi
-    printf '%s\n' "$line"
-  } >"$tmp"
-  chmod 644 "$tmp"
-  ensure "$file" "$label" <"$tmp"
-  rc=$?
-  rm -f "$tmp"
-  return "$rc"
-}
-
 # --- stages -----------------------------------------------------------------
 # STAGES is the order they must run in: rules before the OpenCode glob that
 # points at them, settings before the CLAUDE.md block that names the tools.
 STAGES="rules settings claude-md opencode tracker mcp gitignore"
 
+# shellcheck disable=SC2317,SC2329  # called by run_stage in lib/stage.sh
 selected() {
   [ "$1" = mcp ] && [ "$SEED_MCP" != 1 ] && return 1
   [ -n "$ONLY" ] && [ "$1" != "$ONLY" ] && return 1
   case "$SKIP" in *" $1 "*) return 1 ;; esac
-  return 0
-}
-
-row() { ROWS+="$1	$2	$3"$'\n'; }
-
-run_stage() {
-  local name="$1" state
-  CHANGED=""
-  if ! selected "$name"; then
-    row skip "$name" "not selected"
-    return 0
-  fi
-  ST_NOTE=""
-  ST_STATE=""
-  "stage_$name"
-  state="${ST_STATE:-ok}"
-  # A stage that recorded a change is the definition of drift under --check and
-  # the dry run, whatever its own read-back said before the write; under --apply
-  # the same recording means it was applied. A stage that could not run keeps its
-  # own verdict: exit 2, not "not applied".
-  if [ -n "$CHANGED" ]; then
-    if [ "$MODE" = apply ]; then
-      state=applied
-    elif [ "$state" != cannot ]; then
-      state=change
-    fi
-  fi
-  [ "$state" = change ] && DRIFT=$((DRIFT + 1))
-  [ "$state" = cannot ] && CANNOT=$((CANNOT + 1))
-  row "$state" "$name" "${ST_NOTE:-said nothing about what it did}"
-  [ -z "$CHANGED" ] && return 0
-  printf '%s' "$CHANGED" | while IFS= read -r label; do
-    [ -n "$label" ] && printf '                 - %s\n' "$label"
-  done
   return 0
 }
 
@@ -254,17 +163,5 @@ say "kit:   $KIT_VERSION at $KIT ($verb)"
 say
 for s in $STAGES; do run_stage "$s"; done
 
-say
-say "| stage | status | note |"
-say "|---|---|---|"
-printf '%s' "$ROWS" | while IFS='	' read -r st name note; do
-  [ -n "${st:-}" ] || continue
-  say "| $name | $st | ${note//|/\\|} |"
-done
-say
-say "**$DRIFT to change · $CANNOT could not run**"
-say
-
-[ "$CANNOT" -gt 0 ] && exit 2
-[ "$MODE" = check ] && [ "$DRIFT" -gt 0 ] && exit 1
-exit 0
+stage_report
+exit $?

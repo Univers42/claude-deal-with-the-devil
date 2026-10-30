@@ -121,8 +121,8 @@ fi
 FAKEKIT="$TMP/kit"
 mkdir -p "$FAKEKIT/tools/lib" "$FAKEKIT/.claude-plugin" "$FAKEKIT/rules" "$FAKEKIT/templates/tracker"
 cp "$ROOT/tools/setup.sh" "$FAKEKIT/tools/"
-cp "$ROOT/tools/lib/common.sh" "$ROOT/tools/lib/seed.sh" "$ROOT/tools/lib/seed-tracker.sh" \
-  "$FAKEKIT/tools/lib/"
+cp "$ROOT/tools/lib/common.sh" "$ROOT/tools/lib/stage.sh" "$ROOT/tools/lib/seed.sh" \
+  "$ROOT/tools/lib/seed-tracker.sh" "$FAKEKIT/tools/lib/"
 cp "$ROOT/.claude-plugin/plugin.json" "$FAKEKIT/.claude-plugin/"
 cp "$ROOT/templates/settings.json" "$FAKEKIT/templates/"
 cp "$ROOT/templates/tracker/github.md" "$ROOT/templates/tracker/local.md" \

@@ -1,0 +1,10 @@
+{
+  "$comment": "Copy to ~/.config/harness42/local.json (chmod 600) and fill in. It is never committed: the kit is public. `vars` fill the ${NAME} placeholders of profiles/user.json; an MCP server whose `requires` names a var that is missing here is skipped, not half-configured.",
+  "vars": {
+    "BROWSER_PATH": "/usr/bin/chromium-browser"
+  },
+  "scan": {
+    "active": ["http://localhost", "http://127.0.0.1", "https://staging.example.ts.net"],
+    "passive": ["https://app.example.com"]
+  }
+}
