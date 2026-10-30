@@ -26,6 +26,9 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `watch.sh` | "Run this without ever hanging" — hard + idle timeouts around any command | wraps a command |
 | `selfcheck.sh` | "Does this config tell the truth about itself?" (the drift gate) | every doc + every frontmatter block |
 | `setup.sh` | "What is this host still missing from the kit?" — seeds rules, permissions, CLAUDE.md, OpenCode wiring, tracker, gitignore | the host's `.claude/`, `opencode.json`, `.gitignore` |
+| `profile.sh` | "What is my user scope still missing from the profile?" — pinned plugins, MCP servers, tools, skills, CLAUDE.md block into `~/.claude` (see [`doc/PROFILE.md`](../doc/PROFILE.md)) | `profiles/user.json` + the private overlay `~/.config/harness42/local.json` |
+| `scan.sh` | "Is our own app leaking anything a passive scan sees?" — ZAP baseline, refused for any origin not allowlisted exactly | the overlay's `scan` lists |
+| `lib/stage.sh` | the dry-run / `--check` / `--apply` runner `setup.sh` and `profile.sh` share | — |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |
 | `skillcheck.sh` | "Is this config MANAGED?" (lifecycle, description form, resolving references) | `skills/`, `commands/`, agents, rules, every doc |
 | `index.sh` | "Do the README tables and the router still match the frontmatter?" (the generated index) | the marked blocks of `README.md`, every skill and command |

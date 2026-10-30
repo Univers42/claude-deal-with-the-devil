@@ -1,0 +1,118 @@
+# The user profile: one pinned `~/.claude` for every machine
+
+`devil profile` brings the **user scope** (`~/.claude`, `~/.claude.json`, `~/.local/bin`) to
+the profile in [`profiles/user.json`](../profiles/user.json). `devil setup` seeds a *repo*; this
+seeds *you*. Re-run it on a new machine instead of re-explaining how you work.
+
+```sh
+devil profile                 # dry run: what would change
+devil profile --check         # exit 1 if anything drifted, 2 if a stage cannot run
+devil profile --apply         # install, enable, write; idempotent
+devil profile --apply --pack frontend --only plugins
+```
+
+What it does not do:
+- It never removes a plugin, a marketplace or an MCP server that the profile does not name.
+- It never overwrites a skill directory it did not vendor itself.
+- It never puts a secret in the repo.
+
+Machine-specific values live in the private overlay `~/.config/harness42/local.json`
+(template: [`profiles/local.example.json`](../profiles/local.example.json), `chmod 600`). An MCP
+server that needs a value the overlay lacks is skipped and named in the report.
+
+## Stages
+
+| Stage | Brings | How it decides |
+|---|---|---|
+| tools | uv, bun, rust-analyzer, codebase-memory-mcp, LSP servers, ccusage, specify, serena into `~/.local/bin` | each tool's own `--version`. Archives are sha256-verified before install |
+| marketplaces | the plugin catalogs below | matched by name; never removed |
+| plugins | every plugin of the selected packs, at user scope, enabled | `claude plugin list --json`. An LSP plugin whose server binary is missing is skipped |
+| mcp | stdio servers with exact versions | `~/.claude.json`, compared field by field; a hand-edited server is restored |
+| skills | single skills vendored from a pinned commit | a `.harness42` stamp in each directory |
+| retire | loose skills that an installed plugin also ships | moved to `~/.claude/backups/skills-<date>/`, never deleted |
+| settings | `env` keys (agent teams) | merged; every other key in `settings.json` kept |
+| instructions | the block in [`profiles/claude-md.md`](../profiles/claude-md.md) | between `harness42:profile` markers; your own text kept |
+| budget | the always-on token cost of the profile's plugins | `claude plugin details`; fails `--check` above `budget.always_on_tokens` |
+| lock | `profiles/user.lock.json`: installed version + commit per entry | written on `--apply`, compared otherwise. Commit it with the profile |
+
+## Packs
+
+Sources, in order of trust:
+- **Tier A** is on Trail of Bits' approved-marketplace list: `anthropics/claude-plugins-official`,
+  `anthropics/knowledge-work-plugins`, `trailofbits/*`, `obra/superpowers`.
+- **Tier B** is vendor-official and pinned: shadcn, vercel-labs, bytebase, superfly, spf13,
+  revfactory, thedotmack, DeusData, rtk-ai.
+- The official Anthropic marketplace updates itself (Claude Code default), so its plugins float and
+  the lock records what you got. Third-party marketplaces do not update unless pinned to a new `#ref`.
+
+| Pack | What it adds | Leaves the machine |
+|---|---|---|
+| core | superpowers, devil (this kit: its hooks and gates in every project), claude-md-management, skill-creator, session-report, hookify, code-review, pr-review-toolkit, feature-dev, code-simplifier, claude-code-setup, ralph-loop, mattpocock-skills, harness (revfactory, "Harness v2": builds a project's agent team), Spec Kit CLI, agent-teams flag | nothing beyond Claude itself |
+| knowledge | context7, LSP plugins (typescript, gopls, rust-analyzer, pyright, clangd), codebase-memory-mcp (local code graph), serena, ccusage | context7 sends library names and the query, never code |
+| frontend | frontend-design, ui-ux-pro-max, modern-web-guidance, figma, playwright + chrome-devtools MCP (headless, isolated), shadcn MCP, vercel react/web-design skills, anthropics webapp-testing | figma: design files you open (OAuth) |
+| backend | github, dbhub (read-only, 1000-row cap), fly (with a confirm hook on destructive or billable actions), mongodb, redis-development, go (spf13), rust-review (ToB) | github and fly: what you ask them to do |
+| business | knowledge-work-plugins: product-management, engineering, design, data, operations, small-business, brand-voice, marketing, finance, legal; anthropics docx / pdf / pptx / xlsx / doc-coauthoring | nothing |
+
+Not installed, and why:
+- **Hooks on every tool call, or a competing methodology:** ruflo, oh-my-claudecode, ECC, GSD, gstack,
+  SuperClaude, BMAD, compound-engineering.
+- **Sends code to the cloud or needs a paid plan:** claude-context, mem0, 21st Magic, axe, superdesign,
+  Supermemory cloud.
+- **Rewrites every reply:** explanatory / learning output styles.
+- **Adds an attribution trailer, against the no-co-author rule:** commit-commands.
+- **Not this stack:** kubernetes, Next/Vite devtools, vercel, supabase, prisma.
+- **Duplicate subagent catalogs without tags to pin:** wshobson/agents, VoltAgent.
+
+## White-hat scanning: `devil scan`
+
+`devil scan <url>` runs ZAP's **baseline** (spider + passive rules, no attack payloads) in a
+container pinned by digest, against an exact `scheme://host:port` listed in the overlay's
+`scan.active` or `scan.passive`. It refuses:
+- an unlisted host;
+- a portless URL that does not match a listed port;
+- the kit's own service ports (5678, 37777, 6767, 8282, 9050, 9052);
+- wildcard or portless allowlist entries;
+- `user@host` tricks and non-http schemes;
+- `--full`.
+
+[`tests/test_scan.sh`](../tests/test_scan.sh) proves each refusal.
+
+## Risk verdicts (the devil, 2026-10-30)
+
+| Item | Verdict | Conditions that bind the build |
+|---|---|---|
+| n8n on the host with a shell | PROCEED-WITH-CONDITIONS | see list below |
+| n8n's MCP Server Trigger as a user MCP | **BLOCK** | `hooks/scripts/risk.py` guards only `Bash`, so `mcp__n8n__*` would be an unguarded host shell. Lift when it has bearer auth, fixed tool arguments and `permissions.ask` on `mcp__n8n__*` |
+| rtk, claude-mem hooks | PROCEED-WITH-CONDITIONS | see list below |
+| security-guidance, fly hooks | PROCEED | — |
+| ZAP active scan + MCP add-on | **BLOCK** | the add-on's context tool lets the agent put any URL in scope, and `*.tail10f2ea.ts.net` holds a live database. Baseline ships now (Z1: exact allowlist, Z4: memory cap, Z5: no proxy); active scans and the add-on wait for a re-submission |
+
+Conditions for n8n on the host:
+- pinned 2.45.7 with a committed lockfile;
+- webhook, form and file triggers stay excluded;
+- `InaccessiblePaths` covers `~/.ssh`, `~/.config/gh` and `~/.gnupg`;
+- `MemoryMax=768M`;
+- no `claude -p` call that bypasses permissions;
+- telemetry off;
+- bound to 127.0.0.1;
+- the nightly job is a systemd timer, not n8n.
+
+Conditions for the rtk and claude-mem hooks:
+- the kit's ask/deny beats rtk's allow (G1, G2);
+- no rtk PostToolUse hook, telemetry off, failures still exit non-zero;
+- claude-mem passes a secret canary;
+- claude-mem's 32 KiB Read gate is turned off or documented;
+- pinned uv/bun are installed first;
+- claude-mem's worker listens on loopback only.
+
+## Caveats
+
+- **Pins are a snapshot.** "Widely used in October 2026" was researched on 2026-10-30 and
+  goes stale. Bumping is a deliberate edit to `profiles/user.json` plus a re-apply, never an
+  automatic update.
+- **Floating official plugins.** The official marketplace updates itself, so two machines applied a
+  week apart can differ there. `user.lock.json` says how.
+- **Install everything costs context.** The budget stage prints the always-on total. Measure it
+  before raising the ceiling.
+- **Tor egress.** Downloads and OAuth logins may need a retry. A failed download is `cannot`
+  (exit 2), never a silent pass.
