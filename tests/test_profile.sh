@@ -201,6 +201,14 @@ check "a plugin with only stdio servers passes" '[ $? -eq 0 ]'
 run --check --pack frontend --only plugins
 check "--pack frontend sees only frontend plugins" '! grep -q "alpha@acme" "$TMP/out"'
 
+# The shipped profile keeps two vendor paths shut: chrome-devtools-mcp sends usage statistics and
+# trace URLs to Google unless told not to, and Artifact / RemoteTrigger publish to claude.ai.
+USER_JSON="$ROOT/profiles/user.json"
+check "chrome-devtools runs without Google usage statistics or CrUX" \
+  'jq -e ".mcp[] | select(.name == \"chrome-devtools\") | .config.args | index(\"--no-usage-statistics\") and index(\"--no-performance-crux\")" "$USER_JSON" >/dev/null'
+check "the tools that publish to claude.ai are denied" \
+  'jq -e ".settings.permissions.deny | index(\"Artifact\") and index(\"RemoteTrigger\")" "$USER_JSON" >/dev/null'
+
 echo
 echo "test_profile: $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ]

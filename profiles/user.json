@@ -415,7 +415,9 @@
           "--isolated",
           "--executablePath",
           "${BROWSER_PATH}",
-          "--chromeArg=--no-sandbox"
+          "--chromeArg=--no-sandbox",
+          "--no-usage-statistics",
+          "--no-performance-crux"
         ]
       }
     },
@@ -1098,6 +1100,12 @@
       "claude-haiku-5-5": {
         "effortLevel": "xhigh"
       }
+    },
+    "permissions": {
+      "deny": [
+        "Artifact",
+        "RemoteTrigger"
+      ]
     }
   },
   "remove_plugins": [
