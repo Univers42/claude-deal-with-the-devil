@@ -84,12 +84,19 @@ cat >"$TMP/profile.json" <<JSON
     { "name": "dupe", "replaced_by": "pretty@acme" },
     { "name": "orphan", "replaced_by": "never@acme" }
   ],
+  "json_files": [
+    { "pack": "core", "path": "~/.memtool/settings.json", "merge": { "GATE": "false" } }
+  ],
+  "commands": [
+    { "pack": "core", "name": "marker", "check": "test -f ~/.marker", "run": "touch ~/.marker" }
+  ],
   "instructions": "$TMP/block.md"
 }
 JSON
 printf '# Rules\n\nCite or say unverified.\n' >"$TMP/block.md"
 printf '{"vars": {"BROWSER_PATH": "/usr/bin/chromium"}}\n' >"$HARNESS42_LOCAL"
 printf '# mine\n\nKeep this line.\n' >"$HOME/.claude/CLAUDE.md"
+mkdir -p "$HOME/.memtool" && printf '{"KEEP": 1}\n' >"$HOME/.memtool/settings.json"
 printf '{"env": {"KEEP": "yes"}, "model": "opus"}\n' >"$HOME/.claude/settings.json"
 printf '[{"id": "cloudy@acme", "scope": "user", "enabled": true, "version": "1"}]\n' >"$STUB_STATE/plugins.json"
 mkdir -p "$HOME/.claude/skills/dupe" "$HOME/.claude/skills/orphan"
@@ -128,6 +135,8 @@ check "CLAUDE.md block written" 'grep -q "Cite or say unverified." "$HOME/.claud
 check "CLAUDE.md own text kept" 'grep -q "Keep this line." "$HOME/.claude/CLAUDE.md"'
 check "settings merged deep, own keys kept" 'jq -e ".env.TEAMS_FLAG == \"1\" and .env.KEEP == \"yes\" and .model == \"opus\" and .syncClaudeAiPlugins == false" "$HOME/.claude/settings.json" >/dev/null'
 check "a plugin listed in remove_plugins is uninstalled" '! jq -e "any(.[]; .id == \"cloudy@acme\")" "$STUB_STATE/plugins.json" >/dev/null'
+check "json_files merged into a file under HOME" 'jq -e ".GATE == \"false\" and .KEEP == 1" "$HOME/.memtool/settings.json" >/dev/null'
+check "a command runs when its check fails" '[ -f "$HOME/.marker" ]'
 check "lock records the plugin version" 'jq -e ".plugins[\"alpha@acme\"].version == \"1.0.0\"" "$TMP/profile.lock.json" >/dev/null'
 
 # --- idempotence

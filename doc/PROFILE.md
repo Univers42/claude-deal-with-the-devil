@@ -73,6 +73,8 @@ Sources, in order of trust:
 
 | security | security-guidance, claude-security (official); ToB insecure-defaults, differential-review, supply-chain-risk-auditor, property-based-testing, testing-handbook-skills, semgrep-rule-creator, audit-context-building, agentic-actions-auditor, static-analysis; skills-curated threat-model, security-best-practices, ownership-map, security-awareness, ffuf-web-fuzzing; Semgrep CE CLI 1.183.0 | nothing. The hooks were read before adoption: none makes a network call. security-guidance keeps a local Agent SDK venv |
 
+| memory | claude-mem v15.7.0 (local SQLite + Chroma, compression on your Claude plan, worker on 127.0.0.1); rtk 1.1.0 OSS build (a PreToolUse Bash hook that compresses command output) | nothing. claude-mem telemetry is off in three layers: `DO_NOT_TRACK`, `CLAUDE_MEM_TELEMETRY=off`, `telemetry.json`. rtk telemetry consent is `no` |
+
 Not installed, and why:
 - **official semgrep plugin:** a binary hook on every Write/Edit/Bash, plus a hosted MCP. The Semgrep CE CLI and `devil quality` cover it locally.
 - **ToB fp-check:** an LLM prompt-hook on every Stop, even when the skill is unused.
@@ -128,6 +130,23 @@ Conditions for the rtk and claude-mem hooks:
 - claude-mem's 32 KiB Read gate is turned off or documented;
 - pinned uv/bun are installed first;
 - claude-mem's worker listens on loopback only.
+
+## Conditions proven (2026-10-31)
+
+| Condition | Evidence |
+|---|---|
+| G1: force-push refused | the devil hook returns `deny`: "Refused: force-push to a protected branch" |
+| G2: the kit's ask beats rtk | the devil hook returns `ask` for `git push --dry-run`. rtk only rewrites the command (`permissionDecision: null`) |
+| R1: no rtk PostToolUse | `jq .hooks ~/.claude/settings.json` shows one PreToolUse `rtk hook claude` |
+| R2: rtk telemetry off | `rtk telemetry status` reports `consent: no` |
+| R3: failures still fail | `rtk git status` outside a repo exits 128; `rtk ls /missing` exits 2 |
+| C1: secret canary | **failed first**: claude-mem stores raw tool input, and its redaction is opt-in. With `CLAUDE_MEM_REDACT_ENABLED` and `CLAUDE_MEM_REDACT_GENERIC_ENABLED` on, a fresh `ghp_` token and an `API_TOKEN=` value land as `<redacted type='github_pat'/>` and `<redacted type='generic_token'/>`, with 0 raw hits in the db, WAL or logs |
+| C2: Read gate | `CLAUDE_MEM_FILE_READ_GATE_ENABLED=false` |
+| C3: pinned runtimes | uv 0.13.6 and bun 1.4.4 are installed by the tools stage before claude-mem |
+| C4: loopback only | `ss -ltn` shows `127.0.0.1:37700` |
+
+claude-mem's telemetry defaults to ON (PostHog). The worker ran for about a minute with that default
+before the three off-switches were added, so a lifecycle event may have left the machine then.
 
 ## Caveats
 

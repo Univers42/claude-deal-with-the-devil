@@ -28,6 +28,8 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$DIR/lib/profile.sh"
 # shellcheck source=lib/profile-fetch.sh
 . "$DIR/lib/profile-fetch.sh"
+# shellcheck source=lib/profile-audit.sh
+. "$DIR/lib/profile-audit.sh"
 
 MODE=dry
 PROFILE=""
@@ -51,7 +53,7 @@ Brings ~/.claude to the pinned profile (default: the kit's profiles/user.json).
   --pack     only entries of these packs (core,knowledge,frontend,backend,business,...)
   --skip     stage to leave out (repeatable)
   --only     the one stage to run
-Stages: tools marketplaces plugins localonly mcp skills retire settings instructions budget lock
+Stages: tools marketplaces plugins localonly mcp skills retire settings json_files commands instructions budget lock
 
 Exit 0 clean, 1 (--check) drift, 2 could not run.
 USAGE
@@ -113,7 +115,7 @@ jq -e 'type == "object" and .version == 1' "$PROFILE" >/dev/null 2>&1 || {
 }
 profile_init "$PROFILE" "$PACKS" || exit 2
 
-STAGES="tools marketplaces plugins localonly mcp skills retire settings instructions budget lock"
+STAGES="tools marketplaces plugins localonly mcp skills retire settings json_files commands instructions budget lock"
 # shellcheck disable=SC2317,SC2329  # called by run_stage in lib/stage.sh
 selected() {
   [ -n "$ONLY" ] && [ "$1" != "$ONLY" ] && return 1

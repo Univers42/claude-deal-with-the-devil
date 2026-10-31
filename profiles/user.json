@@ -116,6 +116,16 @@
         "semgrep==1.183.0"
       ],
       "check": "semgrep --version"
+    },
+    {
+      "name": "rtk",
+      "pack": "memory",
+      "kind": "tar",
+      "version": "1.1.0",
+      "url": "https://github.com/rtk-ai/rtk/releases/download/v1.1.0/rtk-oss-x86_64-unknown-linux-musl.tar.gz",
+      "sha256": "4dec94a64035e08189ae82fd5408fe4ae9ae27a665fc07e3e3ec3c4c2d8e8a3e",
+      "member": "rtk",
+      "check": "rtk --version"
     }
   ],
   "marketplaces": [
@@ -155,6 +165,10 @@
     {
       "name": "go-skills",
       "source": "spf13/go-skills"
+    },
+    {
+      "name": "thedotmack",
+      "source": "thedotmack/claude-mem#v15.7.0"
     }
   ],
   "plugins": [
@@ -330,6 +344,10 @@
     {
       "id": "ffuf-web-fuzzing@skills-curated",
       "pack": "security"
+    },
+    {
+      "id": "claude-mem@thedotmack",
+      "pack": "memory"
     }
   ],
   "mcp": [
@@ -1024,7 +1042,11 @@
   "settings": {
     "env": {
       "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-      "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+      "ENABLE_CLAUDEAI_MCP_SERVERS": "false",
+      "CLAUDE_MEM_ONLINE_OPTIN": "false",
+      "DO_NOT_TRACK": "1",
+      "CLAUDE_MEM_TELEMETRY": "off",
+      "CLAUDE_MEM_TELEMETRY_ERRORS": "off"
     },
     "syncClaudeAiPlugins": false
   },
@@ -1044,5 +1066,39 @@
     "finance@knowledge-work-plugins",
     "legal@knowledge-work-plugins",
     "brand-voice@knowledge-work-plugins"
+  ],
+  "json_files": [
+    {
+      "pack": "memory",
+      "path": "~/.claude-mem/settings.json",
+      "merge": {
+        "CLAUDE_MEM_FILE_READ_GATE_ENABLED": "false",
+        "CLAUDE_MEM_PROVIDER": "claude",
+        "CLAUDE_MEM_WORKER_HOST": "127.0.0.1",
+        "CLAUDE_MEM_REDACT_ENABLED": "true",
+        "CLAUDE_MEM_REDACT_GENERIC_ENABLED": "true"
+      }
+    },
+    {
+      "pack": "memory",
+      "path": "~/.claude-mem/telemetry.json",
+      "merge": {
+        "enabled": false
+      }
+    }
+  ],
+  "commands": [
+    {
+      "pack": "memory",
+      "name": "rtk-telemetry-off",
+      "check": "rtk telemetry status 2>&1 | grep -qiE \"consent: +(declined|denied|refused|no)\"",
+      "run": "rtk telemetry disable"
+    },
+    {
+      "pack": "memory",
+      "name": "rtk-hook",
+      "check": "jq -e \"[.hooks.PreToolUse[]?.hooks[]?.command] | index(\\\"rtk hook claude\\\")\" ~/.claude/settings.json",
+      "run": "rtk init -g --hook-only --auto-patch"
+    }
   ]
 }

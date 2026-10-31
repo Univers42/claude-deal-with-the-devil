@@ -16,6 +16,10 @@
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "1.0.0"
     },
+    "claude-mem@thedotmack": {
+      "sha": "35d8557840fc4105b55d8aeb499e6795d08afa65",
+      "version": "15.7.0"
+    },
     "claude-security@claude-plugins-official": {
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "0.12.0"
@@ -129,12 +133,12 @@
       "version": "1.2.6"
     },
     "session-report@claude-plugins-official": {
-      "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
-      "version": "f8c5e7a1dcb7"
+      "sha": "a7ba5b93db0c7c8d17f3f1d25853adca79598a1a",
+      "version": "a7ba5b93db0c"
     },
     "skill-creator@claude-plugins-official": {
-      "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
-      "version": "f8c5e7a1dcb7"
+      "sha": "a7ba5b93db0c7c8d17f3f1d25853adca79598a1a",
+      "version": "a7ba5b93db0c"
     },
     "static-analysis@trailofbits": {
       "sha": "2be6433b39e009cd2b6fd3be1895f6b1faa5af9a",
@@ -251,6 +255,7 @@
     "codebase-memory-mcp": "0.12.1",
     "gopls": "v0.23.0",
     "pyright": "1.1.414",
+    "rtk": "1.1.0",
     "rust-analyzer": "2026-10-26",
     "semgrep": "1.183.0",
     "serena": "2.1.0",
