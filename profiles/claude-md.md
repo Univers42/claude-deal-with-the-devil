@@ -17,7 +17,7 @@
 |---|---|---|---|
 | Repo docs, ADRs, CLAUDE.md | the truth about the code | always first | with the change |
 | Auto-memory (`MEMORY.md`) | curated knowledge: decisions, how we work, expensive measured facts | loaded at start | deliberately, one fact per entry, dated |
-| claude-mem (local) | what happened in past sessions, secrets redacted | search before re-deriving | automatic |
+| claude-mem (local) | past sessions until 2026-10-31, secrets redacted | search before re-deriving | nothing new: its observer is off, it sent sessions to Claude |
 
 When two layers disagree, the repo wins, then the most recent dated entry. Fix or delete the stale one.
 

@@ -4,9 +4,13 @@
 # Settings say what should happen; this checks what does. It exists because three
 # promises broke on the profile's own machine (doc/PROFILE.md): a claude-mem default
 # that phoned home, a systemd `InaccessiblePaths=` skipped without an error, and a
-# claude.ai connector loading despite its off-switch. Six checks:
+# claude.ai connector loading despite its off-switch. A fourth broke later: claude-mem's
+# observer sent every session to Claude on the user's plan. Eight checks:
 #   claude.ai  settings turn the account's MCP servers and plugin sync off
 #   telemetry  settings carry DO_NOT_TRACK=1
+#   sessions   no session mirror, Remote Control, mobile push or transcript share
+#              (feedback survey, /feedback, /bug) through claude.ai
+#   claude-mem its observer is off for every project and its cloud sync has no token
 #   mcp        no user or project MCP server is a remote URL (~/.claude.json)
 #   listen     none of our processes listens beyond loopback (ss -ltnp)
 #   secrets    no process of a running harness42-* unit can read ~/.ssh, ~/.gnupg
@@ -21,12 +25,16 @@
 # listener owned by root or another user is reported as `info`, never judged.
 # `secrets` reads the processes of harness42-* units only: an MCP server or a
 # plugin hook launched by Claude runs as you and can read ~/.ssh by design.
+# `claude-mem` reads its settings file only: a CLAUDE_MEM_* variable in the worker's
+# environment that overrides it is not seen. Claude Code itself still reaches the
+# model with the login; no check here can turn that off.
 set -uo pipefail
 
 PROC="${SOVEREIGN_PROC:-/proc}"
 CGROUP="${SOVEREIGN_CGROUP:-/sys/fs/cgroup}"
 SETTINGS="$HOME/.claude/settings.json"
 CLAUDE_JSON="$HOME/.claude.json"
+CLAUDE_MEM="$HOME/.claude-mem/settings.json"
 FINDINGS=0
 ROWS=""
 
@@ -57,6 +65,40 @@ check_telemetry() {
   local dnt
   dnt="$(setting '.env.DO_NOT_TRACK')"
   if [ "$dnt" = 1 ]; then row telemetry ok "DO_NOT_TRACK=1"; else row telemetry finding "DO_NOT_TRACK=$dnt (want 1)"; fi
+}
+
+check_sessions() {
+  local k v bad=""
+  for k in autoUploadSessions remoteControlAtStartup agentPushNotifEnabled inputNeededNotifEnabled; do
+    v="$(jq -r --arg k "$k" '.[$k] | if . == null then "unset" else tostring end' "$SETTINGS" 2>/dev/null || echo unreadable)"
+    [ "$v" = false ] || bad+=" $k=$v"
+  done
+  for k in CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY DISABLE_FEEDBACK_COMMAND DISABLE_BUG_COMMAND; do
+    v="$(setting ".env.$k")"
+    [ "$v" = 1 ] || bad+=" $k=$v"
+  done
+  if [ -z "$bad" ]; then
+    row sessions ok "no session mirror, Remote Control, mobile push or transcript share"
+  else
+    row sessions finding "want the four switches false and the three env 1:$bad"
+  fi
+}
+
+check_claude_mem() {
+  local ex provider tok
+  [ -f "$CLAUDE_MEM" ] || {
+    row claude-mem ok "not installed ($CLAUDE_MEM absent)"
+    return
+  }
+  ex="$(jq -r '.CLAUDE_MEM_EXCLUDED_PROJECTS // "unset"' "$CLAUDE_MEM" 2>/dev/null || echo unreadable)"
+  provider="$(jq -r '.CLAUDE_MEM_PROVIDER // "claude"' "$CLAUDE_MEM" 2>/dev/null || echo unreadable)"
+  tok="$(jq -r '.CLAUDE_MEM_CLOUD_SYNC_TOKEN // "" | length' "$CLAUDE_MEM" 2>/dev/null || echo unreadable)"
+  if [ "$ex" = '**' ]; then
+    row claude-mem ok "observer off for every project (CLAUDE_MEM_EXCLUDED_PROJECTS=**)"
+  else
+    row claude-mem finding "observer sends sessions to CLAUDE_MEM_PROVIDER=$provider; CLAUDE_MEM_EXCLUDED_PROJECTS=$ex (want **)"
+  fi
+  [ "$tok" = 0 ] || row claude-mem finding "CLAUDE_MEM_CLOUD_SYNC_TOKEN is set: memory syncs to cmem.ai"
 }
 
 check_mcp() {
@@ -124,6 +166,8 @@ check_outbound() {
 
 check_claude_ai
 check_telemetry
+check_sessions
+check_claude_mem
 check_mcp
 check_listen
 check_secrets

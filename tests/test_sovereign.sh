@@ -58,9 +58,15 @@ unit() {
   printf '%s\n' "$@" >"$SOVEREIGN_CGROUP/user.slice/$name/cgroup.procs"
 }
 
+SETTINGS_OK='{"env":{"ENABLE_CLAUDEAI_MCP_SERVERS":"false","DO_NOT_TRACK":"1","CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY":"1","DISABLE_FEEDBACK_COMMAND":"1","DISABLE_BUG_COMMAND":"1"},"syncClaudeAiPlugins":false,"autoUploadSessions":false,"remoteControlAtStartup":false,"agentPushNotifEnabled":false,"inputNeededNotifEnabled":false}'
+# settings <jq filter>: the clean settings.json with one change applied.
+settings() { jq -c "$1" <<<"$SETTINGS_OK" >"$HOME/.claude/settings.json"; }
+
 clean() {
-  rm -rf "${STUB:?}"/* "$SOVEREIGN_PROC" "$SOVEREIGN_CGROUP"
-  printf '%s\n' '{"env":{"ENABLE_CLAUDEAI_MCP_SERVERS":"false","DO_NOT_TRACK":"1"},"syncClaudeAiPlugins":false}' >"$HOME/.claude/settings.json"
+  rm -rf "${STUB:?}"/* "$SOVEREIGN_PROC" "$SOVEREIGN_CGROUP" "$HOME/.claude-mem"
+  settings .
+  mkdir -p "$HOME/.claude-mem"
+  printf '%s\n' '{"CLAUDE_MEM_PROVIDER":"claude","CLAUDE_MEM_EXCLUDED_PROJECTS":"**","CLAUDE_MEM_CLOUD_SYNC_TOKEN":""}' >"$HOME/.claude-mem/settings.json"
   printf '%s\n' '{"mcpServers":{"serena":{"type":"stdio","command":"serena"}}}' >"$HOME/.claude.json"
   cat >"$STUB/listen" <<'TXT'
 LISTEN 0 511 127.0.0.1:5678 0.0.0.0:* users:(("n8n",pid=20,fd=22))
@@ -91,14 +97,49 @@ expect "a clean machine passes" 0
 expect "a listener whose owner is hidden is reported, not failed" 0 "*:5000"
 
 clean
-printf '%s\n' '{"env":{"DO_NOT_TRACK":"1"},"syncClaudeAiPlugins":false}' >"$HOME/.claude/settings.json"
+settings 'del(.env.ENABLE_CLAUDEAI_MCP_SERVERS)'
 run
 expect "claude.ai MCP servers left on is a finding" 1 "ENABLE_CLAUDEAI_MCP_SERVERS"
 
 clean
-printf '%s\n' '{"env":{"ENABLE_CLAUDEAI_MCP_SERVERS":"false"},"syncClaudeAiPlugins":false}' >"$HOME/.claude/settings.json"
+settings 'del(.env.DO_NOT_TRACK)'
 run
 expect "telemetry not opted out is a finding" 1 "DO_NOT_TRACK"
+
+clean
+settings '.autoUploadSessions = true'
+run
+expect "sessions mirrored to claude.ai is a finding" 1 "autoUploadSessions=true"
+
+clean
+settings 'del(.remoteControlAtStartup)'
+run
+expect "Remote Control not explicitly off is a finding" 1 "remoteControlAtStartup=unset"
+
+clean
+settings '.agentPushNotifEnabled = true'
+run
+expect "mobile push through claude.ai is a finding" 1 "agentPushNotifEnabled=true"
+
+clean
+settings 'del(.env.CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY)'
+run
+expect "a feedback survey that can share the transcript is a finding" 1 "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY"
+
+clean
+printf '%s\n' '{"CLAUDE_MEM_PROVIDER":"claude"}' >"$HOME/.claude-mem/settings.json"
+run
+expect "claude-mem compressing sessions on a cloud model is a finding" 1 "CLAUDE_MEM_EXCLUDED_PROJECTS"
+
+clean
+printf '%s\n' '{"CLAUDE_MEM_EXCLUDED_PROJECTS":"**","CLAUDE_MEM_CLOUD_SYNC_TOKEN":"tok"}' >"$HOME/.claude-mem/settings.json"
+run
+expect "claude-mem cloud sync configured is a finding" 1 "CLAUDE_MEM_CLOUD_SYNC_TOKEN"
+
+clean
+rm -rf "$HOME/.claude-mem"
+run
+expect "no claude-mem installed is fine" 0
 
 clean
 printf '%s\n' '{"mcpServers":{"cloud":{"type":"http","url":"https://mcp.example.com"}},"projects":{"/p":{"mcpServers":{"sse1":{"type":"sse","url":"https://x.example"}}}}}' >"$HOME/.claude.json"

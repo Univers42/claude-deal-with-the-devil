@@ -32,8 +32,14 @@ Rule (2026-10-31): everything is declared here and runs on this machine. The pro
 
 - `ENABLE_CLAUDEAI_MCP_SERVERS=false`: no connector from the claude.ai account loads.
 - `syncClaudeAiPlugins: false`: no plugin syncs down from claude.ai.
+- `autoUploadSessions`, `remoteControlAtStartup`, `agentPushNotifEnabled` and
+  `inputNeededNotifEnabled` are `false`. No session is mirrored to claude.ai, no Remote Control bridge
+  starts, and no push reaches the mobile app (user decision, 2026-10-31: sessions stay local).
+- `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY`, `DISABLE_FEEDBACK_COMMAND` and `DISABLE_BUG_COMMAND` are `1`.
+  The survey's "share this transcript" prompt and the two feedback commands are what upload a
+  session transcript. `DISABLE_TELEMETRY` and `DISABLE_ERROR_REPORTING` are `1` as well.
 
-The login itself is untouched.
+The login itself is untouched: Claude Code still reaches the model with it.
 
 No plugin that bundles a remote MCP server is installed. Those plugins sit in `remove_plugins`, and
 an apply uninstalls them:
@@ -79,7 +85,7 @@ Sources, in order of trust:
 | backend | dbhub (read-only, 1000-row cap), redis-development, go (spf13), rust-review (ToB); `gh` and `fly` stay plain CLIs | nothing |
 | business | 71 skills from knowledge-work-plugins (product, engineering, design, data, operations, marketing, finance, legal, brand-voice) **vendored without their plugins**, so none of their connectors loads; anthropics docx / pdf / pptx / xlsx / doc-coauthoring | nothing |
 | security | security-guidance, claude-security (official); ToB insecure-defaults, differential-review, supply-chain-risk-auditor, property-based-testing, testing-handbook-skills, semgrep-rule-creator, audit-context-building, agentic-actions-auditor, static-analysis; skills-curated threat-model, security-best-practices, ownership-map, security-awareness, ffuf-web-fuzzing; Semgrep CE CLI 1.183.0 | nothing. The hooks were read before adoption: none makes a network call. security-guidance keeps a local Agent SDK venv |
-| memory | claude-mem v15.7.0 (local SQLite + Chroma, compression on your Claude plan, worker on 127.0.0.1); rtk 1.1.0 OSS build (a PreToolUse Bash hook that compresses command output) | nothing. claude-mem telemetry is off in three layers: `DO_NOT_TRACK`, `CLAUDE_MEM_TELEMETRY=off`, `telemetry.json`. rtk telemetry consent is `no` |
+| memory | claude-mem v15.7.0 (local SQLite + Chroma, worker on 127.0.0.1; search, My Rules and the stored memory only); rtk 1.1.0 OSS build (a PreToolUse Bash hook that compresses command output) | nothing. claude-mem's observer sent every session to Claude on your plan, and its provider has no "off", so `CLAUDE_MEM_EXCLUDED_PROJECTS=**` stops it for every project. The rule rewriter, auto-refresh, quota fallback, transcript watcher, Telegram and Grok pushers are off too, and cmem.ai sync has no token. Telemetry is off in three layers: `DO_NOT_TRACK`, `CLAUDE_MEM_TELEMETRY=off`, `telemetry.json`. rtk telemetry consent is `no` |
 | orchestrator | n8n 2.45.7 on the host from a committed lockfile (`profiles/n8n/`), a systemd user unit on 127.0.0.1:5678, a starter workflow (`claude -p` with an explicit `--allowedTools`), and a nightly systemd timer running `devil profile --check` into `~/.cache/harness42/reports/` | nothing. Diagnostics, templates, version checks and community packages are off |
 
 Not installed, and why:
@@ -101,9 +107,13 @@ Not installed, and why:
 
 The settings above are promises; `devil sovereign` checks what the machine does. Three of the
 promises broke during this build: claude-mem's telemetry defaulted on, `InaccessiblePaths=` was
-skipped silently, and a claude.ai connector loaded despite its off-switch. It checks:
+skipped silently, and a claude.ai connector loaded despite its off-switch. A fourth broke later,
+while the check still said clean: claude-mem's observer sent sessions to Claude. It checks:
 
 - the claude.ai switches and `DO_NOT_TRACK`;
+- that no session leaves through claude.ai: no mirror, no Remote Control, no mobile push, and no
+  transcript share from the feedback survey, `/feedback` or `/bug`;
+- that claude-mem's observer is off for every project and its cloud sync has no token;
 - that no user or project MCP server in `~/.claude.json` is a remote URL;
 - that none of your processes listens beyond loopback (`ss -ltnp`);
 - that no process of a `harness42-*` unit can read `~/.ssh`, `~/.gnupg` or `~/.config/gh`,
