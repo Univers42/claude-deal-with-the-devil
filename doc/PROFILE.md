@@ -55,7 +55,7 @@ deliberately. The history of this file shows which ones existed.
 | mcp | stdio servers with exact versions | `~/.claude.json`, compared field by field; a hand-edited server is restored |
 | skills | single skills vendored from a pinned commit | a `.harness42` stamp in each directory |
 | retire | loose skills that an installed plugin also ships | moved to `~/.claude/backups/skills-<date>/`, never deleted |
-| settings | `env` keys (agent teams) | merged; every other key in `settings.json` kept |
+| settings | `env` keys, model and effort, theme, the claude.ai off-switches; then the overlay's `settings` (autoMode, which names your own infrastructure) | merged, overlay last; every other key in `settings.json` kept |
 | instructions | the block in [`profiles/claude-md.md`](../profiles/claude-md.md) | between `harness42:profile` markers; your own text kept |
 | budget | the always-on token cost of the profile's plugins | `claude plugin details`; fails `--check` above `budget.always_on_tokens` |
 | lock | `profiles/user.lock.json`: installed version + commit per entry | written on `--apply`, compared otherwise. Commit it with the profile |
@@ -96,6 +96,23 @@ Not installed, and why:
 - **Adds an attribution trailer, against the no-co-author rule:** commit-commands.
 - **Not this stack:** kubernetes, Next/Vite devtools, vercel, supabase, prisma.
 - **Duplicate subagent catalogs without tags to pin:** wshobson/agents, VoltAgent.
+
+## Sovereignty, measured: `devil sovereign`
+
+The settings above are promises; `devil sovereign` checks what the machine does. Three of the
+promises broke during this build: claude-mem's telemetry defaulted on, `InaccessiblePaths=` was
+skipped silently, and a claude.ai connector loaded despite its off-switch. It checks:
+
+- the claude.ai switches and `DO_NOT_TRACK`;
+- that no user or project MCP server in `~/.claude.json` is a remote URL;
+- that none of your processes listens beyond loopback (`ss -ltnp`);
+- that no process of a `harness42-*` unit can read `~/.ssh`, `~/.gnupg` or `~/.config/gh`,
+  each seen through the process's own mount namespace;
+- that no such process holds an off-machine connection.
+
+It exits 1 on any finding, and the nightly timer runs it after `profile --check`
+(`~/.cache/harness42/reports/sovereign-<date>.md`). The network checks are one snapshot, and a
+listener owned by root is shown as `info`, not judged: the Caveat in `tools/sovereign.sh`.
 
 ## White-hat scanning: `devil scan`
 
@@ -216,5 +233,8 @@ the static half of the conditions above.
   week apart can differ there. `user.lock.json` says how.
 - **Install everything costs context.** The budget stage prints the always-on total. Measure it
   before raising the ceiling.
+- **`playwright install` prunes.** Each run deletes the browser builds no registered Playwright
+  still references, so one project's install can remove another's. The profile pins the
+  playwright MCP's own version (build 1247); re-run a project's `npx playwright install` after it.
 - **Tor egress.** Downloads and OAuth logins may need a retry. A failed download is `cannot`
   (exit 2), never a silent pass.

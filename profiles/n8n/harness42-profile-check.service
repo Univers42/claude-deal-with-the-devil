@@ -1,9 +1,10 @@
-# The nightly drift report: does ~/.claude still match the pinned profile?
-# Read-only (--check); the report lands in the journal and in the cache dir.
+# The nightly report: does ~/.claude still match the pinned profile, and does
+# anything leave the machine (devil sovereign)? Read-only; the report lands in
+# the cache dir, and the unit fails (visible in `systemctl --user --failed`) on drift or a finding.
 [Unit]
 Description=harness42 profile drift check (read-only)
 
 [Service]
 Type=oneshot
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=/bin/sh -c 'mkdir -p %h/.cache/harness42/reports && bash @KIT@/tools/profile.sh --check --skip budget > %h/.cache/harness42/reports/profile-check-$(date +%%F).md 2>&1'
+ExecStart=/bin/sh -c 'mkdir -p %h/.cache/harness42/reports && bash @KIT@/tools/profile.sh --check --skip budget > %h/.cache/harness42/reports/profile-check-$(date +%%F).md 2>&1; p=$$?; bash @KIT@/tools/sovereign.sh > %h/.cache/harness42/reports/sovereign-$(date +%%F).md 2>&1; s=$$?; [ $$p -eq 0 ] && [ $$s -eq 0 ]'

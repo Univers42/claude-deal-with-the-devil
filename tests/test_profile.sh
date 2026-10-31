@@ -95,7 +95,7 @@ cat >"$TMP/profile.json" <<JSON
 }
 JSON
 printf '# Rules\n\nCite or say unverified.\n' >"$TMP/block.md"
-printf '{"vars": {"BROWSER_PATH": "/usr/bin/chromium"}}\n' >"$HARNESS42_LOCAL"
+printf '{"vars": {"BROWSER_PATH": "/usr/bin/chromium"}, "settings": {"autoMode": {"environment": ["private host"]}, "env": {"TEAMS_FLAG": "2"}}}\n' >"$HARNESS42_LOCAL"
 printf '# mine\n\nKeep this line.\n' >"$HOME/.claude/CLAUDE.md"
 mkdir -p "$HOME/.memtool" && printf '{"KEEP": 1}\n' >"$HOME/.memtool/settings.json"
 printf '{"env": {"KEEP": "yes"}, "model": "opus"}\n' >"$HOME/.claude/settings.json"
@@ -134,7 +134,8 @@ check "duplicate skill retired to backups" '[ ! -d "$HOME/.claude/skills/dupe" ]
 check "skill whose replacement is absent is kept" '[ -d "$HOME/.claude/skills/orphan" ]'
 check "CLAUDE.md block written" 'grep -q "Cite or say unverified." "$HOME/.claude/CLAUDE.md"'
 check "CLAUDE.md own text kept" 'grep -q "Keep this line." "$HOME/.claude/CLAUDE.md"'
-check "settings merged deep, own keys kept" 'jq -e ".env.TEAMS_FLAG == \"1\" and .env.KEEP == \"yes\" and .model == \"opus\" and .syncClaudeAiPlugins == false" "$HOME/.claude/settings.json" >/dev/null'
+check "overlay settings merge last and win" 'jq -e ".autoMode.environment == [\"private host\"] and .env.TEAMS_FLAG == \"2\"" "$HOME/.claude/settings.json" >/dev/null'
+check "settings merged deep, own keys kept" 'jq -e ".env.TEAMS_FLAG == \"2\" and .env.KEEP == \"yes\" and .model == \"opus\" and .syncClaudeAiPlugins == false" "$HOME/.claude/settings.json" >/dev/null'
 check "a plugin listed in remove_plugins is uninstalled" '! jq -e "any(.[]; .id == \"cloudy@acme\")" "$STUB_STATE/plugins.json" >/dev/null'
 check "json_files merged into a file under HOME" 'jq -e ".GATE == \"false\" and .KEEP == 1" "$HOME/.memtool/settings.json" >/dev/null'
 check "a command runs when its check fails" '[ -f "$HOME/.marker" ]'

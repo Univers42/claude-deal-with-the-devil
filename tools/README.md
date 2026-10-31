@@ -28,6 +28,7 @@ and 2 for a name it does not know. An enabled plugin has its `bin/` on the Bash 
 | `setup.sh` | "What is this host still missing from the kit?" — seeds rules, permissions, CLAUDE.md, OpenCode wiring, tracker, gitignore | the host's `.claude/`, `opencode.json`, `.gitignore` |
 | `profile.sh` | "What is my user scope still missing from the profile?" — pinned plugins, MCP servers, tools, skills, CLAUDE.md block into `~/.claude` (see [`doc/PROFILE.md`](../doc/PROFILE.md)) | `profiles/user.json` + the private overlay `~/.config/harness42/local.json` |
 | `scan.sh` | "Is our own app leaking anything a passive scan sees?" — ZAP baseline, refused for any origin not allowlisted exactly | the overlay's `scan` lists |
+| `sovereign.sh` | "Does anything of our AI stack leave this machine?" — measures claude.ai switches, telemetry, remote MCP servers, non-loopback listeners, secrets visible to kit services, their outbound connections | `~/.claude`, `ss`, the harness42-* units |
 | `lib/profile-audit.sh` | the read-only stages of `profile.sh`: localonly, budget, lock | installed plugins |
 | `lib/stage.sh` | the dry-run / `--check` / `--apply` runner `setup.sh` and `profile.sh` share | — |
 | `release.sh` | "Is the version source honest, and can I cut a release?" (the version gate) | `.claude-plugin/*.json` + `CHANGELOG.md` |

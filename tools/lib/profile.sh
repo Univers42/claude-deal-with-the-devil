@@ -189,18 +189,23 @@ merge_json() {
 
 json_keys() { jq -r '[paths(type != "object" and type != "array") | join(".")] | join(",")' <<<"$1"; }
 
+# The overlay's `settings` merge last: values that name private infrastructure
+# (autoMode's environment) never enter the public profile, yet still replay.
 stage_settings() {
-  local f="$CLAUDE_HOME/settings.json" want
+  local f="$CLAUDE_HOME/settings.json" want private='{}' keys
   want="$(jq -c '.settings // {}' "$PROFILE_FILE")"
+  [ -f "$LOCAL_FILE" ] && private="$(jq -c '.settings // {}' "$LOCAL_FILE")"
+  want="$(jq -nc --argjson a "$want" --argjson b "$private" '$a * $b')"
   if [ "$want" = '{}' ]; then
     note ok "no settings to merge" "profile"
     return 0
   fi
-  merge_json "$f" "$want" "merge $(json_keys "$want") into settings.json" || {
+  keys="$(jq -r 'keys | join(",")' <<<"$want")"
+  merge_json "$f" "$want" "merge $keys into settings.json" || {
     note cannot "settings.json is not valid JSON" "$f"
     return 0
   }
-  note ok "$(json_keys "$want")" "deep merge: the profile wins on its keys, every other key kept"
+  note ok "$keys" "deep merge: profile, then the overlay; every other key kept"
 }
 
 # json_files: the same merge for another tool's config (claude-mem's settings).

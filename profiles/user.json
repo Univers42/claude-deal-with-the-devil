@@ -1048,7 +1048,25 @@
       "CLAUDE_MEM_TELEMETRY": "off",
       "CLAUDE_MEM_TELEMETRY_ERRORS": "off"
     },
-    "syncClaudeAiPlugins": false
+    "syncClaudeAiPlugins": false,
+    "model": "opus",
+    "effortLevel": "xhigh",
+    "theme": "dark",
+    "tui": "fullscreen",
+    "agentPushNotifEnabled": true,
+    "skipWorkflowUsageWarning": true,
+    "modelSettings": {
+      "claude-opus-5": {
+        "effortLevel": "xhigh"
+      },
+      "claude-opus-5-5": {
+        "effortLevel": "medium",
+        "autoCompactWindow": 500000
+      },
+      "claude-haiku-5-5": {
+        "effortLevel": "xhigh"
+      }
+    }
   },
   "remove_plugins": [
     "context7@claude-plugins-official",
@@ -1123,6 +1141,12 @@
       "name": "profile-check-timer",
       "check": "sed \"s#@KIT@#$HARNESS42_KIT#g\" \"$HARNESS42_KIT\"/profiles/n8n/harness42-profile-check.service | cmp -s - $HOME/.config/systemd/user/harness42-profile-check.service && systemctl --user is-enabled -q harness42-profile-check.timer",
       "run": "install -d $HOME/.config/systemd/user && sed \"s#@KIT@#$HARNESS42_KIT#g\" \"$HARNESS42_KIT\"/profiles/n8n/harness42-profile-check.service > $HOME/.config/systemd/user/harness42-profile-check.service && install -m644 \"$HARNESS42_KIT\"/profiles/n8n/harness42-profile-check.timer $HOME/.config/systemd/user/ && systemctl --user daemon-reload && systemctl --user enable -q --now harness42-profile-check.timer"
+    },
+    {
+      "pack": "frontend",
+      "name": "playwright-browser",
+      "check": "test -x $HOME/.cache/ms-playwright/chromium_headless_shell-1247/chrome-headless-shell-linux64/chrome-headless-shell",
+      "run": "npx -y playwright@1.64.0-alpha-1790635538000 install chromium-headless-shell"
     }
   ]
 }

@@ -1,10 +1,27 @@
 {
-  "$comment": "Copy to ~/.config/harness42/local.json (chmod 600) and fill in. It is never committed: the kit is public. `vars` fill the ${NAME} placeholders of profiles/user.json; an MCP server whose `requires` names a var that is missing here is skipped, not half-configured.",
+  "$comment": "Copy to ~/.config/harness42/local.json (chmod 600) and fill in. It is never committed: the kit is public. `vars` fill the ${NAME} placeholders of profiles/user.json; an MCP server whose `requires` names a var that is missing here is skipped, not half-configured. `settings` merge into ~/.claude/settings.json after the profile, for values that name your own infrastructure (autoMode).",
   "vars": {
-    "BROWSER_PATH": "/usr/bin/chromium-browser"
+    "BROWSER_PATH": "/home/you/.cache/ms-playwright/chromium_headless_shell-1247/chrome-headless-shell-linux64/chrome-headless-shell"
   },
   "scan": {
-    "active": ["http://localhost", "http://127.0.0.1", "https://staging.example.ts.net"],
-    "passive": ["https://app.example.com"]
+    "active": [
+      "http://localhost:3001",
+      "http://127.0.0.1:4100",
+      "https://staging.example.ts.net"
+    ],
+    "passive": [
+      "https://app.example.com"
+    ]
+  },
+  "settings": {
+    "autoMode": {
+      "environment": [
+        "**Trusted internal domains**: app.example.com",
+        "**Sensitive remote targets**: anything named prod"
+      ],
+      "soft_deny": [
+        "$defaults"
+      ]
+    }
   }
 }
