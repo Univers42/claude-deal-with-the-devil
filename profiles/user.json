@@ -106,6 +106,16 @@
       ],
       "python": "3.13",
       "check": "serena --version"
+    },
+    {
+      "name": "semgrep",
+      "pack": "security",
+      "kind": "uv",
+      "version": "1.183.0",
+      "pkgs": [
+        "semgrep==1.183.0"
+      ],
+      "check": "semgrep --version"
     }
   ],
   "marketplaces": [
@@ -256,6 +266,70 @@
     {
       "id": "rust-review@trailofbits",
       "pack": "backend"
+    },
+    {
+      "id": "security-guidance@claude-plugins-official",
+      "pack": "security"
+    },
+    {
+      "id": "claude-security@claude-plugins-official",
+      "pack": "security"
+    },
+    {
+      "id": "insecure-defaults@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "differential-review@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "supply-chain-risk-auditor@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "property-based-testing@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "testing-handbook-skills@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "semgrep-rule-creator@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "audit-context-building@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "agentic-actions-auditor@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "static-analysis@trailofbits",
+      "pack": "security"
+    },
+    {
+      "id": "openai-security-threat-model@skills-curated",
+      "pack": "security"
+    },
+    {
+      "id": "openai-security-best-practices@skills-curated",
+      "pack": "security"
+    },
+    {
+      "id": "openai-security-ownership-map@skills-curated",
+      "pack": "security"
+    },
+    {
+      "id": "security-awareness@skills-curated",
+      "pack": "security"
+    },
+    {
+      "id": "ffuf-web-fuzzing@skills-curated",
+      "pack": "security"
     }
   ],
   "mcp": [

@@ -273,3 +273,32 @@ stage_lock() {
     note ok "installed set differs from $(basename "$LOCK_FILE") (info; --apply re-records it)" "lock_render"
   fi
 }
+
+# The local-only rule (doc/PROFILE.md): no enabled user plugin may bundle a remote
+# MCP server (a `url`, or type http/sse/ws). Read from each plugin's own files, so
+# a plugin that grows a connector in an update is caught on the next --check.
+# Caveat: reads `.mcp.json` and the `mcpServers` object of `.claude-plugin/plugin.json`
+# only; servers declared in a separate file that plugin.json points to by path, or
+# packed in an .mcpb bundle, are not inspected and pass unseen.
+stage_localonly() {
+  local installed id path bad="" n=0
+  installed="$(claude plugin list --json 2>/dev/null | jq -c '[.[] | select(.scope == "user" and .enabled)]')" ||
+    installed='[]'
+  while IFS=$'\t' read -r id path; do
+    [ -n "$id" ] && [ -d "$path" ] || continue
+    n=$((n + 1))
+    local files=() f
+    for f in "$path/.mcp.json" "$path/.claude-plugin/plugin.json"; do [ -f "$f" ] && files+=("$f"); done
+    [ "${#files[@]}" -gt 0 ] || continue
+    if jq -se '[.[] | (.mcpServers // {}) | select(type == "object") | .[] |
+      select(.url != null or ((.type // "") | test("^(http|sse|ws)")))] | length > 0' \
+      "${files[@]}" >/dev/null 2>&1; then
+      bad+=" $id"
+    fi
+  done < <(jq -r '.[] | [.id, (.installPath // "")] | @tsv' <<<"$installed")
+  if [ -n "$bad" ]; then
+    note change "remote MCP servers bundled by:$bad (add them to remove_plugins)" "$n plugins inspected"
+  else
+    note ok "no enabled plugin bundles a remote MCP server" "$n plugins inspected"
+  fi
+}

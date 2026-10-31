@@ -71,7 +71,13 @@ Sources, in order of trust:
 | backend | dbhub (read-only, 1000-row cap), redis-development, go (spf13), rust-review (ToB); `gh` and `fly` stay plain CLIs | nothing |
 | business | 71 skills from knowledge-work-plugins (product, engineering, design, data, operations, marketing, finance, legal, brand-voice) **vendored without their plugins**, so none of their connectors loads; anthropics docx / pdf / pptx / xlsx / doc-coauthoring | nothing |
 
+| security | security-guidance, claude-security (official); ToB insecure-defaults, differential-review, supply-chain-risk-auditor, property-based-testing, testing-handbook-skills, semgrep-rule-creator, audit-context-building, agentic-actions-auditor, static-analysis; skills-curated threat-model, security-best-practices, ownership-map, security-awareness, ffuf-web-fuzzing; Semgrep CE CLI 1.183.0 | nothing. The hooks were read before adoption: none makes a network call. security-guidance keeps a local Agent SDK venv |
+
 Not installed, and why:
+- **official semgrep plugin:** a binary hook on every Write/Edit/Bash, plus a hosted MCP. The Semgrep CE CLI and `devil quality` cover it locally.
+- **ToB fp-check:** an LLM prompt-hook on every Stop, even when the skill is unused.
+- **DAP debugger MCPs:** ctagard/dap-mcp (11★) and Govinda-Fichtner/debugger-mcp (6★) are too young to trust.
+
 - **Hooks on every tool call, or a competing methodology:** ruflo, oh-my-claudecode, ECC, GSD, gstack,
   SuperClaude, BMAD, compound-engineering.
 - **Sends code to the cloud or needs a paid plan:** claude-context, mem0, 21st Magic, axe, superdesign,

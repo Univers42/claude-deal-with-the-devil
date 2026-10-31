@@ -167,6 +167,16 @@ run --apply --only tools
 check "wrong checksum exits 2" '[ $? -eq 2 ]'
 check "wrong checksum installs nothing" '[ ! -e "$HARNESS42_BIN/hello" ]'
 
+# --- local-only: a plugin that bundles a remote MCP server fails --check
+mkdir -p "$TMP/plug/.claude-plugin"
+printf '{"mcpServers": {"saas": {"type": "http", "url": "https://mcp.example.com/mcp"}}}\n' >"$TMP/plug/.mcp.json"
+jq --arg p "$TMP/plug" 'map(if .id == "alpha@acme" then .installPath = $p else . end)' "$STUB_STATE/plugins.json" >"$TMP/p" && mv "$TMP/p" "$STUB_STATE/plugins.json"
+run --check --only localonly
+check "a plugin with a remote MCP server fails --check" '[ $? -eq 1 ] && grep -q "alpha@acme" "$TMP/out"'
+printf '{"mcpServers": {"local": {"command": "npx", "args": ["x@1.0.0"]}}}\n' >"$TMP/plug/.mcp.json"
+run --check --only localonly
+check "a plugin with only stdio servers passes" '[ $? -eq 0 ]'
+
 # --- --pack limits the run to one pack
 run --check --pack frontend --only plugins
 check "--pack frontend sees only frontend plugins" '! grep -q "alpha@acme" "$TMP/out"'
