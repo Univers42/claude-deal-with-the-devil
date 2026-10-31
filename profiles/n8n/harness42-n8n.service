@@ -31,6 +31,18 @@ Environment=N8N_PERSONALIZATION_ENABLED=false
 Environment=N8N_HIRING_BANNER_ENABLED=false
 Environment=N8N_PUBLIC_API_DISABLED=true
 Environment=N8N_BLOCK_ENV_ACCESS_IN_NODE=true
+# Free only (user rule, 2026-10-31): n8n 2.45.7 ships features tied to an n8n
+# account or its cloud: the AI builder's MCP endpoint (on by default), MCP
+# access, the MCP app registry on api.n8n.io, and licence auto-renewal against
+# license.n8n.io. Names and defaults read from @n8n/config in this version. The
+# UI's "Enterprise trial" / "register" buttons post to enterprise.n8n.io and no
+# setting hides them: leave them unclicked (devil sovereign flags the traffic).
+Environment=N8N_AI_ENABLED=false
+Environment=N8N_MCP_ACCESS_ENABLED=false
+Environment=N8N_MCP_BUILDER_ENABLED=false
+Environment=N8N_MCP_APPS_ENABLED=false
+Environment=N8N_MCP_COMMUNITY_NODE_DISCOVERY_ENABLED=false
+Environment=N8N_LICENSE_AUTO_RENEW_ENABLED=false
 # Overrides n8n's default exclusion list: Execute Command becomes available
 # (the point of running on the host); the inbound triggers stay out.
 Environment="NODES_EXCLUDE=[\"n8n-nodes-base.webhook\",\"n8n-nodes-base.formTrigger\",\"n8n-nodes-base.localFileTrigger\"]"

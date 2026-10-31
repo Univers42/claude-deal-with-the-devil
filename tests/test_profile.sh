@@ -172,6 +172,14 @@ run --apply
 check "failed install exits 2" '[ $? -eq 2 ]'
 rm -f "$STUB_STATE/fail-install"
 
+# --- --only: a comma list and repeats select several stages; a typo is an error, not "0 to change"
+run --check --only localonly,settings
+check "--only a,b runs both stages" 'grep -q "^| localonly | ok" "$TMP/out" && grep -q "^| settings |" "$TMP/out" && grep -q "^| mcp | skip" "$TMP/out"'
+run --check --only localonly --only settings
+check "--only repeated runs both stages" 'grep -q "^| localonly | ok" "$TMP/out" && grep -q "^| settings |" "$TMP/out"'
+run --check --only tool
+check "--only with an unknown stage exits 2" '[ $? -eq 2 ] && grep -q "unknown stage" "$TMP/out"'
+
 # --- a wrong checksum refuses the tool
 rm -f "$HARNESS42_BIN/hello"
 sed -i "s/$SHA/$(printf '0%.0s' {1..64})/" "$TMP/profile.json"

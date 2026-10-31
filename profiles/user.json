@@ -126,6 +126,36 @@
       "sha256": "4dec94a64035e08189ae82fd5408fe4ae9ae27a665fc07e3e3ec3c4c2d8e8a3e",
       "member": "rtk",
       "check": "rtk --version"
+    },
+    {
+      "name": "playwright-mcp",
+      "pack": "frontend",
+      "kind": "npm",
+      "version": "0.0.83",
+      "pkgs": [
+        "@playwright/mcp@0.0.83"
+      ],
+      "check": "playwright-mcp --version"
+    },
+    {
+      "name": "chrome-devtools-mcp",
+      "pack": "frontend",
+      "kind": "npm",
+      "version": "1.12.0",
+      "pkgs": [
+        "chrome-devtools-mcp@1.12.0"
+      ],
+      "check": "chrome-devtools-mcp --version"
+    },
+    {
+      "name": "shadcn",
+      "pack": "frontend",
+      "kind": "npm",
+      "version": "4.23.0",
+      "pkgs": [
+        "shadcn@4.23.0"
+      ],
+      "check": "shadcn --version"
     }
   ],
   "marketplaces": [
@@ -359,10 +389,8 @@
       ],
       "config": {
         "type": "stdio",
-        "command": "npx",
+        "command": "playwright-mcp",
         "args": [
-          "-y",
-          "@playwright/mcp@0.0.83",
           "--headless",
           "--isolated",
           "--no-sandbox",
@@ -381,10 +409,8 @@
       ],
       "config": {
         "type": "stdio",
-        "command": "npx",
+        "command": "chrome-devtools-mcp",
         "args": [
-          "-y",
-          "chrome-devtools-mcp@1.12.0",
           "--headless",
           "--isolated",
           "--executablePath",
@@ -398,10 +424,8 @@
       "pack": "frontend",
       "config": {
         "type": "stdio",
-        "command": "npx",
+        "command": "shadcn",
         "args": [
-          "-y",
-          "shadcn@4.23.0",
           "mcp"
         ]
       }

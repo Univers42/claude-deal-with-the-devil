@@ -40,6 +40,9 @@ check "memory is capped at 768M" 'grep -qx "MemoryMax=768M" "$UNIT"'
 for flag in DIAGNOSTICS_ENABLED VERSION_NOTIFICATIONS_ENABLED TEMPLATES_ENABLED COMMUNITY_PACKAGES_ENABLED; do
   check "N8N_$flag is false" 'grep -qx "Environment=N8N_$flag=false" "$UNIT"'
 done
+for flag in AI_ENABLED MCP_ACCESS_ENABLED MCP_BUILDER_ENABLED MCP_APPS_ENABLED MCP_COMMUNITY_NODE_DISCOVERY_ENABLED LICENSE_AUTO_RENEW_ENABLED; do
+  check "N8N_$flag is false (no n8n-account feature)" 'grep -qx "Environment=N8N_$flag=false" "$UNIT"'
+done
 check "no workflow bypasses claude permissions" '! grep -rqE -- "dangerously-skip-permissions|--permission-mode[= ]+bypassPermissions" "$N8N/workflows"'
 check "every claude -p command names its allowed tools" '! jq -r ".nodes[] | select(.type == \"n8n-nodes-base.executeCommand\") | .parameters.command" "$N8N"/workflows/*.json | grep -- "claude -p" | grep -vq -- "--allowedTools"'
 check "no workflow registers an MCP trigger" '! grep -rq "mcpTrigger" "$N8N/workflows"'

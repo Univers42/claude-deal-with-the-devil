@@ -219,6 +219,13 @@ Live conditions, measured after `devil profile --apply --pack orchestrator`:
 The owner account is created by hand in the browser at `http://127.0.0.1:5678` on first visit.
 Nobody else can reach that page.
 
+Free only, not "free with a trial" (user rule, 2026-10-31). n8n 2.45.7 ships features tied to an
+n8n account or its cloud. The unit turns them off with variables read from `@n8n/config` in this
+version: `N8N_AI_ENABLED`, `N8N_MCP_ACCESS_ENABLED`, `N8N_MCP_BUILDER_ENABLED` (on by default),
+`N8N_MCP_APPS_ENABLED` (the registry on `api.n8n.io`), `N8N_MCP_COMMUNITY_NODE_DISCOVERY_ENABLED`
+and `N8N_LICENSE_AUTO_RENEW_ENABLED`. The UI's "Enterprise trial" and "register" buttons post to
+`enterprise.n8n.io`, and no setting hides them: leave them unclicked.
+
 Install scripts are gated by `allowScripts` (npm 11). Only sqlite3, isolated-vm and
 msgpackr-extract may build, each pinned to its version. The other 13 are denied, among them
 `@scarf/scarf` (install analytics) and the two `@sentry` profilers. `tests/test_n8n.sh` holds
