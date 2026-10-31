@@ -1,0 +1,38 @@
+{
+  "name": "harness42-n8n",
+  "private": true,
+  "description": "The pinned n8n the profile runs on the host (doc/PROFILE.md). Installed with `npm ci` from the committed lockfile.",
+  "dependencies": {
+    "n8n": "2.45.7"
+  },
+  "allowScripts": {
+    "sqlite3@5.1.7": true,
+    "isolated-vm@7.0.2": true,
+    "msgpackr-extract@3.0.4": true,
+    "@scarf/scarf@1.4.0": false,
+    "@sentry/node-cpu-profiler@2.4.4": false,
+    "@sentry/node-native-stacktrace@0.5.2": false,
+    "agent-browser@0.26.0": false,
+    "oracledb@6.10.0": false,
+    "@confluentinc/kafka-javascript@1.9.1": false,
+    "cpu-features@0.0.10": false,
+    "ssh2@1.15.0": false,
+    "ssh2@1.17.0": false,
+    "protobufjs@7.6.6": false,
+    "vue-demi@0.14.10": false,
+    "@parcel/watcher@2.6.0": false
+  },
+  "overrides": {
+    "form-data@^4": "4.0.6",
+    "fast-xml-parser@^4": "4.5.5",
+    "fast-xml-parser@^5": "5.7.0",
+    "axios@^1": "1.20.0",
+    "@modelcontextprotocol/sdk@^1": "1.32.0",
+    "ws@^8": "8.21.0",
+    "undici@^7": "7.30.1",
+    "linkify-it@^5": "5.0.2",
+    "@modelcontextprotocol/server@^2": "2.1.0",
+    "@modelcontextprotocol/node@^2": "2.1.0",
+    "@opentelemetry/propagator-jaeger@^2": "2.9.0"
+  }
+}

@@ -1,0 +1,9 @@
+[Unit]
+Description=Nightly harness42 profile drift check
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -43,6 +43,8 @@ profile_init() {
   fi
   mkdir -p "$HARNESS42_CACHE"
   export PATH="$HARNESS42_BIN:$PATH"
+  # The kit root, for setup steps that install files the kit ships (commands stage).
+  export HARNESS42_KIT="$KIT"
 }
 
 # pq <filter>: run a jq filter over the profile, one compact JSON value per line.

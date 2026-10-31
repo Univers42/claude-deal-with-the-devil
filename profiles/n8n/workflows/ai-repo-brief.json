@@ -1,0 +1,29 @@
+{
+  "id": "h42AiRepoBrief01",
+  "name": "harness42: AI repo brief (claude -p, read-only tools)",
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "nodes": [
+    {
+      "id": "6c2a3f4e-0000-4000-8000-000000000001",
+      "name": "Run by hand",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "parameters": {}
+    },
+    {
+      "id": "6c2a3f4e-0000-4000-8000-000000000002",
+      "name": "Brief the repo",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [260, 0],
+      "parameters": {
+        "command": "cd \"$HOME/Documents/harness42\" && claude -p 'In five bullets: what changed on this branch and what is left to do? Cite files.' --allowedTools 'Read,Grep,Glob,Bash(git status:*),Bash(git log:*),Bash(git diff:*)' --output-format text"
+      }
+    }
+  ],
+  "connections": {
+    "Run by hand": { "main": [[{ "node": "Brief the repo", "type": "main", "index": 0 }]] }
+  }
+}

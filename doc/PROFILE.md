@@ -20,7 +20,11 @@ Machine-specific values live in the private overlay `~/.config/harness42/local.j
 (template: [`profiles/local.example.json`](../profiles/local.example.json), `chmod 600`). An MCP
 server that needs a value the overlay lacks is skipped and named in the report.
 
-## Local only: nothing from the claude.ai account
+## Local only and free: nothing from the claude.ai account, no paid MCP
+
+No MCP server that needs a paid plan or a cloud account. When a local option exists, it is the one
+taken (user decision, 2026-10-31). The `localonly` stage enforces the cloud half. The paid half is
+a review rule: check a service's pricing and auth before adding it.
 
 Rule (2026-10-31): everything is declared here and runs on this machine. The profile sets, in
 `~/.claude/settings.json`:
@@ -75,6 +79,8 @@ Sources, in order of trust:
 
 | memory | claude-mem v15.7.0 (local SQLite + Chroma, compression on your Claude plan, worker on 127.0.0.1); rtk 1.1.0 OSS build (a PreToolUse Bash hook that compresses command output) | nothing. claude-mem telemetry is off in three layers: `DO_NOT_TRACK`, `CLAUDE_MEM_TELEMETRY=off`, `telemetry.json`. rtk telemetry consent is `no` |
 
+| orchestrator | n8n 2.45.7 on the host from a committed lockfile (`profiles/n8n/`), a systemd user unit on 127.0.0.1:5678, a starter workflow (`claude -p` with an explicit `--allowedTools`), and a nightly systemd timer running `devil profile --check` into `~/.cache/harness42/reports/` | nothing. Diagnostics, templates, version checks and community packages are off |
+
 Not installed, and why:
 - **official semgrep plugin:** a binary hook on every Write/Edit/Bash, plus a hosted MCP. The Semgrep CE CLI and `devil quality` cover it locally.
 - **ToB fp-check:** an LLM prompt-hook on every Stop, even when the skill is unused.
@@ -116,7 +122,7 @@ container pinned by digest, against an exact `scheme://host:port` listed in the 
 Conditions for n8n on the host:
 - pinned 2.45.7 with a committed lockfile;
 - webhook, form and file triggers stay excluded;
-- `InaccessiblePaths` covers `~/.ssh`, `~/.config/gh` and `~/.gnupg`;
+- `~/.ssh`, `~/.config/gh` and `~/.gnupg` are unreadable to n8n (masked by bubblewrap: `InaccessiblePaths=` is skipped silently on Ubuntu, see the unit);
 - `MemoryMax=768M`;
 - no `claude -p` call that bypasses permissions;
 - telemetry off;
@@ -157,6 +163,44 @@ auto-memory (curated). To revisit: a free local LLM provider, or a machine with 
 
 claude-mem's telemetry defaults to ON (PostHog). The worker ran for about a minute with that default
 before the three off-switches were added, so a lifecycle event may have left the machine then.
+
+## n8n supply chain (osv-scanner, 2026-10-31)
+
+`osv-scanner v2.2.3 scan source --lockfile profiles/n8n/package-lock.json`. n8n 2.45.7 is the
+latest stable (`npm view n8n dist-tags`), so a newer n8n is not the fix.
+
+| Lockfile | Vulnerable packages | Critical (≥ 9) | High (7–9) |
+|---|---|---|---|
+| n8n as published | 48 | 4 | 24 |
+| with `overrides` in `profiles/n8n/package.json` | 39 | 1 | 17 |
+
+The overrides only move a package to a fixed version in the **same major**: form-data, both
+fast-xml-parser lines, axios, `@modelcontextprotocol/sdk`/`server`/`node`, ws, undici, linkify-it
+5, the Jaeger propagator. Every fix that would need a new major stays out, because forcing it
+could break n8n in ways no test here would catch. That covers tar 6, uuid, zod 3, toml 3,
+markdown-it 13, nodemailer 7, msal-node, adm-zip, langsmith and the OpenTelemetry SDK.
+The remaining critical, `tar@6.2.1`, comes only through node-gyp and cacache, at build
+time. These residuals are accepted because n8n listens on 127.0.0.1 only and has no inbound
+triggers. Re-run the scan when n8n ships a new stable.
+
+Live conditions, measured after `devil profile --apply --pack orchestrator`:
+
+| Condition | Evidence |
+|---|---|
+| loopback only | `ss -ltn`: `127.0.0.1:5678` (UI) and `127.0.0.1:5679` (task-runner broker), nothing else. The LAN IP does not answer, and 5 minutes after start n8n holds 0 non-loopback connections |
+| no inbound triggers | `POST /webhook/test` → 404 |
+| secrets unreadable | **failed first**: `InaccessiblePaths=` was skipped silently (n8n shared the host's mount namespace and listed `~/.ssh`). Under bwrap, n8n's namespace differs from the host's and `~/.ssh`, `~/.config/gh`, `~/.gnupg`, `~/.config/42ctl` hold 0 entries; the host's copies are intact |
+| memory cap | `systemctl --user show -p MemoryMax`: 805306368 (768M); about 560 MiB used at idle |
+| nightly check | `harness42-profile-check.timer` enabled, next run 03:30 |
+| no MCP trigger | not registered; `tests/test_n8n.sh` fails if a workflow carries one |
+
+The owner account is created by hand in the browser at `http://127.0.0.1:5678` on first visit.
+Nobody else can reach that page.
+
+Install scripts are gated by `allowScripts` (npm 11). Only sqlite3, isolated-vm and
+msgpackr-extract may build, each pinned to its version. The other 13 are denied, among them
+`@scarf/scarf` (install analytics) and the two `@sentry` profilers. `tests/test_n8n.sh` holds
+the static half of the conditions above.
 
 ## Caveats
 

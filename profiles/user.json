@@ -1099,6 +1099,30 @@
       "name": "rtk-hook",
       "check": "jq -e \"[.hooks.PreToolUse[]?.hooks[]?.command] | index(\\\"rtk hook claude\\\")\" ~/.claude/settings.json",
       "run": "rtk init -g --hook-only --auto-patch"
+    },
+    {
+      "pack": "orchestrator",
+      "name": "n8n-install",
+      "check": "[ \"$($HOME/.local/share/harness42/n8n/node_modules/.bin/n8n --version 2>/dev/null)\" = 2.45.7 ]",
+      "run": "install -d $HOME/.local/share/harness42/n8n && cp \"$HARNESS42_KIT\"/profiles/n8n/package.json \"$HARNESS42_KIT\"/profiles/n8n/package-lock.json $HOME/.local/share/harness42/n8n/ && cd $HOME/.local/share/harness42/n8n && npm ci --no-audit --no-fund --loglevel http"
+    },
+    {
+      "pack": "orchestrator",
+      "name": "n8n-service",
+      "check": "cmp -s \"$HARNESS42_KIT\"/profiles/n8n/harness42-n8n.service $HOME/.config/systemd/user/harness42-n8n.service && systemctl --user is-active -q harness42-n8n",
+      "run": "install -Dm644 \"$HARNESS42_KIT\"/profiles/n8n/harness42-n8n.service $HOME/.config/systemd/user/harness42-n8n.service && systemctl --user daemon-reload && systemctl --user enable -q harness42-n8n && systemctl --user restart harness42-n8n && sleep 20 && systemctl --user is-active -q harness42-n8n"
+    },
+    {
+      "pack": "orchestrator",
+      "name": "n8n-workflows",
+      "check": "cmp -s \"$HARNESS42_KIT\"/profiles/n8n/workflows/ai-repo-brief.json $HOME/.local/share/harness42/n8n-data/imported/ai-repo-brief.json",
+      "run": "N8N_USER_FOLDER=$HOME/.local/share/harness42/n8n-data $HOME/.local/share/harness42/n8n/node_modules/.bin/n8n import:workflow --input=\"$HARNESS42_KIT\"/profiles/n8n/workflows/ai-repo-brief.json && install -Dm644 \"$HARNESS42_KIT\"/profiles/n8n/workflows/ai-repo-brief.json $HOME/.local/share/harness42/n8n-data/imported/ai-repo-brief.json"
+    },
+    {
+      "pack": "orchestrator",
+      "name": "profile-check-timer",
+      "check": "sed \"s#@KIT@#$HARNESS42_KIT#g\" \"$HARNESS42_KIT\"/profiles/n8n/harness42-profile-check.service | cmp -s - $HOME/.config/systemd/user/harness42-profile-check.service && systemctl --user is-enabled -q harness42-profile-check.timer",
+      "run": "install -d $HOME/.config/systemd/user && sed \"s#@KIT@#$HARNESS42_KIT#g\" \"$HARNESS42_KIT\"/profiles/n8n/harness42-profile-check.service > $HOME/.config/systemd/user/harness42-profile-check.service && install -m644 \"$HARNESS42_KIT\"/profiles/n8n/harness42-profile-check.timer $HOME/.config/systemd/user/ && systemctl --user daemon-reload && systemctl --user enable -q --now harness42-profile-check.timer"
     }
   ]
 }

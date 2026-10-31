@@ -1,0 +1,43 @@
+# n8n on the host, loopback only: the profile's AI-workflow orchestrator.
+# Every line below is a condition of the devil's verdict of 2026-10-30
+# (doc/PROFILE.md): no inbound trigger nodes, no phone-home, no access to the
+# keys that reach the data center or GitHub, a hard memory cap.
+[Unit]
+Description=n8n (harness42 profile), loopback-only AI workflow orchestrator
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/harness42/n8n
+# The secrets are masked by bubblewrap, not InaccessiblePaths=: a user manager
+# needs a user namespace for that, Ubuntu's AppArmor userns restriction denies it,
+# and systemd then skips the setting without an error (n8n read ~/.ssh, measured
+# 2026-10-31). bwrap has an AppArmor profile that allows it. No bwrap, no start.
+ExecStart=/usr/bin/bwrap --dev-bind / / --die-with-parent \
+  --tmpfs %h/.ssh --tmpfs %h/.config/gh --tmpfs %h/.gnupg --tmpfs %h/.config/42ctl \
+  -- %h/.local/share/harness42/n8n/node_modules/.bin/n8n start
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=N8N_USER_FOLDER=%h/.local/share/harness42/n8n-data
+Environment=N8N_LISTEN_ADDRESS=127.0.0.1
+Environment=N8N_HOST=127.0.0.1
+Environment=N8N_PORT=5678
+Environment=N8N_PROTOCOL=http
+Environment=N8N_SECURE_COOKIE=false
+Environment=N8N_DIAGNOSTICS_ENABLED=false
+Environment=N8N_VERSION_NOTIFICATIONS_ENABLED=false
+Environment=N8N_TEMPLATES_ENABLED=false
+Environment=N8N_COMMUNITY_PACKAGES_ENABLED=false
+Environment=N8N_PERSONALIZATION_ENABLED=false
+Environment=N8N_HIRING_BANNER_ENABLED=false
+Environment=N8N_PUBLIC_API_DISABLED=true
+Environment=N8N_BLOCK_ENV_ACCESS_IN_NODE=true
+# Overrides n8n's default exclusion list: Execute Command becomes available
+# (the point of running on the host); the inbound triggers stay out.
+Environment="NODES_EXCLUDE=[\"n8n-nodes-base.webhook\",\"n8n-nodes-base.formTrigger\",\"n8n-nodes-base.localFileTrigger\"]"
+MemoryMax=768M
+NoNewPrivileges=true
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

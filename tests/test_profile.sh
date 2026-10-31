@@ -88,7 +88,8 @@ cat >"$TMP/profile.json" <<JSON
     { "pack": "core", "path": "~/.memtool/settings.json", "merge": { "GATE": "false" } }
   ],
   "commands": [
-    { "pack": "core", "name": "marker", "check": "test -f ~/.marker", "run": "touch ~/.marker" }
+    { "pack": "core", "name": "marker", "check": "test -f ~/.marker", "run": "touch ~/.marker" },
+    { "pack": "core", "name": "kitpath", "check": "test -f ~/.kitpath", "run": "test -f \"\$HARNESS42_KIT/tools/profile.sh\" && touch ~/.kitpath" }
   ],
   "instructions": "$TMP/block.md"
 }
@@ -137,6 +138,7 @@ check "settings merged deep, own keys kept" 'jq -e ".env.TEAMS_FLAG == \"1\" and
 check "a plugin listed in remove_plugins is uninstalled" '! jq -e "any(.[]; .id == \"cloudy@acme\")" "$STUB_STATE/plugins.json" >/dev/null'
 check "json_files merged into a file under HOME" 'jq -e ".GATE == \"false\" and .KEEP == 1" "$HOME/.memtool/settings.json" >/dev/null'
 check "a command runs when its check fails" '[ -f "$HOME/.marker" ]'
+check "a command sees the kit as HARNESS42_KIT" '[ -f "$HOME/.kitpath" ]'
 check "lock records the plugin version" 'jq -e ".plugins[\"alpha@acme\"].version == \"1.0.0\"" "$TMP/profile.lock.json" >/dev/null'
 
 # --- idempotence

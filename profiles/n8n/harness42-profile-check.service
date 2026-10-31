@@ -1,0 +1,9 @@
+# The nightly drift report: does ~/.claude still match the pinned profile?
+# Read-only (--check); the report lands in the journal and in the cache dir.
+[Unit]
+Description=harness42 profile drift check (read-only)
+
+[Service]
+Type=oneshot
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/bin/sh -c 'mkdir -p %h/.cache/harness42/reports && bash @KIT@/tools/profile.sh --check --skip budget > %h/.cache/harness42/reports/profile-check-$(date +%%F).md 2>&1'
