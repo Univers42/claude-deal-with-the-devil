@@ -203,6 +203,7 @@ check "--pack frontend sees only frontend plugins" '! grep -q "alpha@acme" "$TMP
 
 # The shipped profile keeps two vendor paths shut: chrome-devtools-mcp sends usage statistics and
 # trace URLs to Google unless told not to, and Artifact / RemoteTrigger publish to claude.ai.
+# shellcheck disable=SC2034  # read by the eval inside check()
 USER_JSON="$ROOT/profiles/user.json"
 check "chrome-devtools runs without Google usage statistics or CrUX" \
   'jq -e ".mcp[] | select(.name == \"chrome-devtools\") | .config.args | index(\"--no-usage-statistics\") and index(\"--no-performance-crux\")" "$USER_JSON" >/dev/null'
