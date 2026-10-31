@@ -131,6 +131,16 @@ Conditions for the rtk and claude-mem hooks:
 - pinned uv/bun are installed first;
 - claude-mem's worker listens on loopback only.
 
+## Supermemory: killed (trial, 2026-10-31)
+
+The self-hosted server (`server-v0.0.9`, standalone linux-x64 binary, sha256 verified) refuses to
+start without a model-provider key: "No model provider API key configured. Set one of
+OPENAI_API_KEY, ANTHROPIC_API_KEY, GEMINI_API_KEY, GROQ_API_KEY". Each of those is either paid (the
+Anthropic API is billed apart from a Claude plan) or a cloud service that would receive the
+memories. That breaks both free and local, and the free "lite" licence also caps the store at 10k
+documents. The supermemory role is covered by claude-mem (automatic, local, redacted) plus
+auto-memory (curated). To revisit: a free local LLM provider, or a machine with a GPU for one.
+
 ## Conditions proven (2026-10-31)
 
 | Condition | Evidence |
