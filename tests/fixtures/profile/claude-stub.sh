@@ -32,6 +32,9 @@ case "$1 $2" in
     + [{id: $id, scope: "user", enabled: true, version: "1.0.0"}]' "$S/plugins.json" |
     put "$S/plugins.json"
   ;;
+"plugin uninstall")
+  jq --arg id "$3" 'map(select(.id != $id or .scope != "user"))' "$S/plugins.json" | put "$S/plugins.json"
+  ;;
 "plugin enable")
   jq --arg id "$3" 'map(if .id == $id and .scope == "user" then .enabled = true else . end)' \
     "$S/plugins.json" | put "$S/plugins.json"

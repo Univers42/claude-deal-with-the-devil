@@ -1,9 +1,5 @@
 {
   "plugins": {
-    "brand-voice@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.1.0"
-    },
     "claude-code-setup@claude-plugins-official": {
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "1.0.0"
@@ -20,53 +16,21 @@
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "1.0.0"
     },
-    "context7@claude-plugins-official": {
-      "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
-      "version": "f8c5e7a1dcb7"
-    },
-    "data@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.1.0"
-    },
     "dbhub@dbhub": {
       "sha": "116cfdd2c29133eca097e9fef139875c6e1376b9",
       "version": "1.5.0"
-    },
-    "design@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.2.0"
     },
     "devil@univers42": {
       "sha": "11412933559c4857627fe7b73b070b1bc05d0a2f",
       "version": "1.1.1"
     },
-    "engineering@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.2.0"
-    },
     "feature-dev@claude-plugins-official": {
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "1.0.1"
     },
-    "figma@claude-plugins-official": {
-      "sha": "f2789420e7e8b4e2465dfeb1e12e1fc6a31397e5",
-      "version": "2.2.157"
-    },
-    "finance@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.3.0"
-    },
-    "fly@fly-skills": {
-      "sha": "32519ca124185dfab22ac47f7daf4e0d714c152a",
-      "version": "1.0.3"
-    },
     "frontend-design@claude-plugins-official": {
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "1.1.1"
-    },
-    "github@claude-plugins-official": {
-      "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
-      "version": "f8c5e7a1dcb7"
     },
     "go@go-skills": {
       "sha": "9adc400ee06a1161c5361789d2e3dcfe93cf7803",
@@ -80,14 +44,6 @@
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "0.1.1"
     },
-    "legal@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.3.0"
-    },
-    "marketing@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.2.0"
-    },
     "mattpocock-skills@claude-plugins-official": {
       "sha": "49dd158d1076134a641b33efb035946536778336",
       "version": "1.3.1"
@@ -96,21 +52,9 @@
       "sha": "b31dc0a43ff5d19bcf386a3476a216f3b39a6f55",
       "version": "0.0.194"
     },
-    "mongodb@claude-plugins-official": {
-      "sha": "c370a63b27075008a92134686b24af3817edeb00",
-      "version": "1.2.1"
-    },
-    "operations@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.3.0"
-    },
     "pr-review-toolkit@claude-plugins-official": {
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "1.0.1"
-    },
-    "product-management@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.2.0"
     },
     "pyright-lsp@claude-plugins-official": {
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
@@ -140,10 +84,6 @@
       "sha": "f8c5e7a1dcb71b10cb74586224b5401f3de5db28",
       "version": "f8c5e7a1dcb7"
     },
-    "small-business@knowledge-work-plugins": {
-      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
-      "version": "1.35.1"
-    },
     "superpowers@claude-plugins-official": {
       "sha": "bb92a77741419a4ab5f06e711a283343f1ada0c3",
       "version": "7.0.0"
@@ -158,16 +98,87 @@
     }
   },
   "skills": {
+    "accessibility-review": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/accessibility-review",
+    "analyze": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/analyze",
+    "architecture": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/architecture",
+    "audit-support": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/audit-support",
+    "brand-review": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/brand-review",
+    "brand-voice-enforcement": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:partner-built/brand-voice/skills/brand-voice-enforcement",
+    "brief": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/brief",
+    "build-dashboard": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/build-dashboard",
+    "campaign-plan": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/campaign-plan",
+    "capacity-plan": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/capacity-plan",
+    "change-request": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/change-request",
+    "close-management": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/close-management",
+    "code-review": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/code-review",
+    "competitive-brief": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/competitive-brief",
+    "compliance-check": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/compliance-check",
+    "compliance-tracking": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/compliance-tracking",
     "composition-patterns": "vercel-labs/agent-skills@1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62:skills/composition-patterns",
+    "content-creation": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/content-creation",
+    "create-viz": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/create-viz",
+    "data-context-extractor": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/data-context-extractor",
+    "data-visualization": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/data-visualization",
+    "debug": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/debug",
+    "deploy-checklist": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/deploy-checklist",
+    "design-critique": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/design-critique",
+    "design-handoff": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/design-handoff",
+    "design-system": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/design-system",
+    "discover-brand": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:partner-built/brand-voice/skills/discover-brand",
     "doc-coauthoring": "anthropics/skills@ca45fc496a3436251f191354091d557da31c15b5:skills/doc-coauthoring",
+    "documentation": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/documentation",
     "docx": "anthropics/skills@ca45fc496a3436251f191354091d557da31c15b5:skills/docx",
+    "draft-content": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/draft-content",
+    "email-sequence": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/email-sequence",
+    "explore-data": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/explore-data",
+    "financial-statements": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/financial-statements",
+    "guideline-generation": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:partner-built/brand-voice/skills/guideline-generation",
+    "incident-response": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/incident-response",
+    "journal-entry": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/journal-entry",
+    "journal-entry-prep": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/journal-entry-prep",
+    "legal-response": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/legal-response",
+    "legal-risk-assessment": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/legal-risk-assessment",
+    "meeting-briefing": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/meeting-briefing",
+    "metrics-review": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/metrics-review",
     "pdf": "anthropics/skills@ca45fc496a3436251f191354091d557da31c15b5:skills/pdf",
+    "performance-report": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/performance-report",
     "pptx": "anthropics/skills@ca45fc496a3436251f191354091d557da31c15b5:skills/pptx",
+    "process-doc": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/process-doc",
+    "process-optimization": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/process-optimization",
+    "product-brainstorming": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/product-brainstorming",
     "react-best-practices": "vercel-labs/agent-skills@1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62:skills/react-best-practices",
     "react-view-transitions": "vercel-labs/agent-skills@1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62:skills/react-view-transitions",
+    "reconciliation": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/reconciliation",
+    "research-synthesis": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/research-synthesis",
+    "review-contract": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/review-contract",
+    "risk-assessment": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/risk-assessment",
+    "roadmap-update": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/roadmap-update",
+    "runbook": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/runbook",
+    "seo-audit": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:marketing/skills/seo-audit",
     "shadcn": "shadcn-ui/ui@b8d7baa15b1dca5716f13153e63795fc3d741f6b:skills/shadcn",
+    "signature-request": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/signature-request",
+    "sox-testing": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/sox-testing",
+    "sprint-planning": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/sprint-planning",
+    "sql-queries": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/sql-queries",
+    "stakeholder-update": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/stakeholder-update",
+    "standup": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/standup",
+    "statistical-analysis": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/statistical-analysis",
+    "status-report": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/status-report",
+    "synthesize-research": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/synthesize-research",
+    "system-design": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/system-design",
+    "tech-debt": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/tech-debt",
+    "testing-strategy": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:engineering/skills/testing-strategy",
+    "triage-nda": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/triage-nda",
+    "user-research": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/user-research",
+    "ux-copy": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:design/skills/ux-copy",
+    "validate-data": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/validate-data",
+    "variance-analysis": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:finance/skills/variance-analysis",
+    "vendor-check": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:legal/skills/vendor-check",
+    "vendor-review": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:operations/skills/vendor-review",
     "web-design-guidelines": "vercel-labs/agent-skills@1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62:skills/web-design-guidelines",
     "webapp-testing": "anthropics/skills@ca45fc496a3436251f191354091d557da31c15b5:skills/webapp-testing",
+    "write-query": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:data/skills/write-query",
+    "write-spec": "anthropics/knowledge-work-plugins@2574e29377c7173d0cecffef29a6ecbd7f8ccb5d:product-management/skills/write-spec",
     "xlsx": "anthropics/skills@ca45fc496a3436251f191354091d557da31c15b5:skills/xlsx"
   },
   "tools": {

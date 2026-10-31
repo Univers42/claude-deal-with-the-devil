@@ -5,8 +5,8 @@
 # (dry|check|apply), defines `selected <stage>` and one `stage_<name>` per stage,
 # and starts with CHANGED="" DRIFT=0 CANNOT=0 ROWS="".
 #
-# A stage reports through note() (tools/lib/seed.sh, or its own) by setting
-# ST_STATE / ST_NOTE, records every change it would make in CHANGED (through
+# A stage reports with note() (tools/lib/seed.sh, or its own) by setting
+# ST_STATE / ST_NOTE, records every change it would make in CHANGED (via
 # ensure(), append_line() or act()), and every change it could not make in FAILED.
 
 # --- write helpers ----------------------------------------------------------
@@ -68,7 +68,7 @@ append_line() {
 }
 
 # act <label> <cmd> [args...]: the command-shaped twin of ensure(), for a change
-# made through another tool (the `claude` CLI) rather than by writing a file. The
+# made by another tool (the `claude` CLI) rather than by writing a file. The
 # label lands in CHANGED in every mode; only --apply runs the command, and a
 # command that fails lands in FAILED, which makes the stage `cannot` (exit 2):
 # a failed install is never reported as applied.

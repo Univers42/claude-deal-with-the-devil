@@ -58,7 +58,7 @@ cat >"$TMP/profile.json" <<JSON
 {
   "version": 1,
   "budget": { "always_on_tokens": null },
-  "env": { "TEAMS_FLAG": "1" },
+  "settings": { "env": { "TEAMS_FLAG": "1" }, "syncClaudeAiPlugins": false },
   "tools": [
     { "name": "hello", "pack": "core", "kind": "tar", "version": "1.0",
       "url": "file://$TMP/hello.tar.gz", "sha256": "$SHA",
@@ -70,6 +70,7 @@ cat >"$TMP/profile.json" <<JSON
     { "id": "lsp@acme", "pack": "core", "requires_bin": "no-such-binary-xyz" },
     { "id": "pretty@acme", "pack": "frontend" }
   ],
+  "remove_plugins": ["cloudy@acme"],
   "mcp": [
     { "name": "browser", "pack": "frontend", "requires": ["BROWSER_PATH"],
       "config": { "type": "stdio", "command": "npx", "args": ["-y", "b@1.0.0", "--exe", "\${BROWSER_PATH}"] } },
@@ -90,6 +91,7 @@ printf '# Rules\n\nCite or say unverified.\n' >"$TMP/block.md"
 printf '{"vars": {"BROWSER_PATH": "/usr/bin/chromium"}}\n' >"$HARNESS42_LOCAL"
 printf '# mine\n\nKeep this line.\n' >"$HOME/.claude/CLAUDE.md"
 printf '{"env": {"KEEP": "yes"}, "model": "opus"}\n' >"$HOME/.claude/settings.json"
+printf '[{"id": "cloudy@acme", "scope": "user", "enabled": true, "version": "1"}]\n' >"$STUB_STATE/plugins.json"
 mkdir -p "$HOME/.claude/skills/dupe" "$HOME/.claude/skills/orphan"
 
 run() { bash "$PROFILE_SH" --profile "$TMP/profile.json" "$@" >"$TMP/out" 2>&1; }
@@ -124,7 +126,8 @@ check "duplicate skill retired to backups" '[ ! -d "$HOME/.claude/skills/dupe" ]
 check "skill whose replacement is absent is kept" '[ -d "$HOME/.claude/skills/orphan" ]'
 check "CLAUDE.md block written" 'grep -q "Cite or say unverified." "$HOME/.claude/CLAUDE.md"'
 check "CLAUDE.md own text kept" 'grep -q "Keep this line." "$HOME/.claude/CLAUDE.md"'
-check "settings env merged, own keys kept" 'jq -e ".env.TEAMS_FLAG == \"1\" and .env.KEEP == \"yes\" and .model == \"opus\"" "$HOME/.claude/settings.json" >/dev/null'
+check "settings merged deep, own keys kept" 'jq -e ".env.TEAMS_FLAG == \"1\" and .env.KEEP == \"yes\" and .model == \"opus\" and .syncClaudeAiPlugins == false" "$HOME/.claude/settings.json" >/dev/null'
+check "a plugin listed in remove_plugins is uninstalled" '! jq -e "any(.[]; .id == \"cloudy@acme\")" "$STUB_STATE/plugins.json" >/dev/null'
 check "lock records the plugin version" 'jq -e ".plugins[\"alpha@acme\"].version == \"1.0.0\"" "$TMP/profile.lock.json" >/dev/null'
 
 # --- idempotence

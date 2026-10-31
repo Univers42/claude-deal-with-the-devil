@@ -1,147 +1,974 @@
 {
-  "$comment": "The user-scope profile `devil profile` applies to ~/.claude. Every entry is pinned; doc/PROFILE.md says what each pack adds, sends out and costs. Machine-specific values (hosts, DSNs, browser path) live in the private overlay ~/.config/harness42/local.json, never here: this repository is public.",
+  "$comment": "The user-scope profile `devil profile` applies to ~/.claude. Every entry is pinned; doc/PROFILE.md says what each pack adds, sends out and costs. Machine-specific values (hosts, DSNs, browser path) live in the private overlay ~/.config/harness42/local.json, never here: this repository is public. Local-only rule (2026-10-31): nothing loads from the claude.ai account (settings below) and no plugin that bundles a remote/cloud MCP server; remove_plugins lists the ones taken out.",
   "version": 1,
-  "budget": { "always_on_tokens": null },
-  "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
+  "budget": {
+    "always_on_tokens": null
+  },
   "tools": [
-    { "name": "uv", "pack": "core", "kind": "tar", "version": "0.13.6",
+    {
+      "name": "uv",
+      "pack": "core",
+      "kind": "tar",
+      "version": "0.13.6",
       "url": "https://github.com/astral-sh/uv/releases/download/0.13.6/uv-x86_64-unknown-linux-gnu.tar.gz",
       "sha256": "f29c3e94ffabd7e6f3ba521dba169a9b7ec12100bf3257087f0f24f6123f3645",
-      "member": "uv-x86_64-unknown-linux-gnu/uv", "check": "uv --version" },
-    { "name": "bun", "pack": "memory", "kind": "zip", "version": "1.4.4",
+      "member": "uv-x86_64-unknown-linux-gnu/uv",
+      "check": "uv --version"
+    },
+    {
+      "name": "bun",
+      "pack": "memory",
+      "kind": "zip",
+      "version": "1.4.4",
       "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64.zip",
       "sha256": "bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c",
-      "member": "bun-linux-x64/bun", "check": "bun --version" },
-    { "name": "rust-analyzer", "pack": "knowledge", "kind": "gz", "version": "2026-10-26",
+      "member": "bun-linux-x64/bun",
+      "check": "bun --version"
+    },
+    {
+      "name": "rust-analyzer",
+      "pack": "knowledge",
+      "kind": "gz",
+      "version": "2026-10-26",
       "url": "https://github.com/rust-lang/rust-analyzer/releases/download/2026-10-26/rust-analyzer-x86_64-unknown-linux-gnu.gz",
       "sha256": "4c83773525f93b636ed79761389568b4d2a89c05fa7ecc440245032d49ad80ce",
-      "expect": "0.3.3097", "check": "rust-analyzer --version" },
-    { "name": "codebase-memory-mcp", "pack": "knowledge", "kind": "tar", "version": "0.12.1",
+      "expect": "0.3.3097",
+      "check": "rust-analyzer --version"
+    },
+    {
+      "name": "codebase-memory-mcp",
+      "pack": "knowledge",
+      "kind": "tar",
+      "version": "0.12.1",
       "url": "https://github.com/DeusData/codebase-memory-mcp/releases/download/v0.12.1/codebase-memory-mcp-linux-amd64.tar.gz",
       "sha256": "8453015145f072c1b9b019cbdd02cea8cc6f18cc5e116036dd20992631c638c7",
-      "member": "codebase-memory-mcp", "check": "codebase-memory-mcp --version" },
-    { "name": "typescript-language-server", "pack": "knowledge", "kind": "npm", "version": "6.0.2",
-      "pkgs": ["typescript-language-server@6.0.2", "typescript@7.0.2"],
-      "check": "typescript-language-server --version" },
-    { "name": "pyright", "pack": "knowledge", "kind": "npm", "version": "1.1.414",
-      "pkgs": ["pyright@1.1.414"], "check": "pyright --version" },
-    { "name": "gopls", "pack": "knowledge", "kind": "go", "version": "v0.23.0",
-      "pkgs": ["golang.org/x/tools/gopls@v0.23.0"], "check": "gopls version" },
-    { "name": "ccusage", "pack": "knowledge", "kind": "npm", "version": "20.0.45",
-      "pkgs": ["ccusage@20.0.45"], "check": "ccusage --version" },
-    { "name": "specify", "pack": "core", "kind": "uv", "version": "1.2.5",
-      "pkgs": ["specify-cli==1.2.5"], "check": "specify --version" },
-    { "name": "serena", "pack": "knowledge", "kind": "uv", "version": "2.1.0",
-      "pkgs": ["serena-agent==2.1.0"], "python": "3.13", "check": "serena --version" }
+      "member": "codebase-memory-mcp",
+      "check": "codebase-memory-mcp --version"
+    },
+    {
+      "name": "typescript-language-server",
+      "pack": "knowledge",
+      "kind": "npm",
+      "version": "6.0.2",
+      "pkgs": [
+        "typescript-language-server@6.0.2",
+        "typescript@7.0.2"
+      ],
+      "check": "typescript-language-server --version"
+    },
+    {
+      "name": "pyright",
+      "pack": "knowledge",
+      "kind": "npm",
+      "version": "1.1.414",
+      "pkgs": [
+        "pyright@1.1.414"
+      ],
+      "check": "pyright --version"
+    },
+    {
+      "name": "gopls",
+      "pack": "knowledge",
+      "kind": "go",
+      "version": "v0.23.0",
+      "pkgs": [
+        "golang.org/x/tools/gopls@v0.23.0"
+      ],
+      "check": "gopls version"
+    },
+    {
+      "name": "ccusage",
+      "pack": "knowledge",
+      "kind": "npm",
+      "version": "20.0.45",
+      "pkgs": [
+        "ccusage@20.0.45"
+      ],
+      "check": "ccusage --version"
+    },
+    {
+      "name": "specify",
+      "pack": "core",
+      "kind": "uv",
+      "version": "1.2.5",
+      "pkgs": [
+        "specify-cli==1.2.5"
+      ],
+      "check": "specify --version"
+    },
+    {
+      "name": "serena",
+      "pack": "knowledge",
+      "kind": "uv",
+      "version": "2.1.0",
+      "pkgs": [
+        "serena-agent==2.1.0"
+      ],
+      "python": "3.13",
+      "check": "serena --version"
+    }
   ],
   "marketplaces": [
-    { "name": "claude-plugins-official", "source": "anthropics/claude-plugins-official", "autoupdate": true },
-    { "name": "knowledge-work-plugins", "source": "anthropics/knowledge-work-plugins" },
-    { "name": "ui-ux-pro-max-skill", "source": "nextlevelbuilder/ui-ux-pro-max-skill" },
-    { "name": "univers42", "source": "Univers42/harness42" },
-    { "name": "trailofbits", "source": "trailofbits/skills" },
-    { "name": "skills-curated", "source": "trailofbits/skills-curated" },
-    { "name": "harness-marketplace", "source": "revfactory/harness" },
-    { "name": "dbhub", "source": "bytebase/dbhub#v1.5.0" },
-    { "name": "fly-skills", "source": "superfly/skills" },
-    { "name": "go-skills", "source": "spf13/go-skills" }
+    {
+      "name": "claude-plugins-official",
+      "source": "anthropics/claude-plugins-official",
+      "autoupdate": true
+    },
+    {
+      "name": "knowledge-work-plugins",
+      "source": "anthropics/knowledge-work-plugins"
+    },
+    {
+      "name": "ui-ux-pro-max-skill",
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill"
+    },
+    {
+      "name": "univers42",
+      "source": "Univers42/harness42"
+    },
+    {
+      "name": "trailofbits",
+      "source": "trailofbits/skills"
+    },
+    {
+      "name": "skills-curated",
+      "source": "trailofbits/skills-curated"
+    },
+    {
+      "name": "harness-marketplace",
+      "source": "revfactory/harness"
+    },
+    {
+      "name": "dbhub",
+      "source": "bytebase/dbhub#v1.5.0"
+    },
+    {
+      "name": "go-skills",
+      "source": "spf13/go-skills"
+    }
   ],
   "plugins": [
-    { "id": "superpowers@claude-plugins-official", "pack": "core" },
-    { "id": "devil@univers42", "pack": "core" },
-    { "id": "claude-md-management@claude-plugins-official", "pack": "core" },
-    { "id": "skill-creator@claude-plugins-official", "pack": "core" },
-    { "id": "session-report@claude-plugins-official", "pack": "core" },
-    { "id": "hookify@claude-plugins-official", "pack": "core" },
-    { "id": "code-review@claude-plugins-official", "pack": "core" },
-    { "id": "pr-review-toolkit@claude-plugins-official", "pack": "core" },
-    { "id": "feature-dev@claude-plugins-official", "pack": "core" },
-    { "id": "code-simplifier@claude-plugins-official", "pack": "core" },
-    { "id": "claude-code-setup@claude-plugins-official", "pack": "core" },
-    { "id": "ralph-loop@claude-plugins-official", "pack": "core" },
-    { "id": "mattpocock-skills@claude-plugins-official", "pack": "core" },
-    { "id": "harness@harness-marketplace", "pack": "core" },
-
-    { "id": "context7@claude-plugins-official", "pack": "knowledge" },
-    { "id": "typescript-lsp@claude-plugins-official", "pack": "knowledge", "requires_bin": "typescript-language-server" },
-    { "id": "gopls-lsp@claude-plugins-official", "pack": "knowledge", "requires_bin": "gopls" },
-    { "id": "rust-analyzer-lsp@claude-plugins-official", "pack": "knowledge", "requires_bin": "rust-analyzer" },
-    { "id": "pyright-lsp@claude-plugins-official", "pack": "knowledge", "requires_bin": "pyright" },
-    { "id": "clangd-lsp@claude-plugins-official", "pack": "knowledge", "requires_bin": "clangd" },
-
-    { "id": "frontend-design@claude-plugins-official", "pack": "frontend" },
-    { "id": "ui-ux-pro-max@ui-ux-pro-max-skill", "pack": "frontend" },
-    { "id": "modern-web-guidance@claude-plugins-official", "pack": "frontend" },
-    { "id": "figma@claude-plugins-official", "pack": "frontend" },
-
-    { "id": "github@claude-plugins-official", "pack": "backend" },
-    { "id": "dbhub@dbhub", "pack": "backend" },
-    { "id": "fly@fly-skills", "pack": "backend" },
-    { "id": "mongodb@claude-plugins-official", "pack": "backend" },
-    { "id": "redis-development@claude-plugins-official", "pack": "backend" },
-    { "id": "go@go-skills", "pack": "backend" },
-    { "id": "rust-review@trailofbits", "pack": "backend" },
-
-    { "id": "product-management@knowledge-work-plugins", "pack": "business" },
-    { "id": "engineering@knowledge-work-plugins", "pack": "business" },
-    { "id": "design@knowledge-work-plugins", "pack": "business" },
-    { "id": "data@knowledge-work-plugins", "pack": "business" },
-    { "id": "operations@knowledge-work-plugins", "pack": "business" },
-    { "id": "small-business@knowledge-work-plugins", "pack": "business" },
-    { "id": "brand-voice@knowledge-work-plugins", "pack": "business" },
-    { "id": "marketing@knowledge-work-plugins", "pack": "business" },
-    { "id": "finance@knowledge-work-plugins", "pack": "business" },
-    { "id": "legal@knowledge-work-plugins", "pack": "business" }
+    {
+      "id": "superpowers@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "devil@univers42",
+      "pack": "core"
+    },
+    {
+      "id": "claude-md-management@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "skill-creator@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "session-report@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "hookify@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "code-review@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "pr-review-toolkit@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "feature-dev@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "code-simplifier@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "claude-code-setup@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "ralph-loop@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "mattpocock-skills@claude-plugins-official",
+      "pack": "core"
+    },
+    {
+      "id": "harness@harness-marketplace",
+      "pack": "core"
+    },
+    {
+      "id": "typescript-lsp@claude-plugins-official",
+      "pack": "knowledge",
+      "requires_bin": "typescript-language-server"
+    },
+    {
+      "id": "gopls-lsp@claude-plugins-official",
+      "pack": "knowledge",
+      "requires_bin": "gopls"
+    },
+    {
+      "id": "rust-analyzer-lsp@claude-plugins-official",
+      "pack": "knowledge",
+      "requires_bin": "rust-analyzer"
+    },
+    {
+      "id": "pyright-lsp@claude-plugins-official",
+      "pack": "knowledge",
+      "requires_bin": "pyright"
+    },
+    {
+      "id": "clangd-lsp@claude-plugins-official",
+      "pack": "knowledge",
+      "requires_bin": "clangd"
+    },
+    {
+      "id": "frontend-design@claude-plugins-official",
+      "pack": "frontend"
+    },
+    {
+      "id": "ui-ux-pro-max@ui-ux-pro-max-skill",
+      "pack": "frontend"
+    },
+    {
+      "id": "modern-web-guidance@claude-plugins-official",
+      "pack": "frontend"
+    },
+    {
+      "id": "dbhub@dbhub",
+      "pack": "backend"
+    },
+    {
+      "id": "redis-development@claude-plugins-official",
+      "pack": "backend"
+    },
+    {
+      "id": "go@go-skills",
+      "pack": "backend"
+    },
+    {
+      "id": "rust-review@trailofbits",
+      "pack": "backend"
+    }
   ],
   "mcp": [
-    { "name": "playwright", "pack": "frontend", "requires": ["BROWSER_PATH"],
-      "config": { "type": "stdio", "command": "npx",
-        "args": ["-y", "@playwright/mcp@0.0.83", "--headless", "--isolated", "--no-sandbox",
-                 "--browser", "chromium", "--executable-path", "${BROWSER_PATH}"] } },
-    { "name": "chrome-devtools", "pack": "frontend", "requires": ["BROWSER_PATH"],
-      "config": { "type": "stdio", "command": "npx",
-        "args": ["-y", "chrome-devtools-mcp@1.12.0", "--headless", "--isolated",
-                 "--executablePath", "${BROWSER_PATH}", "--chromeArg=--no-sandbox"] } },
-    { "name": "shadcn", "pack": "frontend",
-      "config": { "type": "stdio", "command": "npx", "args": ["-y", "shadcn@4.23.0", "mcp"] } },
-    { "name": "codebase-memory", "pack": "knowledge", "requires_bin": "codebase-memory-mcp",
-      "config": { "type": "stdio", "command": "codebase-memory-mcp", "args": [] } },
-    { "name": "serena", "pack": "knowledge", "requires_bin": "serena",
-      "config": { "type": "stdio", "command": "serena",
-        "args": ["start-mcp-server", "--context", "claude-code", "--project-from-cwd"] } }
+    {
+      "name": "playwright",
+      "pack": "frontend",
+      "requires": [
+        "BROWSER_PATH"
+      ],
+      "config": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@playwright/mcp@0.0.83",
+          "--headless",
+          "--isolated",
+          "--no-sandbox",
+          "--browser",
+          "chromium",
+          "--executable-path",
+          "${BROWSER_PATH}"
+        ]
+      }
+    },
+    {
+      "name": "chrome-devtools",
+      "pack": "frontend",
+      "requires": [
+        "BROWSER_PATH"
+      ],
+      "config": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "chrome-devtools-mcp@1.12.0",
+          "--headless",
+          "--isolated",
+          "--executablePath",
+          "${BROWSER_PATH}",
+          "--chromeArg=--no-sandbox"
+        ]
+      }
+    },
+    {
+      "name": "shadcn",
+      "pack": "frontend",
+      "config": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "shadcn@4.23.0",
+          "mcp"
+        ]
+      }
+    },
+    {
+      "name": "codebase-memory",
+      "pack": "knowledge",
+      "requires_bin": "codebase-memory-mcp",
+      "config": {
+        "type": "stdio",
+        "command": "codebase-memory-mcp",
+        "args": []
+      }
+    },
+    {
+      "name": "serena",
+      "pack": "knowledge",
+      "requires_bin": "serena",
+      "config": {
+        "type": "stdio",
+        "command": "serena",
+        "args": [
+          "start-mcp-server",
+          "--context",
+          "claude-code",
+          "--project-from-cwd"
+        ]
+      }
+    }
   ],
   "skills": [
-    { "name": "react-best-practices", "pack": "frontend", "repo": "vercel-labs/agent-skills",
-      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62", "path": "skills/react-best-practices" },
-    { "name": "web-design-guidelines", "pack": "frontend", "repo": "vercel-labs/agent-skills",
-      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62", "path": "skills/web-design-guidelines" },
-    { "name": "composition-patterns", "pack": "frontend", "repo": "vercel-labs/agent-skills",
-      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62", "path": "skills/composition-patterns" },
-    { "name": "react-view-transitions", "pack": "frontend", "repo": "vercel-labs/agent-skills",
-      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62", "path": "skills/react-view-transitions" },
-    { "name": "shadcn", "pack": "frontend", "repo": "shadcn-ui/ui",
-      "sha": "b8d7baa15b1dca5716f13153e63795fc3d741f6b", "path": "skills/shadcn" },
-    { "name": "webapp-testing", "pack": "frontend", "repo": "anthropics/skills",
-      "sha": "ca45fc496a3436251f191354091d557da31c15b5", "path": "skills/webapp-testing" },
-    { "name": "docx", "pack": "business", "repo": "anthropics/skills",
-      "sha": "ca45fc496a3436251f191354091d557da31c15b5", "path": "skills/docx" },
-    { "name": "pdf", "pack": "business", "repo": "anthropics/skills",
-      "sha": "ca45fc496a3436251f191354091d557da31c15b5", "path": "skills/pdf" },
-    { "name": "pptx", "pack": "business", "repo": "anthropics/skills",
-      "sha": "ca45fc496a3436251f191354091d557da31c15b5", "path": "skills/pptx" },
-    { "name": "xlsx", "pack": "business", "repo": "anthropics/skills",
-      "sha": "ca45fc496a3436251f191354091d557da31c15b5", "path": "skills/xlsx" },
-    { "name": "doc-coauthoring", "pack": "business", "repo": "anthropics/skills",
-      "sha": "ca45fc496a3436251f191354091d557da31c15b5", "path": "skills/doc-coauthoring" }
+    {
+      "name": "react-best-practices",
+      "pack": "frontend",
+      "repo": "vercel-labs/agent-skills",
+      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/react-best-practices"
+    },
+    {
+      "name": "web-design-guidelines",
+      "pack": "frontend",
+      "repo": "vercel-labs/agent-skills",
+      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/web-design-guidelines"
+    },
+    {
+      "name": "composition-patterns",
+      "pack": "frontend",
+      "repo": "vercel-labs/agent-skills",
+      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/composition-patterns"
+    },
+    {
+      "name": "react-view-transitions",
+      "pack": "frontend",
+      "repo": "vercel-labs/agent-skills",
+      "sha": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/react-view-transitions"
+    },
+    {
+      "name": "shadcn",
+      "pack": "frontend",
+      "repo": "shadcn-ui/ui",
+      "sha": "b8d7baa15b1dca5716f13153e63795fc3d741f6b",
+      "path": "skills/shadcn"
+    },
+    {
+      "name": "webapp-testing",
+      "pack": "frontend",
+      "repo": "anthropics/skills",
+      "sha": "ca45fc496a3436251f191354091d557da31c15b5",
+      "path": "skills/webapp-testing"
+    },
+    {
+      "name": "docx",
+      "pack": "business",
+      "repo": "anthropics/skills",
+      "sha": "ca45fc496a3436251f191354091d557da31c15b5",
+      "path": "skills/docx"
+    },
+    {
+      "name": "pdf",
+      "pack": "business",
+      "repo": "anthropics/skills",
+      "sha": "ca45fc496a3436251f191354091d557da31c15b5",
+      "path": "skills/pdf"
+    },
+    {
+      "name": "pptx",
+      "pack": "business",
+      "repo": "anthropics/skills",
+      "sha": "ca45fc496a3436251f191354091d557da31c15b5",
+      "path": "skills/pptx"
+    },
+    {
+      "name": "xlsx",
+      "pack": "business",
+      "repo": "anthropics/skills",
+      "sha": "ca45fc496a3436251f191354091d557da31c15b5",
+      "path": "skills/xlsx"
+    },
+    {
+      "name": "doc-coauthoring",
+      "pack": "business",
+      "repo": "anthropics/skills",
+      "sha": "ca45fc496a3436251f191354091d557da31c15b5",
+      "path": "skills/doc-coauthoring"
+    },
+    {
+      "name": "competitive-brief",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/competitive-brief"
+    },
+    {
+      "name": "metrics-review",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/metrics-review"
+    },
+    {
+      "name": "product-brainstorming",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/product-brainstorming"
+    },
+    {
+      "name": "roadmap-update",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/roadmap-update"
+    },
+    {
+      "name": "sprint-planning",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/sprint-planning"
+    },
+    {
+      "name": "stakeholder-update",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/stakeholder-update"
+    },
+    {
+      "name": "synthesize-research",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/synthesize-research"
+    },
+    {
+      "name": "write-spec",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "product-management/skills/write-spec"
+    },
+    {
+      "name": "architecture",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/architecture"
+    },
+    {
+      "name": "code-review",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/code-review"
+    },
+    {
+      "name": "debug",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/debug"
+    },
+    {
+      "name": "deploy-checklist",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/deploy-checklist"
+    },
+    {
+      "name": "documentation",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/documentation"
+    },
+    {
+      "name": "incident-response",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/incident-response"
+    },
+    {
+      "name": "standup",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/standup"
+    },
+    {
+      "name": "system-design",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/system-design"
+    },
+    {
+      "name": "tech-debt",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/tech-debt"
+    },
+    {
+      "name": "testing-strategy",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "engineering/skills/testing-strategy"
+    },
+    {
+      "name": "accessibility-review",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/accessibility-review"
+    },
+    {
+      "name": "design-critique",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/design-critique"
+    },
+    {
+      "name": "design-handoff",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/design-handoff"
+    },
+    {
+      "name": "design-system",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/design-system"
+    },
+    {
+      "name": "research-synthesis",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/research-synthesis"
+    },
+    {
+      "name": "user-research",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/user-research"
+    },
+    {
+      "name": "ux-copy",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "design/skills/ux-copy"
+    },
+    {
+      "name": "analyze",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/analyze"
+    },
+    {
+      "name": "build-dashboard",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/build-dashboard"
+    },
+    {
+      "name": "create-viz",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/create-viz"
+    },
+    {
+      "name": "data-context-extractor",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/data-context-extractor"
+    },
+    {
+      "name": "data-visualization",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/data-visualization"
+    },
+    {
+      "name": "explore-data",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/explore-data"
+    },
+    {
+      "name": "sql-queries",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/sql-queries"
+    },
+    {
+      "name": "statistical-analysis",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/statistical-analysis"
+    },
+    {
+      "name": "validate-data",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/validate-data"
+    },
+    {
+      "name": "write-query",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "data/skills/write-query"
+    },
+    {
+      "name": "capacity-plan",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/capacity-plan"
+    },
+    {
+      "name": "change-request",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/change-request"
+    },
+    {
+      "name": "compliance-tracking",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/compliance-tracking"
+    },
+    {
+      "name": "process-doc",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/process-doc"
+    },
+    {
+      "name": "process-optimization",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/process-optimization"
+    },
+    {
+      "name": "risk-assessment",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/risk-assessment"
+    },
+    {
+      "name": "runbook",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/runbook"
+    },
+    {
+      "name": "status-report",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/status-report"
+    },
+    {
+      "name": "vendor-review",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "operations/skills/vendor-review"
+    },
+    {
+      "name": "brand-review",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/brand-review"
+    },
+    {
+      "name": "campaign-plan",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/campaign-plan"
+    },
+    {
+      "name": "content-creation",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/content-creation"
+    },
+    {
+      "name": "draft-content",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/draft-content"
+    },
+    {
+      "name": "email-sequence",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/email-sequence"
+    },
+    {
+      "name": "performance-report",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/performance-report"
+    },
+    {
+      "name": "seo-audit",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "marketing/skills/seo-audit"
+    },
+    {
+      "name": "audit-support",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/audit-support"
+    },
+    {
+      "name": "close-management",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/close-management"
+    },
+    {
+      "name": "financial-statements",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/financial-statements"
+    },
+    {
+      "name": "journal-entry",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/journal-entry"
+    },
+    {
+      "name": "journal-entry-prep",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/journal-entry-prep"
+    },
+    {
+      "name": "reconciliation",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/reconciliation"
+    },
+    {
+      "name": "sox-testing",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/sox-testing"
+    },
+    {
+      "name": "variance-analysis",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "finance/skills/variance-analysis"
+    },
+    {
+      "name": "brief",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/brief"
+    },
+    {
+      "name": "compliance-check",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/compliance-check"
+    },
+    {
+      "name": "legal-response",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/legal-response"
+    },
+    {
+      "name": "legal-risk-assessment",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/legal-risk-assessment"
+    },
+    {
+      "name": "meeting-briefing",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/meeting-briefing"
+    },
+    {
+      "name": "review-contract",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/review-contract"
+    },
+    {
+      "name": "signature-request",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/signature-request"
+    },
+    {
+      "name": "triage-nda",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/triage-nda"
+    },
+    {
+      "name": "vendor-check",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "legal/skills/vendor-check"
+    },
+    {
+      "name": "brand-voice-enforcement",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "partner-built/brand-voice/skills/brand-voice-enforcement"
+    },
+    {
+      "name": "discover-brand",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "partner-built/brand-voice/skills/discover-brand"
+    },
+    {
+      "name": "guideline-generation",
+      "pack": "business",
+      "repo": "anthropics/knowledge-work-plugins",
+      "sha": "2574e29377c7173d0cecffef29a6ecbd7f8ccb5d",
+      "path": "partner-built/brand-voice/skills/guideline-generation"
+    }
   ],
   "retire_skills": [
-    { "name": "ui-ux-pro-max", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" },
-    { "name": "design", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" },
-    { "name": "design-system", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" },
-    { "name": "brand", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" },
-    { "name": "banner-design", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" },
-    { "name": "slides", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" },
-    { "name": "ui-styling", "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill" }
+    {
+      "name": "ui-ux-pro-max",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    },
+    {
+      "name": "design",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    },
+    {
+      "name": "design-system",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    },
+    {
+      "name": "brand",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    },
+    {
+      "name": "banner-design",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    },
+    {
+      "name": "slides",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    },
+    {
+      "name": "ui-styling",
+      "replaced_by": "ui-ux-pro-max@ui-ux-pro-max-skill"
+    }
   ],
-  "instructions": "profiles/claude-md.md"
+  "instructions": "profiles/claude-md.md",
+  "settings": {
+    "env": {
+      "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+      "ENABLE_CLAUDEAI_MCP_SERVERS": "false"
+    },
+    "syncClaudeAiPlugins": false
+  },
+  "remove_plugins": [
+    "context7@claude-plugins-official",
+    "figma@claude-plugins-official",
+    "github@claude-plugins-official",
+    "mongodb@claude-plugins-official",
+    "fly@fly-skills",
+    "product-management@knowledge-work-plugins",
+    "engineering@knowledge-work-plugins",
+    "design@knowledge-work-plugins",
+    "data@knowledge-work-plugins",
+    "operations@knowledge-work-plugins",
+    "small-business@knowledge-work-plugins",
+    "marketing@knowledge-work-plugins",
+    "finance@knowledge-work-plugins",
+    "legal@knowledge-work-plugins",
+    "brand-voice@knowledge-work-plugins"
+  ]
 }

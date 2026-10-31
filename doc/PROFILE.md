@@ -20,6 +20,24 @@ Machine-specific values live in the private overlay `~/.config/harness42/local.j
 (template: [`profiles/local.example.json`](../profiles/local.example.json), `chmod 600`). An MCP
 server that needs a value the overlay lacks is skipped and named in the report.
 
+## Local only: nothing from the claude.ai account
+
+Rule (2026-10-31): everything is declared here and runs on this machine. The profile sets, in
+`~/.claude/settings.json`:
+- `ENABLE_CLAUDEAI_MCP_SERVERS=false`: no connector from the claude.ai account loads.
+- `syncClaudeAiPlugins: false`: no plugin syncs down from claude.ai.
+
+The login itself is untouched.
+
+No plugin that bundles a remote MCP server is installed. Those plugins sit in `remove_plugins`, and
+an apply uninstalls them:
+- context7, figma, github and fly, which reach hosted services;
+- mongodb, whose bundled server is unpinned;
+- the knowledge-work-plugins, which bundle more than 50 SaaS connectors (Slack, Notion, Stripe, Gmail…).
+
+To use a cloud service from another account later, add its plugin to that machine's profile
+deliberately. The history of this file shows which ones existed.
+
 ## Stages
 
 | Stage | Brings | How it decides |
@@ -48,10 +66,10 @@ Sources, in order of trust:
 | Pack | What it adds | Leaves the machine |
 |---|---|---|
 | core | superpowers, devil (this kit: its hooks and gates in every project), claude-md-management, skill-creator, session-report, hookify, code-review, pr-review-toolkit, feature-dev, code-simplifier, claude-code-setup, ralph-loop, mattpocock-skills, harness (revfactory, "Harness v2": builds a project's agent team), Spec Kit CLI, agent-teams flag | nothing beyond Claude itself |
-| knowledge | context7, LSP plugins (typescript, gopls, rust-analyzer, pyright, clangd), codebase-memory-mcp (local code graph), serena, ccusage | context7 sends library names and the query, never code |
-| frontend | frontend-design, ui-ux-pro-max, modern-web-guidance, figma, playwright + chrome-devtools MCP (headless, isolated), shadcn MCP, vercel react/web-design skills, anthropics webapp-testing | figma: design files you open (OAuth) |
-| backend | github, dbhub (read-only, 1000-row cap), fly (with a confirm hook on destructive or billable actions), mongodb, redis-development, go (spf13), rust-review (ToB) | github and fly: what you ask them to do |
-| business | knowledge-work-plugins: product-management, engineering, design, data, operations, small-business, brand-voice, marketing, finance, legal; anthropics docx / pdf / pptx / xlsx / doc-coauthoring | nothing |
+| knowledge | LSP plugins (typescript, gopls, rust-analyzer, pyright, clangd), codebase-memory-mcp (local code graph), serena, ccusage | nothing |
+| frontend | frontend-design, ui-ux-pro-max, modern-web-guidance, playwright + chrome-devtools MCP (headless, isolated), shadcn MCP, vercel react/web-design skills, anthropics webapp-testing | nothing |
+| backend | dbhub (read-only, 1000-row cap), redis-development, go (spf13), rust-review (ToB); `gh` and `fly` stay plain CLIs | nothing |
+| business | 71 skills from knowledge-work-plugins (product, engineering, design, data, operations, marketing, finance, legal, brand-voice) **vendored without their plugins**, so none of their connectors loads; anthropics docx / pdf / pptx / xlsx / doc-coauthoring | nothing |
 
 Not installed, and why:
 - **Hooks on every tool call, or a competing methodology:** ruflo, oh-my-claudecode, ECC, GSD, gstack,

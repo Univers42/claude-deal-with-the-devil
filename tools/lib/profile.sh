@@ -102,6 +102,13 @@ stage_plugins() {
     disabled) act "enable $id" claude plugin enable "$id" --scope user ;;
     esac
   done < <(pq '.plugins[]? | select(inpack)')
+  # remove_plugins names each plugin the profile takes out (cloud connectors, a
+  # replaced tool): uninstalled only when listed, never because it is unknown.
+  while IFS= read -r id; do
+    [ -n "$id" ] || continue
+    jq -e --arg id "$id" 'any(.[]; .id == $id)' <<<"$installed" >/dev/null &&
+      act "uninstall $id (remove_plugins)" claude plugin uninstall "$id" --scope user
+  done < <(jq -r '.remove_plugins[]?' "$PROFILE_FILE")
   note ok "$n plugins${skipped:+; skipped, binary missing:$skipped}" "claude plugin list --json"
 }
 
@@ -164,22 +171,23 @@ stage_retire() {
 }
 
 stage_settings() {
-  local f="$CLAUDE_HOME/settings.json" env merged
-  env="$(jq -c '.env // {}' "$PROFILE_FILE")"
-  if [ "$env" = '{}' ]; then
-    note ok "no env to set" "profile"
+  local f="$CLAUDE_HOME/settings.json" want merged keys
+  want="$(jq -c '.settings // {}' "$PROFILE_FILE")"
+  if [ "$want" = '{}' ]; then
+    note ok "no settings to merge" "profile"
     return 0
   fi
+  keys="$(jq -r '[paths(type != "object" and type != "array") | join(".")] | join(",")' <<<"$want")"
   if [ -f "$f" ]; then
-    merged="$(jq --argjson e "$env" '.env = ((.env // {}) + $e)' "$f" 2>/dev/null)" || {
+    merged="$(jq --argjson w "$want" '. * $w' "$f" 2>/dev/null)" || {
       note cannot "settings.json is not valid JSON" "$f"
       return 0
     }
   else
-    merged="$(jq -n --argjson e "$env" '{env: $e}')"
+    merged="$(jq -n --argjson w "$want" '$w')"
   fi
-  ensure "$f" "set env $(jq -r 'keys | join(",")' <<<"$env") in settings.json" < <(printf '%s\n' "$merged")
-  note ok "env $(jq -r 'keys | join(",")' <<<"$env")" "profile wins on its keys, every other key kept"
+  ensure "$f" "merge $keys into settings.json" < <(printf '%s\n' "$merged")
+  note ok "$keys" "deep merge: the profile wins on its keys, every other key kept"
 }
 
 stage_instructions() {

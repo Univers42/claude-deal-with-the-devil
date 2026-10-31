@@ -10,7 +10,7 @@
 #
 # Same contract as setup.sh, over the same runner (tools/lib/stage.sh): the
 # default dry run prints what would change, `--check` exits 1 unless every stage
-# is already applied, `--apply` changes things. Changes go through the `claude`
+# is already applied, `--apply` changes things. Changes are made by the `claude`
 # CLI (marketplaces, plugins, MCP servers) or ensure() (files), never by editing
 # ~/.claude.json directly.
 #
