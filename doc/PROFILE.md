@@ -12,6 +12,7 @@ devil profile --apply --pack frontend --only plugins
 ```
 
 What it does not do:
+
 - It never removes a plugin, a marketplace or an MCP server that the profile does not name.
 - It never overwrites a skill directory it did not vendor itself.
 - It never puts a secret in the repo.
@@ -28,6 +29,7 @@ a review rule: check a service's pricing and auth before adding it.
 
 Rule (2026-10-31): everything is declared here and runs on this machine. The profile sets, in
 `~/.claude/settings.json`:
+
 - `ENABLE_CLAUDEAI_MCP_SERVERS=false`: no connector from the claude.ai account loads.
 - `syncClaudeAiPlugins: false`: no plugin syncs down from claude.ai.
 
@@ -35,6 +37,7 @@ The login itself is untouched.
 
 No plugin that bundles a remote MCP server is installed. Those plugins sit in `remove_plugins`, and
 an apply uninstalls them:
+
 - context7, figma, github and fly, which reach hosted services;
 - mongodb, whose bundled server is unpinned;
 - the knowledge-work-plugins, which bundle more than 50 SaaS connectors (Slack, Notion, Stripe, Gmail…).
@@ -60,6 +63,7 @@ deliberately. The history of this file shows which ones existed.
 ## Packs
 
 Sources, in order of trust:
+
 - **Tier A** is on Trail of Bits' approved-marketplace list: `anthropics/claude-plugins-official`,
   `anthropics/knowledge-work-plugins`, `trailofbits/*`, `obra/superpowers`.
 - **Tier B** is vendor-official and pinned: shadcn, vercel-labs, bytebase, superfly, spf13,
@@ -74,14 +78,12 @@ Sources, in order of trust:
 | frontend | frontend-design, ui-ux-pro-max, modern-web-guidance, playwright + chrome-devtools MCP (headless, isolated), shadcn MCP, vercel react/web-design skills, anthropics webapp-testing | nothing |
 | backend | dbhub (read-only, 1000-row cap), redis-development, go (spf13), rust-review (ToB); `gh` and `fly` stay plain CLIs | nothing |
 | business | 71 skills from knowledge-work-plugins (product, engineering, design, data, operations, marketing, finance, legal, brand-voice) **vendored without their plugins**, so none of their connectors loads; anthropics docx / pdf / pptx / xlsx / doc-coauthoring | nothing |
-
 | security | security-guidance, claude-security (official); ToB insecure-defaults, differential-review, supply-chain-risk-auditor, property-based-testing, testing-handbook-skills, semgrep-rule-creator, audit-context-building, agentic-actions-auditor, static-analysis; skills-curated threat-model, security-best-practices, ownership-map, security-awareness, ffuf-web-fuzzing; Semgrep CE CLI 1.183.0 | nothing. The hooks were read before adoption: none makes a network call. security-guidance keeps a local Agent SDK venv |
-
 | memory | claude-mem v15.7.0 (local SQLite + Chroma, compression on your Claude plan, worker on 127.0.0.1); rtk 1.1.0 OSS build (a PreToolUse Bash hook that compresses command output) | nothing. claude-mem telemetry is off in three layers: `DO_NOT_TRACK`, `CLAUDE_MEM_TELEMETRY=off`, `telemetry.json`. rtk telemetry consent is `no` |
-
 | orchestrator | n8n 2.45.7 on the host from a committed lockfile (`profiles/n8n/`), a systemd user unit on 127.0.0.1:5678, a starter workflow (`claude -p` with an explicit `--allowedTools`), and a nightly systemd timer running `devil profile --check` into `~/.cache/harness42/reports/` | nothing. Diagnostics, templates, version checks and community packages are off |
 
 Not installed, and why:
+
 - **official semgrep plugin:** a binary hook on every Write/Edit/Bash, plus a hosted MCP. The Semgrep CE CLI and `devil quality` cover it locally.
 - **ToB fp-check:** an LLM prompt-hook on every Stop, even when the skill is unused.
 - **DAP debugger MCPs:** ctagard/dap-mcp (11★) and Govinda-Fichtner/debugger-mcp (6★) are too young to trust.
@@ -100,6 +102,7 @@ Not installed, and why:
 `devil scan <url>` runs ZAP's **baseline** (spider + passive rules, no attack payloads) in a
 container pinned by digest, against an exact `scheme://host:port` listed in the overlay's
 `scan.active` or `scan.passive`. It refuses:
+
 - an unlisted host;
 - a portless URL that does not match a listed port;
 - the kit's own service ports (5678, 37777, 6767, 8282, 9050, 9052);
@@ -120,6 +123,7 @@ container pinned by digest, against an exact `scheme://host:port` listed in the 
 | ZAP active scan + MCP add-on | **BLOCK** | the add-on's context tool lets the agent put any URL in scope, and `*.tail10f2ea.ts.net` holds a live database. Baseline ships now (Z1: exact allowlist, Z4: memory cap, Z5: no proxy); active scans and the add-on wait for a re-submission |
 
 Conditions for n8n on the host:
+
 - pinned 2.45.7 with a committed lockfile;
 - webhook, form and file triggers stay excluded;
 - `~/.ssh`, `~/.config/gh` and `~/.gnupg` are unreadable to n8n (masked by bubblewrap: `InaccessiblePaths=` is skipped silently on Ubuntu, see the unit);
@@ -130,6 +134,7 @@ Conditions for n8n on the host:
 - the nightly job is a systemd timer, not n8n.
 
 Conditions for the rtk and claude-mem hooks:
+
 - the kit's ask/deny beats rtk's allow (G1, G2);
 - no rtk PostToolUse hook, telemetry off, failures still exit non-zero;
 - claude-mem passes a secret canary;
